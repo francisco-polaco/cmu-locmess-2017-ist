@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
-        applicationId "pt.ulisboa.tecnico.meic.cmov.locmess"
+        applicationId "pt.ulisboa.tecnico.meic.cmu.locmess"
         minSdkVersion 22
         targetSdkVersion 25
         versionCode 1

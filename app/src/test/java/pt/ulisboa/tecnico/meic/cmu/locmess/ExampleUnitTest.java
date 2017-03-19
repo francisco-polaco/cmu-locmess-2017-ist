@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.meic.cmov.locmess;
+package pt.ulisboa.tecnico.meic.cmu.locmess;
 
 import org.junit.Test;
 
