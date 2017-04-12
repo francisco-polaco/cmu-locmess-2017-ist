@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:weightSum="1"
+    android:orientation="vertical">
+
+    <TextView
+        android:text="@string/app_name"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="50dp"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/Locmess"
+        android:layout_weight="0.04"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="163dp" />
+
+    <TextView
+        android:text="Create Account"
+        android:gravity="center"
+        android:textSize="20dp"
+        android:textColor="@color/colorPrimary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/CreateAccount"
+        android:layout_below="@+id/Locmess"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="13dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:hint="Username"
+        android:textSize="30dp"
+        android:gravity="center"
+        android:ems="10"
+        android:id="@+id/Username"
+        android:layout_marginTop="31dp"
+        android:layout_below="@+id/CreateAccount"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:hint="Password"
+        android:textSize="30dp"
+        android:gravity="center"
+        android:ems="10"
+        android:id="@+id/Pass"
+        android:layout_below="@+id/Username"
+        android:layout_alignStart="@+id/Username" />
+
+    <Button
+        android:text="Login"
+        android:layout_width="150dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="21dp"
+        android:textSize="20dp"
+        android:id="@+id/Login"
+        android:layout_below="@+id/Pass"
+        android:layout_centerHorizontal="true" />
+</RelativeLayout>
