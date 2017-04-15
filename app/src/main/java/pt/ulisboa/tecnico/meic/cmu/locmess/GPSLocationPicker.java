@@ -1,8 +1,10 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -24,7 +26,7 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCallback {
+public class GPSLocationPicker extends FragmentActivity implements OnMapReadyCallback {
 
     private static final String TAG = GPSLocationPicker.class.getSimpleName();
     private static final int ZOOM_LEVEL = 17;
