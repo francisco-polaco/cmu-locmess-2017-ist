@@ -10,21 +10,23 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/LocmessTheme">
+        android:theme="@style/LocmessTheme"
+        android:fullBackupContent="@xml/backup_descriptor">
         <activity
             android:name=".MainScreen"
             android:label="MainScreen"
             android:parentActivityName=".Login">
-            <!--<meta-data
+            <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="pt.ulisboa.tecnico.meic.cmu.locmess.Login" />-->
+                android:value="pt.ulisboa.tecnico.meic.cmu.locmess.Login" />
+        </activity>
+        <activity android:name=".Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Login" />
         <activity
             android:name=".Register"
             android:label="Register"
