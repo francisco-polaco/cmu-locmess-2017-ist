@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">LocMess</string>
-    <string name="action_back">Back</string>
+    <string name="drawer_open">Drawer Open</string>
+    <string name="drawer_close">Drawer Close</string>
 </resources>

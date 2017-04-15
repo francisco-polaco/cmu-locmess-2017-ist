@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:weightSum="1"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="500dp"
+        android:layout_height="400dp"
+        android:orientation="vertical"
+        android:layout_marginBottom="121dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true">
+
+        <TextView
+            android:id="@+id/Locmess"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="0dp"
+            android:layout_weight="0.06"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="50dp" />
+
+        <TextView
+            android:id="@+id/CreateAccount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/Locmess"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="13dp"
+            android:layout_weight="0.04"
+            android:gravity="center"
+            android:onClick="registerScreen"
+            android:text="Create Account"
+            android:textColor="@color/colorPrimary"
+            android:textSize="20dp" />
+
+        <EditText
+            android:id="@+id/Username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/CreateAccount"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="31dp"
+            android:layout_weight="0.04"
+            android:ems="10"
+            android:gravity="center"
+            android:hint="Username"
+            android:inputType="textPersonName"
+            android:textSize="30dp" />
+
+        <EditText
+            android:id="@+id/Pass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/Username"
+            android:layout_below="@+id/Username"
+            android:layout_weight="0.04"
+            android:ems="10"
+            android:gravity="center"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:textSize="30dp" />
+
+        <Button
+            android:id="@+id/Login"
+            android:layout_width="100dp"
+            android:layout_height="70dp"
+            android:layout_below="@+id/Pass"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="21dp"
+            android:layout_weight="0.04"
+            android:onClick="mainScreen"
+            android:text="Login"
+            android:textSize="20dp" />
+
+    </LinearLayout>
+
+</RelativeLayout>
