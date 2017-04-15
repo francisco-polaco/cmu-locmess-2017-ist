@@ -10,12 +10,12 @@ import static pt.ulisboa.tecnico.meic.cmu.locmess.R.layout.register;
  * Created by jp_s on 4/12/2017.
  */
 
-public class Register extends ActionBarActivity{
+public class Register extends ActionBarActivity {
 
     private Toolbar toolbar;
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(register);

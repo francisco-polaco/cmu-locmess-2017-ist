@@ -9,7 +9,7 @@ import android.view.View;
  * Created by jp_s on 4/12/2017.
  */
 
-public class Login extends AppCompatActivity{
+public class Login extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,12 +17,12 @@ public class Login extends AppCompatActivity{
         setContentView(R.layout.newmessage);
     }
 
-    public void registerScreen(View view){
+    public void registerScreen(View view) {
         Intent intent = new Intent(this, Register.class);
         startActivity(intent);
     }
 
-    public void mainScreen(View view){
+    public void mainScreen(View view) {
         Intent intent = new Intent(this, MainScreen.class);
         startActivity(intent);
     }

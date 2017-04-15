@@ -2,8 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:fab="http://schemas.android.com/apk/res-auto">
-    <!--tools:context=".presentation.HomeScreen"-->
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    tools:context=".MainScreen">
 
     <fragment
         android:id="@+id/place_autocomplete_fragment"
@@ -17,7 +17,7 @@
         android:layout_height="match_parent" android:id="@+id/map"
         android:layout_marginBottom="45dp"
         android:layout_marginTop="50dp"
-        tools:context=".presentation.map.LocationPicker"
+        tools:context=".GPSLocationPicker"
         android:name="com.google.android.gms.maps.SupportMapFragment" />
 
 

@@ -1,15 +1,20 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
-import android.view.Gravity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -20,8 +25,10 @@ import android.widget.TextView;
  * Created by jp_s on 4/14/2017.
  */
 
-public class MainScreen extends ActionBarActivity {
+public class MainScreen extends AppCompatActivity {
 
+    private static final String TAG = MainScreen.class.getSimpleName();
+    private static final int PERMISSION_REQUEST_CODE = 666;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
@@ -32,7 +39,7 @@ public class MainScreen extends ActionBarActivity {
         setContentView(R.layout.mainscreen);
         noMessageDisplay();
 
-        toolbar= (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         toolbar.setTitle("Messages");
@@ -44,7 +51,7 @@ public class MainScreen extends ActionBarActivity {
         drawerToggle = setupDrawerToggle();
         drawerLayout.addDrawerListener(drawerToggle);
 
-        ((Button)findViewById(R.id.map_debug)).setOnClickListener(new View.OnClickListener(){
+        ((Button) findViewById(R.id.map_debug)).setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -54,9 +61,15 @@ public class MainScreen extends ActionBarActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        checkBasePermission();
+    }
+
     //toolbar reference.
     private ActionBarDrawerToggle setupDrawerToggle() {
-        return new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open,  R.string.drawer_close);
+        return new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
     }
 
     @Override
@@ -79,11 +92,66 @@ public class MainScreen extends ActionBarActivity {
         drawerToggle.syncState();
     }
 
-    public void noMessageDisplay(){
+    public void noMessageDisplay() {
         ListView listview = (ListView) findViewById(R.id.MessageList);
         TextView textView = (TextView) findViewById(R.id.empty);
-        textView.setText("No Messages To Show");
+        textView.setText(R.string.main_no_messages);
         listview.setEmptyView(textView);
     }
 
+    private void checkBasePermission() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "Permission is not granted, requesting");
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Provide an additional rationale to the user if the permission was not granted
+                // and the user would benefit from additional context for the use of the permission.
+                // For example, if the request has been denied previously.
+                Log.i(TAG,
+                        "Displaying location permission rationale to provide additional context.");
+                showPermissionDialog();
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_CODE);
+            }
+        } else {
+            Log.d(TAG, "Permission is granted");
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "Permission has been granted");
+                //setUserInteraction(true);
+            } else {
+                Log.d(TAG, "Permission has been denied or request cancelled");
+                showPermissionDialog();
+                //setUserInteraction(false);
+            }
+        }
+    }
+
+    private void showPermissionDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.title_rationale_dialog)
+                .setMessage(R.string.message_rationale_dialog)
+                .setPositiveButton(R.string.positive_rationale_dialog, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", MainScreen.this.getPackageName(), null);
+                        intent.setData(uri);
+                        startActivity(intent);
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton(R.string.negative_rationale_dialog, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        MainScreen.this.finish();
+                    }
+                })
+                .show();
+    }
 }

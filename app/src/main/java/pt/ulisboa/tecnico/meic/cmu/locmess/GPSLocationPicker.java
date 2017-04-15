@@ -3,12 +3,11 @@ package pt.ulisboa.tecnico.meic.cmu.locmess;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.SeekBar;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -25,20 +24,16 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class GPSLocationPicker extends FragmentActivity implements OnMapReadyCallback {
+public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final String TAG = GPSLocationPicker.class.getSimpleName();
-    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-
-    private boolean circleValue = true;
-    float mRadius = 150;
-    private LatLng latLong = new LatLng(38.7368234,-9.1408937);
-    private Place mPlace;
-
-    private LatLng myLocation = new LatLng(38.7368234,-9.1408937); //needs to e dynamic update
-
     private static final int ZOOM_LEVEL = 17;
-
+    float mRadius = 150;
+    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    private boolean circleValue = true;
+    private LatLng latLong = new LatLng(38.7368234, -9.1408937);
+    private Place mPlace;
+    private LatLng myLocation = new LatLng(38.7368234, -9.1408937); //needs to e dynamic update
     private Circle mMapCircle;
 
     @Override
@@ -46,7 +41,7 @@ public class GPSLocationPicker extends FragmentActivity implements OnMapReadyCal
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_picker);
         setUpMapIfNeeded();
-//        getActionBar().setDisplayShowTitleEnabled(false);
+        //getActionBar().setDisplayShowTitleEnabled(false);
         SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
         FloatingActionButton recenter = (FloatingActionButton) findViewById(R.id.my_location);
         seekBar.setProgress((int) mRadius);
@@ -90,11 +85,9 @@ public class GPSLocationPicker extends FragmentActivity implements OnMapReadyCal
         autocomplete();
         // Zoom do mapa
         //startInZoomedArea();
-
-
     }
 
-    private void drawCircle(){
+    private void drawCircle() {
         CircleOptions circleOptions = new CircleOptions();
         circleOptions.center(latLong);
         circleOptions.strokeWidth(5);
@@ -104,7 +97,7 @@ public class GPSLocationPicker extends FragmentActivity implements OnMapReadyCal
         mMap.addCircle(circleOptions);
     }
 
-    private void drawMarker(){
+    private void drawMarker() {
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLong);
         markerOptions.title(latLong.latitude + " : " + latLong.longitude);
@@ -112,17 +105,11 @@ public class GPSLocationPicker extends FragmentActivity implements OnMapReadyCal
         mMap.addMarker(markerOptions);
     }
 
-    private void drawCenter(){
-        if(myLocation != null){
+    private void drawCenter() {
+        if (myLocation != null) {
             drawMyPosition();
-        }else new DrawPositionTask().execute(null, null, null);
+        } else new DrawPositionTask().execute(null, null, null);
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
 
     @Override
     protected void onResume() {
@@ -130,11 +117,6 @@ public class GPSLocationPicker extends FragmentActivity implements OnMapReadyCal
         setUpMapIfNeeded();
     }
 
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
 
     /**
      * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
@@ -224,15 +206,15 @@ public class GPSLocationPicker extends FragmentActivity implements OnMapReadyCal
                 return super.onOptionsItemSelected(item);
         }
     }
-    private void autocomplete(){
+
+    private void autocomplete() {
         PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
-            getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
 
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
                 Log.d("Widget", "onPlaceSelected");
-                // TODO: Get info about the selected place.
                 mPlace = place;
                 latLong = mPlace.getLatLng();
                 zoomAtArea();
@@ -240,32 +222,43 @@ public class GPSLocationPicker extends FragmentActivity implements OnMapReadyCal
                 drawCircle();
                 drawCenter();
             }
+
             @Override
             public void onError(Status status) {
                 Log.d("Widget", "onError " + status.getStatusMessage());
-                // TODO: Handle the error.
             }
         });
     }
 
-    private void zoomAtArea(){
-        if(latLong.longitude == 0 && latLong.latitude == 0)
+    private void zoomAtArea() {
+        if (latLong.longitude == 0 && latLong.latitude == 0)
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLong, 1));
         else
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLong, ZOOM_LEVEL));
     }
 
-    private void startInZoomedArea(){
-        if(latLong.longitude == 0 && latLong.latitude == 0)
+    private void startInZoomedArea() {
+        if (latLong.longitude == 0 && latLong.latitude == 0)
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLong, 1));
         else
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLong, ZOOM_LEVEL));
     }
 
 
-    private void zoomAtMe(){
-        if(myLocation != null)
+    private void zoomAtMe() {
+        if (myLocation != null)
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, ZOOM_LEVEL));
+    }
+
+    private void drawMyPosition() {
+        if (mMapCircle != null) mMapCircle.remove();
+        CircleOptions circleOptions = new CircleOptions();
+        circleOptions.center(myLocation);
+        circleOptions.strokeWidth(2);
+        circleOptions.radius(10);
+        circleOptions.strokeColor(Color.argb(255, 50, 200, 255));
+        circleOptions.fillColor(Color.argb(100, 50, 200, 255));
+        //mMapCircle = mMap.addCircle(circleOptions);
     }
 
     private class DrawPositionTask extends AsyncTask<Void, Void, Void> {
@@ -292,22 +285,12 @@ public class GPSLocationPicker extends FragmentActivity implements OnMapReadyCal
             myLocation = lastLocation.result();*/
             return null;
         }
+
         @Override
         protected void onPostExecute(Void aVoid) {
             drawMyPosition();
 
         }
-    }
-
-    private void drawMyPosition(){
-        if(mMapCircle != null) mMapCircle.remove();
-        CircleOptions circleOptions = new CircleOptions();
-        circleOptions.center(myLocation);
-        circleOptions.strokeWidth(2);
-        circleOptions.radius(10);
-        circleOptions.strokeColor(Color.argb(255, 50, 200, 255));
-        circleOptions.fillColor(Color.argb(100, 50, 200, 255));
-        //mMapCircle = mMap.addCircle(circleOptions);
     }
 
 }
