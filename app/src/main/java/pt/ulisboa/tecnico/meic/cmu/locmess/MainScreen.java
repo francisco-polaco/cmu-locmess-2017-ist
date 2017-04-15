@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
@@ -11,6 +12,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -41,6 +43,14 @@ public class MainScreen extends ActionBarActivity {
 
         drawerToggle = setupDrawerToggle();
         drawerLayout.addDrawerListener(drawerToggle);
+
+        ((Button)findViewById(R.id.map_debug)).setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), GPSLocationPicker.class));
+            }
+        });
 
     }
 
