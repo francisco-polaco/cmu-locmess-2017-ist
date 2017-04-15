@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">LocMess</string>
-    <string name="drawer_open">Drawer Open</string>
-    <string name="drawer_close">Drawer Close</string>
+    <string name="map_radius">Radius</string>
+    <string name="google_maps_key">Radius</string>
+    <string name="title_activity_gps_location_picker">GPS Location Picker</string>
 </resources>

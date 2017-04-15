@@ -2,6 +2,9 @@
 
     package="pt.ulisboa.tecnico.meic.cmu.locmess">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -31,6 +34,24 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pt.ulisboa.tecnico.meic.cmu.locmess.Login" />
+        </activity>
+
+        <!-- MAP -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key"/>
+        <!-- MAP -->
+
+        <activity
+            android:name=".GPSLocationPicker"
+            android:label="@string/title_activity_gps_location_picker"
+            android:parentActivityName=""
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden">
+
         </activity>
 
     </application>

@@ -1,0 +1,68 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:fab="http://schemas.android.com/apk/res-auto">
+    <!--tools:context=".presentation.HomeScreen"-->
+
+    <fragment
+        android:id="@+id/place_autocomplete_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+        />
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+        android:layout_height="match_parent" android:id="@+id/map"
+        android:layout_marginBottom="45dp"
+        android:layout_marginTop="50dp"
+        tools:context=".presentation.map.LocationPicker"
+        android:name="com.google.android.gms.maps.SupportMapFragment" />
+
+
+    <com.github.clans.fab.FloatingActionButton
+        android:id="@+id/my_location"
+        fab:fab_colorNormal="#FF009688"
+        fab:fab_colorPressed="#ff0da395"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_location_searching_white_24dp"
+        fab:fab_size="mini"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="50dp"
+        android:layout_marginRight="10dp"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_with_shadow"
+        android:color="#ffffffff"
+        android:id="@+id/barra"
+        android:layout_alignParentBottom="true"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:textAlignment="textStart"
+            android:text="@string/map_radius"
+            android:layout_marginLeft="20dp"/>
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="15dp"
+            android:progress="65"
+            android:max="900"/>
+    </LinearLayout>
+
+
+
+</RelativeLayout>
