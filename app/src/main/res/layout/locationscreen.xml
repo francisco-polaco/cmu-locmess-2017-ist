@@ -4,23 +4,24 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/empty"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:gravity="center"></TextView>
-
-    <ListView
-        android:id="@+id/MessageList"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="57dp" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/EmptyList"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center" />
+
+    <ListView
+        android:id="@+id/LocationsList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="57dp" />
 
     <include
         android:id="@+id/drawer_layout"
@@ -40,14 +41,5 @@
         app:fabSize="mini"
         app:layout_anchor="@+id/drawer_layout"
         app:layout_anchorGravity="bottom|right" />
-
-    <Button
-        android:id="@+id/map_debug"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:text="Map"
-        app:layout_anchor="@+id/drawer_layout"
-        app:layout_anchorGravity="top|center_horizontal" />
 
 </android.support.design.widget.CoordinatorLayout>

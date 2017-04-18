@@ -30,12 +30,20 @@
         <activity
             android:name=".Register"
             android:label="Register"
-            android:parentActivityName=".Login">
+
+            android:parentActivityName=".Login" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pt.ulisboa.tecnico.meic.cmu.locmess.Login" />
         </activity>
-
+        <activity
+            android:name=".NewMessage"
+            android:label="NewMessage">
+        </activity>
+        <activity
+            android:name=".LocationScreen"
+            android:label="LocationScreen">
+        </activity>
         <!-- MAP -->
         <meta-data
             android:name="com.google.android.gms.version"

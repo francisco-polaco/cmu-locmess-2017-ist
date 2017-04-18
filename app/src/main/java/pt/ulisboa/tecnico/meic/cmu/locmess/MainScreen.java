@@ -1,11 +1,12 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -34,6 +35,7 @@ public class MainScreen extends AppCompatActivity {
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
+    private NavigationView nvDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +54,9 @@ public class MainScreen extends AppCompatActivity {
 
         drawerToggle = setupDrawerToggle();
         drawerLayout.addDrawerListener(drawerToggle);
+
+        nvDrawer = (NavigationView) findViewById(R.id.nvView);
+        setupDrawerContent(nvDrawer);
 
         ((Button) findViewById(R.id.map_debug)).setOnClickListener(new View.OnClickListener() {
 
@@ -77,6 +82,11 @@ public class MainScreen extends AppCompatActivity {
     //toolbar reference.
     private ActionBarDrawerToggle setupDrawerToggle() {
         return new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
+    }
+
+    public void NewMessage(View view){
+        Intent intent = new Intent(this, NewMessage.class);
+        startActivity(intent);
     }
 
     @Override
@@ -105,6 +115,34 @@ public class MainScreen extends AppCompatActivity {
         textView.setText(R.string.main_no_messages);
         listview.setEmptyView(textView);
     }
+
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        selectDrawerItem(menuItem);
+                        return true;
+                    }
+                });
+    }
+
+    public void selectDrawerItem(MenuItem menuItem) {
+        switch(menuItem.getItemId()) {
+            case R.id.Message:
+                Intent message = new Intent(this, MainScreen.class);
+                startActivity(message);
+                break;
+            case R.id.Locations:
+                Intent location = new Intent(this, LocationScreen.class);
+                startActivity(location);
+                break;
+        }
+        menuItem.setCheckable(false);
+        drawerLayout.closeDrawers();
+
+    }
+
 
     private void checkBasePermission() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
