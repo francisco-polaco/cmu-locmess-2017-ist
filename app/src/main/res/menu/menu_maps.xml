@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".GPSLocationPicker">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".presentation.map.LocationPicker">
 
     <item android:id="@+id/action_accept"
-        android:title="Accept"
+        android:title="@string/accept"
         android:orderInCategory="100"
         android:icon="@drawable/ic_done_white_24dp"
-        android:showAsAction="always" />
+        app:showAsAction="always" />
 </menu>

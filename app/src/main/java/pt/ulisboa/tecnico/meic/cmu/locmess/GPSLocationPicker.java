@@ -50,6 +50,7 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
         toolbar.setTitle(getString(R.string.activity_name_gps_location));
         setSupportActionBar(toolbar);
         //getActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
         FloatingActionButton recenter = (FloatingActionButton) findViewById(R.id.my_location);
         seekBar.setProgress((int) mRadius);
