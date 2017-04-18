@@ -16,7 +16,7 @@ public class Register extends AppCompatActivity {
     private Toolbar toolbar;
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(register);
