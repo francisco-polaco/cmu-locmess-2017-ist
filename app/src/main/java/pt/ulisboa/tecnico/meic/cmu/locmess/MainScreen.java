@@ -21,6 +21,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
+
 /**
  * Created by jp_s on 4/14/2017.
  */
@@ -58,6 +60,11 @@ public class MainScreen extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(), GPSLocationPicker.class));
             }
         });
+
+        Log.d(TAG, "HELLO");
+        GoogleAPI.init(getApplicationContext(), false);
+        GoogleAPI googleAPI = GoogleAPI.getInstance();
+        googleAPI.connect();
 
     }
 
