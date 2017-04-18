@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="locations">
+        <item>Select Location</item>
+    </string-array>
+
+    <string-array name="keys">
+        <item>Select Keys</item>
+        <item>Im</item>
+        <item>Blue</item>
+        <item> da ba dee da ba daa </item>
+    </string-array>
+
+</resources>

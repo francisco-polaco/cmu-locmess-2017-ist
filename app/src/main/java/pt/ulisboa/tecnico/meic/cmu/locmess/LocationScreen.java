@@ -1,23 +1,15 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess;
 
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.location.Location;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -25,23 +17,21 @@ import android.widget.TextView;
  * Created by jp_s on 4/14/2017.
  */
 
-public class MainScreen extends AppCompatActivity {
+public class LocationScreen extends AppCompatActivity {
 
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
-    private NavigationView nvDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.mainscreen);
-        noMessageDisplay();
+        setContentView(R.layout.locationscreen);
 
         toolbar= (Toolbar) findViewById(R.id.toolbar);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        toolbar.setTitle("Messages");
+        toolbar.setTitle("Locations");
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -49,21 +39,13 @@ public class MainScreen extends AppCompatActivity {
 
         drawerToggle = setupDrawerToggle();
         drawerLayout.addDrawerListener(drawerToggle);
-
-        nvDrawer = (NavigationView) findViewById(R.id.nvView);
-        setupDrawerContent(nvDrawer);
-
+        noLocationDisplay();
 
     }
 
     //toolbar reference.
     private ActionBarDrawerToggle setupDrawerToggle() {
         return new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open,  R.string.drawer_close);
-    }
-
-    public void NewMessage(View view){
-        Intent intent = new Intent(this, NewMessage.class);
-        startActivity(intent);
     }
 
     @Override
@@ -86,39 +68,11 @@ public class MainScreen extends AppCompatActivity {
         drawerToggle.syncState();
     }
 
-    public void noMessageDisplay(){
-        ListView listview = (ListView) findViewById(R.id.MessageList);
-        TextView textView = (TextView) findViewById(R.id.empty);
-        textView.setText("No Messages To Show");
+    public void noLocationDisplay(){
+        ListView listview = (ListView) findViewById(R.id.LocationsList);
+        TextView textView = (TextView) findViewById(R.id.EmptyList);
+        textView.setText("No Locations To Show");
         listview.setEmptyView(textView);
     }
-
-    private void setupDrawerContent(NavigationView navigationView) {
-        navigationView.setNavigationItemSelectedListener(
-                new NavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
-                        selectDrawerItem(menuItem);
-                        return true;
-                    }
-                });
-    }
-
-    public void selectDrawerItem(MenuItem menuItem) {
-        switch(menuItem.getItemId()) {
-            case R.id.Message:
-                Intent message = new Intent(this, MainScreen.class);
-                startActivity(message);
-                break;
-            case R.id.Locations:
-                Intent location = new Intent(this, LocationScreen.class);
-                startActivity(location);
-                break;
-        }
-        menuItem.setCheckable(false);
-        drawerLayout.closeDrawers();
-
-    }
-
 
 }

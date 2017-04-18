@@ -26,11 +26,15 @@
         </activity>
         <activity
             android:name=".MainScreen"
-            android:label="MainScreen"
-            android:parentActivityName=".Login" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="pt.ulisboa.tecnico.meic.cmu.locmess.Login" />
+            android:label="MainScreen">
+        </activity>
+        <activity
+            android:name=".NewMessage"
+            android:label="NewMessage">
+        </activity>
+        <activity
+            android:name=".LocationScreen"
+            android:label="LocationScreen">
         </activity>
 
     </application>
