@@ -137,6 +137,10 @@ public class MainScreen extends AppCompatActivity {
                 Intent location = new Intent(this, LocationScreen.class);
                 startActivity(location);
                 break;
+            case R.id.EditProfile:
+                Intent editprofile = new Intent(this, EditProfile.class);
+                startActivity(editprofile);
+                break;
         }
         menuItem.setCheckable(false);
         drawerLayout.closeDrawers();

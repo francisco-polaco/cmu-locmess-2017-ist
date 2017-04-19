@@ -41,6 +41,10 @@
             android:label="NewMessage">
         </activity>
         <activity
+            android:name=".EditProfile"
+            android:label="EditProfile">
+        </activity>
+        <activity
             android:name=".LocationScreen"
             android:label="LocationScreen">
         </activity>

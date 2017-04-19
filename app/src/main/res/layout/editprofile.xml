@@ -3,4 +3,50 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
+
+    <EditText
+        android:id="@+id/Key"
+        android:layout_width="343dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="Key"
+        android:textSize="20dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <EditText
+            android:id="@+id/Value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.88"
+            android:ems="10"
+            android:hint="Value"
+            android:inputType="textPersonName"
+            android:textSize="20dp" />
+
+        <Button
+            android:id="@+id/AddKeyValue"
+            android:layout_width="52dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="1dp"
+            android:background="@android:drawable/ic_input_add"
+            android:backgroundTint="@color/colorPrimary"
+            android:onClick="DisplayKeyValues" />
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/keyvalue"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
 </LinearLayout>
