@@ -58,14 +58,6 @@ public class MainScreen extends AppCompatActivity {
         nvDrawer = (NavigationView) findViewById(R.id.nvView);
         setupDrawerContent(nvDrawer);
 
-        ((Button) findViewById(R.id.map_debug)).setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), GPSLocationPicker.class));
-            }
-        });
-
         Log.d(TAG, "HELLO");
         GoogleAPI.init(getApplicationContext(), false);
         GoogleAPI googleAPI = GoogleAPI.getInstance();

@@ -13,5 +13,7 @@
     <string name="negative_rationale_dialog">Exit</string>
     <string name="activity_name_gps_location">GPS</string>
     <string name="accept">Accept</string>
+    <string name="create_location_wifi">Wi-Fi</string>
+    <string name="create_location_gps">GPS</string>
 
 </resources>

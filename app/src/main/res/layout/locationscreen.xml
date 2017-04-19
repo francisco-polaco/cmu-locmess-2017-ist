@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LocationScreen">
 
 
     <RelativeLayout
@@ -27,37 +30,38 @@
         android:id="@+id/drawer_layout"
         layout="@layout/hamburger" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/LocationFloatingButton"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_gravity="top|left"
-        android:tint="@android:color/white"
-        android:src="@drawable/ic_action_add"
-        android:layout_marginBottom="30dp"
-        android:layout_marginRight="20dp"
-        app:backgroundTint="@color/colorPrimary"
-        app:fabSize="mini"
-        app:layout_anchor="@+id/drawer_layout"
-        app:layout_anchorGravity="bottom|right" />
 
-     <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/menu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-         android:layout_alignParentBottom="true"
-         android:layout_alignParentRight="true"
-         android:layout_marginRight="10dp"
-         android:layout_marginBottom="10dp"
-         android:layout_marginLeft="10dp">
+    <com.github.clans.fab.FloatingActionMenu
+         android:id="@+id/plus_button"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="10dp"
+        fab:menu_labels_ellipsize="end"
+        fab:menu_labels_singleLine="true"
+        fab:menu_colorNormal="@color/colorPrimary"
+        fab:menu_colorPressed="@color/colorPrimaryDark">
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/menu_item"
+            android:id="@+id/gps_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_add"
-            LocationFloatingButton:fab_size="mini"
-            LocationFloatingButton:fab_label="Menu item 1" />
+            fab:fab_size="mini"
+            fab:fab_label="@string/create_location_gps"
+            fab:fab_colorNormal="@color/colorPrimary"
+            fab:menu_colorPressed="@color/colorPrimaryDark"/>
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/wifi_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_add"
+            fab:fab_size="mini"
+            fab:fab_label="@string/create_location_wifi"
+            fab:fab_colorNormal="@color/colorPrimary"
+            fab:menu_colorPressed="@color/colorPrimaryDark"/>
 
     </com.github.clans.fab.FloatingActionMenu>
 

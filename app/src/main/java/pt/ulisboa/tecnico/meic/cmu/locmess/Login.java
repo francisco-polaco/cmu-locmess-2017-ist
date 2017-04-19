@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
  * Created by jp_s on 4/12/2017.
  */
@@ -24,6 +27,11 @@ public class Login extends AppCompatActivity {
 
     public void mainScreen(View view) {
         Intent intent = new Intent(this, MainScreen.class);
+        try {
+            new File(getApplicationContext().getFilesDir().getPath() + "/logged.dat").createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         startActivity(intent);
     }
 

@@ -41,13 +41,5 @@
         app:layout_anchor="@+id/drawer_layout"
         app:layout_anchorGravity="bottom|right" />
 
-    <Button
-        android:id="@+id/map_debug"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:text="Map"
-        app:layout_anchor="@+id/drawer_layout"
-        app:layout_anchorGravity="top|center_horizontal" />
 
 </android.support.design.widget.CoordinatorLayout>

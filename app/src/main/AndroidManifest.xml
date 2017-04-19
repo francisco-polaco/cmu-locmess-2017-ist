@@ -14,19 +14,14 @@
         android:theme="@style/LocmessTheme">
         <activity
             android:name=".MainScreen"
-            android:label="MainScreen"
-            android:parentActivityName=".Login">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="pt.ulisboa.tecnico.meic.cmu.locmess.Login" />
-        </activity>
-        <activity android:name=".Login">
+            android:label="MainScreen"/>
+        <activity android:name=".Bootstrap">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Login" />
         <activity
             android:name=".Register"
             android:label="Register"

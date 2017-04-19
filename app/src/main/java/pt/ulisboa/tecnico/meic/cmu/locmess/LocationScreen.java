@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by jp_s on 4/14/2017.
@@ -40,6 +41,20 @@ public class LocationScreen extends AppCompatActivity {
         drawerToggle = setupDrawerToggle();
         drawerLayout.addDrawerListener(drawerToggle);
         noLocationDisplay();
+
+        findViewById(R.id.gps_location).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), GPSLocationPicker.class));
+            }
+        });
+        findViewById(R.id.wifi_location).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "WIFI", Toast.LENGTH_SHORT).show();
+                //startActivity(new Intent(getApplicationContext(), GPSLocationPicker.class));
+            }
+        });
 
     }
 
