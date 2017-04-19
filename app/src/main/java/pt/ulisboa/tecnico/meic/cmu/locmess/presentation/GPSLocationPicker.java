@@ -1,11 +1,8 @@
-package pt.ulisboa.tecnico.meic.cmu.locmess;
+package pt.ulisboa.tecnico.meic.cmu.locmess.presentation;
 
-import android.app.Activity;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -28,6 +25,8 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 
 public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -209,7 +208,7 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_accept:
-                Toast.makeText(getApplicationContext(), "yey accepted" , Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "yey accepted", Toast.LENGTH_LONG).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

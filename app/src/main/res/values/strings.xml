@@ -15,5 +15,6 @@
     <string name="accept">Accept</string>
     <string name="create_location_wifi">Wi-Fi</string>
     <string name="create_location_gps">GPS</string>
+    <string name="toast_login_error">Login Error</string>
 
 </resources>

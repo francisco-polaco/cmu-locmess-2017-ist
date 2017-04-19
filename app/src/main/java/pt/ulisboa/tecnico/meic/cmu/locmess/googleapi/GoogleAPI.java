@@ -38,9 +38,10 @@ public final class GoogleAPI implements ConnectionCallbacks, OnConnectionFailedL
     }
 
     public static GoogleAPI getInstance() {
-        if (ourInstance == null) throw new RuntimeException("You didn't initialize GoogleAPI first. " +
-                "If it is the first time you are calling this object," +
-                " you should use the init method first.");
+        if (ourInstance == null)
+            throw new RuntimeException("You didn't initialize GoogleAPI first. " +
+                    "If it is the first time you are calling this object," +
+                    " you should use the init method first.");
         return ourInstance;
     }
 

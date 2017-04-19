@@ -1,11 +1,10 @@
-package pt.ulisboa.tecnico.meic.cmu.locmess;
+package pt.ulisboa.tecnico.meic.cmu.locmess.presentation;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
@@ -20,6 +19,8 @@ import com.thomashaertel.widget.MultiSpinner;
 
 import java.util.Calendar;
 
+import pt.ulisboa.tecnico.meic.cmu.locmess.R;
+
 /**
  * Created by jp_s on 4/15/2017.
  */
@@ -29,6 +30,18 @@ public class NewMessage extends AppCompatActivity {
     private Toolbar toolbar;
     private ArrayAdapter<CharSequence> spinnerKeys;
     private MultiSpinner multispinner;
+    private MultiSpinner.MultiSpinnerListener onSelectedListener = new MultiSpinner.MultiSpinnerListener() {
+        public void onItemsSelected(boolean[] selected) {
+            // Do something here with the selected items
+            String s = "";
+            for (int i = 0; i < selected.length; i++)
+                if (selected[i] == true)
+                    s += " " + spinnerKeys.getItem(i).toString() + "\n";
+
+            multispinner = (MultiSpinner) findViewById(R.id.spinnerMulti);
+            multispinner.setText(s);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,20 +70,6 @@ public class NewMessage extends AppCompatActivity {
         multispinner.setText("Select Keys");
         //------------------------------------------------------------------------
     }
-
-    private MultiSpinner.MultiSpinnerListener onSelectedListener = new MultiSpinner.MultiSpinnerListener() {
-        public void onItemsSelected(boolean[] selected) {
-            // Do something here with the selected items
-            String s ="";
-            for(int i = 0; i<selected.length ;i++)
-                if (selected[i] == true)
-                    s += " " + spinnerKeys.getItem(i).toString() + "\n";
-
-            multispinner = (MultiSpinner) findViewById(R.id.spinnerMulti);
-            multispinner.setText(s);
-        }
-    };
-
 
     public void showDatePickerDialog(View v) {
         DialogFragment newFragment = new DatePickerFragment();
@@ -101,7 +100,7 @@ public class NewMessage extends AppCompatActivity {
 
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             TextView textView = (TextView) getActivity().findViewById(R.id.Time);
-            textView.setText("Hour: "+view.getCurrentHour()+" Minute: "+view.getCurrentMinute());
+            textView.setText("Hour: " + view.getCurrentHour() + " Minute: " + view.getCurrentMinute());
         }
     }
 
@@ -122,7 +121,7 @@ public class NewMessage extends AppCompatActivity {
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
             TextView textView = (TextView) getActivity().findViewById(R.id.Date);
-            textView.setText("Month: "+view.getMonth()+" Day: "+view.getDayOfMonth());
+            textView.setText("Month: " + view.getMonth() + " Day: " + view.getDayOfMonth());
         }
     }
 

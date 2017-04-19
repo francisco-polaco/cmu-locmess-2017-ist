@@ -1,9 +1,10 @@
-package pt.ulisboa.tecnico.meic.cmu.locmess;
+package pt.ulisboa.tecnico.meic.cmu.locmess.presentation;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+
+import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 
 import static pt.ulisboa.tecnico.meic.cmu.locmess.R.layout.register;
 

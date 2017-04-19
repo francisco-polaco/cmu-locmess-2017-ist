@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.meic.cmu.locmess;
+package pt.ulisboa.tecnico.meic.cmu.locmess.presentation;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 
 /**
  * Created by jp_s on 4/18/2017.
@@ -37,24 +39,24 @@ public class EditProfile extends AppCompatActivity {
 
         KeyValues = new HashMap<String, String>();
         itemlist = new ArrayList<>();
-        adapter = new SimpleAdapter(this,itemlist, R.layout.listview,
-                new String[]{"First Line","Second Line"},
-                new int[]{R.id.textView, R.id.textView2} );
+        adapter = new SimpleAdapter(this, itemlist, R.layout.listview,
+                new String[]{"First Line", "Second Line"},
+                new int[]{R.id.textView, R.id.textView2});
         ListView listValues = (ListView) findViewById(R.id.keyvalue);
         listValues.setAdapter(adapter);
     }
 
-    public void DisplayKeyValues(View view){
+    public void DisplayKeyValues(View view) {
         ListView listValues = (ListView) findViewById(R.id.keyvalue);
         EditText value = (EditText) findViewById(R.id.Value);
         EditText key = (EditText) findViewById(R.id.Key);
-        KeyValues.put(key.getText().toString(),value.getText().toString());
+        KeyValues.put(key.getText().toString(), value.getText().toString());
 
         Iterator it = KeyValues.entrySet().iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             HashMap<String, String> resultmap = new HashMap<String, String>();
             Map.Entry pair = (Map.Entry) it.next();
-            resultmap.put("First Line",pair.getKey().toString());
+            resultmap.put("First Line", pair.getKey().toString());
             resultmap.put("Second Line", pair.getValue().toString());
             itemlist.add(resultmap);
         }

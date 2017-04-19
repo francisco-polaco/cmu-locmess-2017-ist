@@ -1,14 +1,14 @@
-package pt.ulisboa.tecnico.meic.cmu.locmess;
+package pt.ulisboa.tecnico.meic.cmu.locmess.presentation;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -18,11 +18,12 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.LogoutService;
 
 /**
  * Created by jp_s on 4/14/2017.
@@ -59,7 +60,6 @@ public class MainScreen extends AppCompatActivity {
         setupDrawerContent(nvDrawer);
 
         Log.d(TAG, "HELLO");
-        GoogleAPI.init(getApplicationContext(), false);
         GoogleAPI googleAPI = GoogleAPI.getInstance();
         googleAPI.connect();
 
@@ -76,7 +76,7 @@ public class MainScreen extends AppCompatActivity {
         return new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
     }
 
-    public void NewMessage(View view){
+    public void NewMessage(View view) {
         Intent intent = new Intent(this, NewMessage.class);
         startActivity(intent);
     }
@@ -120,7 +120,7 @@ public class MainScreen extends AppCompatActivity {
     }
 
     public void selectDrawerItem(MenuItem menuItem) {
-        switch(menuItem.getItemId()) {
+        switch (menuItem.getItemId()) {
             case R.id.Message:
                 Intent message = new Intent(this, MainScreen.class);
                 startActivity(message);
@@ -132,6 +132,12 @@ public class MainScreen extends AppCompatActivity {
             case R.id.EditProfile:
                 Intent editprofile = new Intent(this, EditProfile.class);
                 startActivity(editprofile);
+                break;
+            case R.id.Logout:
+                Intent intent = new Intent(this, Login.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                new LogoutService().execute();
+                startActivity(intent);
                 break;
         }
         menuItem.setCheckable(false);
