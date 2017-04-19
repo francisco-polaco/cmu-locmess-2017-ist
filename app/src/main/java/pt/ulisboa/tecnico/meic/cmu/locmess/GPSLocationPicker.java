@@ -5,12 +5,15 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.common.api.Status;
@@ -26,7 +29,7 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class GPSLocationPicker extends FragmentActivity implements OnMapReadyCallback {
+public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final String TAG = GPSLocationPicker.class.getSimpleName();
     private static final int ZOOM_LEVEL = 17;
@@ -43,7 +46,11 @@ public class GPSLocationPicker extends FragmentActivity implements OnMapReadyCal
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_picker);
         setUpMapIfNeeded();
-        //getActionBar().setDisplayShowTitleEnabled(false);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        toolbar.setTitle(getString(R.string.activity_name_gps_location));
+        setSupportActionBar(toolbar);
+        //getActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
         FloatingActionButton recenter = (FloatingActionButton) findViewById(R.id.my_location);
         seekBar.setProgress((int) mRadius);
@@ -202,7 +209,7 @@ public class GPSLocationPicker extends FragmentActivity implements OnMapReadyCal
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_accept:
-                //mMapStrategy.next(latLong, mRadius);
+                Toast.makeText(getApplicationContext(), "yey accepted" , Toast.LENGTH_LONG).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

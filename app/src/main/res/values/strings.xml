@@ -11,5 +11,7 @@
         You must allow it to continue.</string>
     <string name="positive_rationale_dialog">App Settings</string>
     <string name="negative_rationale_dialog">Exit</string>
+    <string name="activity_name_gps_location">GPS</string>
+    <string name="accept">Accept</string>
 
 </resources>
