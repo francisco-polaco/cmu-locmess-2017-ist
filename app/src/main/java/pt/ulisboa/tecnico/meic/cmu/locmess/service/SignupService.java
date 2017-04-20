@@ -43,6 +43,7 @@ public class SignupService extends LocmessService implements LocmessCallback {
         Message message = (Message) new JsonService().transformJsonToObj(object.toString(), Message.class);
         System.out.println(message.getMessage());
         getActivityCallback().onSuccess(message);
+
         System.out.println(message.getMessage());
     }
 
