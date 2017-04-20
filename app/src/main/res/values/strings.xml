@@ -26,7 +26,7 @@
     <string name="webserver_endpoint_user_listpairs">/user/listpairs</string>
     <string name="webserver_endpoint_user_addpair">/user/addpair</string>
     <string name="webserver_endpoint_user_removepair">/user/removepair</string>
-
+    <string name="toast_error_last_known_location">Impossible to get your last location.</string>
 
 
 </resources>

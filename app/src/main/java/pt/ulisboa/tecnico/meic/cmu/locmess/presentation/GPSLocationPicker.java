@@ -27,6 +27,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.ImpossibleToGetLocationException;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.GetLastLocationService;
 
 public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -35,15 +37,26 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
     float mRadius = 150;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private boolean circleValue = true;
-    private LatLng latLong = new LatLng(38.7368234, -9.1408937);
+    private LatLng latLong;
     private Place mPlace;
-    private LatLng myLocation = new LatLng(38.7368234, -9.1408937); //needs to e dynamic update
+    private LatLng myLocation; //needs to e dynamic update
     private Circle mMapCircle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_picker);
+        GetLastLocationService service = new GetLastLocationService();
+        try {
+            service.execute();
+            latLong = service.result();
+            myLocation = service.result();
+        }catch (ImpossibleToGetLocationException e){
+            latLong = new LatLng(38.7368192, -9.138705); // IST
+            myLocation = new LatLng(38.7368192, -9.138705); // IST
+            Toast.makeText(getApplicationContext(), R.string.toast_error_last_known_location,
+                    Toast.LENGTH_LONG).show();
+        }
         setUpMapIfNeeded();
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         toolbar.setTitle(getString(R.string.activity_name_gps_location));
@@ -189,7 +202,6 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-
         mMap.addMarker(new MarkerOptions().position(latLong).title("Marker"));
         drawMarker();
         drawCircle();
@@ -201,7 +213,6 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
         getMenuInflater().inflate(R.menu.menu_maps, menu);
         return super.onCreateOptionsMenu(menu);
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -251,7 +262,6 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
         else
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLong, ZOOM_LEVEL));
     }
-
 
     private void zoomAtMe() {
         if (myLocation != null)

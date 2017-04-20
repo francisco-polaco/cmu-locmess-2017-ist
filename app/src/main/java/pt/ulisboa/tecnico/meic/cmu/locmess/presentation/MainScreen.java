@@ -201,4 +201,10 @@ public class MainScreen extends AppCompatActivity {
                 })
                 .show();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        GoogleAPI.getInstance().disconnect();
+    }
 }
