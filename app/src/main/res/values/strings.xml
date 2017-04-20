@@ -17,4 +17,16 @@
     <string name="create_location_gps">GPS</string>
     <string name="toast_login_error">Login Error</string>
 
+    <string name="webserver_url">http://192.168.1.64:8080/locmess</string>
+
+    <!-- user endpoints -->
+    <string name="webserver_endpoint_user_signup">/user/signup</string>
+    <string name="webserver_endpoint_user_login">/user/login</string>
+    <string name="webserver_endpoint_user_logout">/user/logout</string>
+    <string name="webserver_endpoint_user_listpairs">/user/listpairs</string>
+    <string name="webserver_endpoint_user_addpair">/user/addpair</string>
+    <string name="webserver_endpoint_user_removepair">/user/removepair</string>
+
+
+
 </resources>

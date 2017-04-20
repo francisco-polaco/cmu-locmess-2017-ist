@@ -35,5 +35,7 @@ dependencies {
     compile 'com.android.support:design:25.3.1'
     compile 'com.thomashaertel:multispinner:0.1.1'
     compile 'com.github.clans:fab:1.6.4'
+    compile 'com.google.code.gson:gson:2.8.0'
+    compile 'com.loopj.android:android-async-http:1.4.9'
     testCompile 'junit:junit:4.12'
 }
