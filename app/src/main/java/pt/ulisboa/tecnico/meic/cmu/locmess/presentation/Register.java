@@ -5,9 +5,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.service.UserService;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.User;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.SignupService;
 
 import static pt.ulisboa.tecnico.meic.cmu.locmess.R.layout.register;
 
@@ -36,11 +38,10 @@ public class Register extends AppCompatActivity {
         String repeatPassword = ((EditText) this.findViewById(R.id.RepeatPass)).getText().toString();
 
         if(!password.equals(repeatPassword)){
-            // TODO : Toast
+            Toast.makeText(this, "Passwords don't match!", Toast.LENGTH_LONG).show();
         }
-        System.out.println(username + " " + password + " " + repeatPassword);
 
-        new UserService(this).signup(username, password);
+        new SignupService(this, new User(username, password)).execute();
     }
 
 }

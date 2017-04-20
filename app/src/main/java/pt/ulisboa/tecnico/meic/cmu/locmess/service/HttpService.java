@@ -16,6 +16,11 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 public class HttpService {
 
     private Context context;
+
+    public AsyncHttpClient getHttpClient() {
+        return httpClient;
+    }
+
     private AsyncHttpClient httpClient;
 
     public HttpService(Context context){
