@@ -218,8 +218,8 @@ public final class GoogleAPI implements ConnectionCallbacks, OnConnectionFailedL
         return mMultithreaded;
     }
 
-    public void setMultithreaded(boolean isMultithread) {
-        this.mMultithreaded = isMultithread;
+    public void setMultithreaded(boolean isMultithreaded) {
+        this.mMultithreaded = isMultithreaded;
     }
 
     public void registerConnectionCallbacks(ConnectionCallbacks connectionCallbacks) {
