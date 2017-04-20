@@ -11,6 +11,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.User;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
+import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
 
 /**
@@ -19,35 +20,36 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
 
 public class SignupService extends LocmessService implements LocmessCallback {
 
-    private Context context;
     private User user;
 
-    public SignupService(Context context, User user){
-        this.context = context;
+    public SignupService(Context context, ActivityCallback activityCallback, User user){
+        super(context, activityCallback);
         this.user = user;
     }
 
     @Override
     protected void dispatch() {
         String user = new JsonService().transformObjToJson(this.user);
-        String endpoint = context.getString(R.string.webserver_endpoint_user_signup);
-        String contentType = context.getString(R.string.content_type_json);
+        String endpoint = getContext().getString(R.string.webserver_endpoint_user_signup);
+        String contentType = getContext().getString(R.string.content_type_json);
         try {
-            new HttpService(context).post(endpoint, new StringEntity(user), contentType, new LocmessRestHandler(this));
+            getHttpService().post(endpoint, new StringEntity(user), contentType, new LocmessRestHandler(this));
         } catch (UnsupportedEncodingException ignored) {
         }
     }
 
-
     @Override
     public void onSucess(JSONObject object) {
         Message message = (Message) new JsonService().transformJsonToObj(object.toString(), Message.class);
+        System.out.println(message.getMessage());
+        getActivityCallback().onSuccess(message);
         System.out.println(message.getMessage());
     }
 
     @Override
     public void onFailure(JSONObject object) {
         Message message = (Message) new JsonService().transformJsonToObj(object.toString(), Message.class);
+        getActivityCallback().onFailure(message);
         System.out.println(message.getMessage());
     }
 }

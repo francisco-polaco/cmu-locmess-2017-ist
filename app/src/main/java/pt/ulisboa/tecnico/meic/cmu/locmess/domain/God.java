@@ -13,6 +13,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.ImpossibleToGetLocationException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.PermissionNotGrantedException;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Token;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 
 public class God {
@@ -20,6 +21,7 @@ public class God {
     private static final String TAG = God.class.getSimpleName();
     private static God ourInstance;
     private Context context;
+    private Token token;
 
     private God(Context context) {
         this.context = context;
@@ -35,16 +37,8 @@ public class God {
         ourInstance = new God(context);
     }
 
-    public boolean checkIfLogged() {
-        return UserAgent.getInstance().checkIfUserLogged(context);
-    }
-
-    public boolean logout() {
-        return UserAgent.getInstance().logout(context);
-    }
-
-    public boolean login() {
-        return UserAgent.getInstance().login(context);
+    public boolean isLogged() {
+        return token != null;
     }
 
     public LatLng getLastLocation() {
@@ -72,5 +66,13 @@ public class God {
     public void stopLocationUpdates(){
         Log.d(TAG, "Shutting down the update location service.");
         context.stopService(new Intent(context, UpdateLocationService.class));
+    }
+
+    public Token getToken() {
+        return token;
+    }
+
+    public void setToken(Token token) {
+        this.token = token;
     }
 }

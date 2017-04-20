@@ -19,6 +19,7 @@
 
     <string name="webserver_url">http://192.168.56.1:8080/locmess</string>
     <string name="content_type_json">application/json</string>
+    <string name="token_header">X-Token</string>
 
     <!-- user endpoints -->
     <string name="webserver_endpoint_user_signup">/user/signup</string>
