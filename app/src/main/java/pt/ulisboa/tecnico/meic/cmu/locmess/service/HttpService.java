@@ -16,16 +16,15 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 public class HttpService {
 
     private Context context;
+    private AsyncHttpClient httpClient;
+
+    public HttpService(Context context) {
+        this.context = context;
+        this.httpClient = new AsyncHttpClient();
+    }
 
     public AsyncHttpClient getHttpClient() {
         return httpClient;
-    }
-
-    private AsyncHttpClient httpClient;
-
-    public HttpService(Context context){
-        this.context = context;
-        this.httpClient = new AsyncHttpClient();
     }
 
     public void get(String endpoint, RequestParams params, AsyncHttpResponseHandler responseHandler) {

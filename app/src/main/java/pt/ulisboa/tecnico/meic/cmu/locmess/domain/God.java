@@ -11,6 +11,13 @@ import android.util.Log;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.concurrent.ConcurrentHashMap;
+
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.ImpossibleToGetLocationException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.PermissionNotGrantedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Token;
@@ -25,6 +32,7 @@ public class God {
 
     private God(Context context) {
         this.context = context;
+        loadState();
     }
 
     public static God getInstance() {
@@ -50,7 +58,7 @@ public class God {
         }
         Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 GoogleAPI.getInstance().getGoogleApiClient());
-        if(lastLocation == null){
+        if (lastLocation == null) {
             Log.d(TAG, "getLastLocation: lastlocation is null");
             throw new ImpossibleToGetLocationException();
         }
@@ -58,12 +66,12 @@ public class God {
 
     }
 
-    public void startLocationUpdates(){
+    public void startLocationUpdates() {
         Log.d(TAG, "Starting up the update location service.");
         context.startService(new Intent(context, UpdateLocationService.class));
     }
 
-    public void stopLocationUpdates(){
+    public void stopLocationUpdates() {
         Log.d(TAG, "Shutting down the update location service.");
         context.stopService(new Intent(context, UpdateLocationService.class));
     }
@@ -74,5 +82,25 @@ public class God {
 
     public void setToken(Token token) {
         this.token = token;
+        saveState();
+    }
+
+    public void saveState(){
+        if(token == null) return;
+        try(ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(
+                context.openFileOutput(Constants.TOKEN_FILENAME, Context.MODE_PRIVATE)))) {
+            objectOutputStream.writeObject(token);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadState(){
+        try(ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
+                context.openFileInput(Constants.TOKEN_FILENAME)))){
+            token = (Token) objectInputStream.readObject();
+        } catch (ClassNotFoundException | IOException e) {
+            e.printStackTrace();
+        }
     }
 }

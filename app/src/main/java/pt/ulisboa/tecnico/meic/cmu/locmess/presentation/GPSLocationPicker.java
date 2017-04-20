@@ -46,17 +46,6 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_picker);
-        GetLastLocationService service = new GetLastLocationService();
-        try {
-            service.execute();
-            latLong = service.result();
-            myLocation = service.result();
-        }catch (ImpossibleToGetLocationException e){
-            latLong = new LatLng(38.7368192, -9.138705); // IST
-            myLocation = new LatLng(38.7368192, -9.138705); // IST
-            Toast.makeText(getApplicationContext(), R.string.toast_error_last_known_location,
-                    Toast.LENGTH_LONG).show();
-        }
         setUpMapIfNeeded();
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         toolbar.setTitle(getString(R.string.activity_name_gps_location));
@@ -106,6 +95,20 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
         autocomplete();
         // Zoom do mapa
         //startInZoomedArea();
+    }
+
+    private void getLastKnownLocation() {
+        GetLastLocationService service = new GetLastLocationService();
+        try {
+            service.execute();
+            latLong = service.result();
+            myLocation = service.result();
+        } catch (ImpossibleToGetLocationException e) {
+            latLong = new LatLng(38.7368192, -9.138705); // IST
+            myLocation = new LatLng(38.7368192, -9.138705); // IST
+            Toast.makeText(getApplicationContext(), R.string.toast_error_last_known_location,
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     private void drawCircle() {
@@ -172,6 +175,7 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        getLastKnownLocation();
         mMap = googleMap;
         // Enabling MyLocation Layer of Google Map
         //googleMap.setMyLocationEnabled(true);

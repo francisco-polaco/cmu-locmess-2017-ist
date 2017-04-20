@@ -5,12 +5,13 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.User;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
-import pt.ulisboa.tecnico.meic.cmu.locmess.service.LoginService;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.LoginWebService;
 
 /**
  * Created by jp_s on 4/12/2017.
@@ -32,7 +33,7 @@ public class Login extends AppCompatActivity implements ActivityCallback {
     public void mainScreen(View view) {
         String username = ((EditText) this.findViewById(R.id.Username)).getText().toString();
         String password = ((EditText) this.findViewById(R.id.Pass)).getText().toString();
-        new LoginService(getApplicationContext(), this, new User(username, password)).execute();
+        new LoginWebService(getApplicationContext(), this, new User(username, password)).execute();
     }
 
     @Override
@@ -44,7 +45,7 @@ public class Login extends AppCompatActivity implements ActivityCallback {
 
     @Override
     public void onFailure(Message result) {
-        //Toast.makeText(getApplicationContext(), R.string.toast_login_error, Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), R.string.toast_login_error, Toast.LENGTH_LONG).show();
     }
 }
 

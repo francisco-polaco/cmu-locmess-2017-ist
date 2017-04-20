@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.presentation;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,12 +15,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
+import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.LogoutWebService;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.SaveStatusService;
 
 /**
  * Created by jp_s on 4/14/2017.
  */
 
-public class LocationScreen extends AppCompatActivity {
+public class LocationScreen extends AppCompatActivity implements ActivityCallback {
 
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
@@ -41,6 +48,8 @@ public class LocationScreen extends AppCompatActivity {
 
         drawerToggle = setupDrawerToggle();
         drawerLayout.addDrawerListener(drawerToggle);
+        NavigationView nvDrawer = (NavigationView) findViewById(R.id.nvView);
+        setupDrawerContent(nvDrawer);
         noLocationDisplay();
 
         findViewById(R.id.gps_location).setOnClickListener(new View.OnClickListener() {
@@ -57,6 +66,17 @@ public class LocationScreen extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        selectDrawerItem(menuItem);
+                        return true;
+                    }
+                });
     }
 
     //toolbar reference.
@@ -91,4 +111,45 @@ public class LocationScreen extends AppCompatActivity {
         listview.setEmptyView(textView);
     }
 
+    public void selectDrawerItem(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.Message:
+                Intent message = new Intent(this, MainScreen.class);
+                startActivity(message);
+                break;
+            case R.id.Locations:
+                Intent location = new Intent(this, LocationScreen.class);
+                startActivity(location);
+                break;
+            case R.id.EditProfile:
+                Intent editprofile = new Intent(this, EditProfile.class);
+                startActivity(editprofile);
+                break;
+            case R.id.Logout:
+                new LogoutWebService(getApplicationContext(), this).execute();
+                break;
+        }
+        menuItem.setCheckable(false);
+        drawerLayout.closeDrawers();
+
+    }
+
+    @Override
+    public void onSuccess(Message result) {
+        Intent intent = new Intent(this, Login.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+
+    }
+
+    @Override
+    public void onFailure(Message result) {
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        GoogleAPI.getInstance().disconnect();
+        super.onDestroy();
+    }
 }

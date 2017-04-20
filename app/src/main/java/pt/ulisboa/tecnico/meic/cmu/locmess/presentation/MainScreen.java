@@ -25,20 +25,20 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
-import pt.ulisboa.tecnico.meic.cmu.locmess.service.LogoutService;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.LogoutWebService;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.SaveStatusService;
 
 /**
  * Created by jp_s on 4/14/2017.
  */
 
-public class MainScreen extends AppCompatActivity  implements ActivityCallback{
+public class MainScreen extends AppCompatActivity implements ActivityCallback {
 
     private static final String TAG = MainScreen.class.getSimpleName();
     private static final int PERMISSION_REQUEST_CODE = 666;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
-    private NavigationView nvDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +58,7 @@ public class MainScreen extends AppCompatActivity  implements ActivityCallback{
         drawerToggle = setupDrawerToggle();
         drawerLayout.addDrawerListener(drawerToggle);
 
-        nvDrawer = (NavigationView) findViewById(R.id.nvView);
+        NavigationView nvDrawer = (NavigationView) findViewById(R.id.nvView);
         setupDrawerContent(nvDrawer);
 
         Log.d(TAG, "HELLO");
@@ -136,10 +136,7 @@ public class MainScreen extends AppCompatActivity  implements ActivityCallback{
                 startActivity(editprofile);
                 break;
             case R.id.Logout:
-                Intent intent = new Intent(this, Login.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                new LogoutService(getApplicationContext(), this).execute();
-                startActivity(intent);
+                new LogoutWebService(getApplicationContext(), this).execute();
                 break;
         }
         menuItem.setCheckable(false);
@@ -206,12 +203,15 @@ public class MainScreen extends AppCompatActivity  implements ActivityCallback{
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         GoogleAPI.getInstance().disconnect();
+        super.onDestroy();
     }
 
     @Override
     public void onSuccess(Message result) {
+        Intent intent = new Intent(this, Login.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
 
     }
 

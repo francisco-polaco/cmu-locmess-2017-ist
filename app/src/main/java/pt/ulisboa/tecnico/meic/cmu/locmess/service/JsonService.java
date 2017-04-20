@@ -18,7 +18,7 @@ public class JsonService {
         return mapper.toJson(object);
     }
 
-    public Object transformJsonToObj(String json, Class cl)  {
+    public Object transformJsonToObj(String json, Class cl) {
         return mapper.fromJson(json, cl);
     }
 

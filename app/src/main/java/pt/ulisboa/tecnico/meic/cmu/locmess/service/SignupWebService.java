@@ -18,11 +18,11 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
  * Created by Diogo on 20/04/2017.
  */
 
-public class SignupService extends LocmessService implements LocmessCallback {
+public class SignupWebService extends LocmessWebService implements LocmessCallback {
 
     private User user;
 
-    public SignupService(Context context, ActivityCallback activityCallback, User user){
+    public SignupWebService(Context context, ActivityCallback activityCallback, User user) {
         super(context, activityCallback);
         this.user = user;
     }

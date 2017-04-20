@@ -1,24 +1,23 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.dto;
 
+import android.location.Location;
+
 public final class DeviceLocation {
+    public final String SERVER_CLASS = "GPSLocation";
     private double latitude;
     private double longitude;
-    private double altitude;
 
-    public DeviceLocation(android.location.Location location){
+    public DeviceLocation(Location location) {
         latitude = location.getLatitude();
         longitude = location.getLongitude();
-        altitude = location.getAltitude();
     }
 
     public double getLatitude() {
         return latitude;
     }
+
     public double getLongitude() {
         return longitude;
-    }
-    public double getAltitude() {
-        return altitude;
     }
 
     @Override
@@ -26,7 +25,6 @@ public final class DeviceLocation {
         return "DeviceLocation{" +
                 "latitude=" + latitude +
                 ", longitude=" + longitude +
-                ", altitude=" + altitude +
                 '}';
     }
 }

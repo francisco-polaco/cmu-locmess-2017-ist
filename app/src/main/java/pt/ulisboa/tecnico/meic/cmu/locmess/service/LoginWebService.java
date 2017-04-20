@@ -17,11 +17,11 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
 
-public final class LoginService extends LocmessService implements LocmessCallback {
+public final class LoginWebService extends LocmessWebService implements LocmessCallback {
 
     private final User user;
 
-    public LoginService(Context context, ActivityCallback activityCallback, User user) {
+    public LoginWebService(Context context, ActivityCallback activityCallback, User user) {
         super(context, activityCallback);
         this.user = user;
     }
@@ -47,7 +47,11 @@ public final class LoginService extends LocmessService implements LocmessCallbac
 
     @Override
     public void onFailure(JSONObject object) {
-        Message message = (Message) getJsonService().transformJsonToObj(object.toString(), Message.class);
+        Message message;
+        if(object != null)
+            message = (Message) getJsonService().transformJsonToObj(object.toString(), Message.class);
+        else
+            message = new Message("NULL");
         getActivityCallback().onFailure(message);
         System.out.println(message);
     }

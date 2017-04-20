@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.googleapi;
 
+import android.app.Notification;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,6 +14,8 @@ import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
+
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.NotificationAgent;
 
 import static com.google.android.gms.common.api.GoogleApiClient.Builder;
 import static com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
@@ -62,6 +65,7 @@ public final class GoogleAPI implements ConnectionCallbacks, OnConnectionFailedL
     public void onConnected(@Nullable final Bundle bundle) {
         Log.d(TAG, "API Connected");
         Toast.makeText(getGoogleApiClient().getContext(), "API Connected", Toast.LENGTH_SHORT).show();
+        NotificationAgent.getInstance().sendNotification(getGoogleApiClient().getContext(), 123);
         // Do what needs to be done when the system is connected.
         //callOnConnectedToRegisteredCallbacks(bundle);
         /* if(mObjectToCallback != null) mObjectToCallback.onConnected(bundle);

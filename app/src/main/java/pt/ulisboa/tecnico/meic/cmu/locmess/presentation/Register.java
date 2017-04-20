@@ -12,7 +12,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.User;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
-import pt.ulisboa.tecnico.meic.cmu.locmess.service.SignupService;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.SignupWebService;
 
 import static pt.ulisboa.tecnico.meic.cmu.locmess.R.layout.register;
 
@@ -40,12 +40,12 @@ public class Register extends AppCompatActivity implements ActivityCallback {
         String password = ((EditText) this.findViewById(R.id.Pass)).getText().toString();
         String repeatPassword = ((EditText) this.findViewById(R.id.RepeatPass)).getText().toString();
 
-        if(!password.equals(repeatPassword)){
+        if (!password.equals(repeatPassword)) {
             Toast.makeText(this, "Passwords don't match!", Toast.LENGTH_LONG).show();
             return;
         }
 
-        new SignupService(getApplicationContext(), this, new User(username, password)).execute();
+        new SignupWebService(getApplicationContext(), this, new User(username, password)).execute();
     }
 
     @Override

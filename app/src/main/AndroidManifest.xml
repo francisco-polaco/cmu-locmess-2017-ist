@@ -58,6 +58,11 @@
             android:label="@string/title_activity_gps_location_picker"
             android:parentActivityName=".presentation.MainScreen"
             android:screenOrientation="portrait" />
+        <receiver android:name=".domain.ConnectivityChangedReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

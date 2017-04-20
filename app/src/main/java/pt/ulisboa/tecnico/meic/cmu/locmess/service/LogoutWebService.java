@@ -10,9 +10,9 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
 
-public final class LogoutService extends LocmessService implements LocmessCallback {
+public final class LogoutWebService extends LocmessWebService implements LocmessCallback {
 
-    public LogoutService(Context context, ActivityCallback activityCallback) {
+    public LogoutWebService(Context context, ActivityCallback activityCallback) {
         super(context, activityCallback);
     }
 

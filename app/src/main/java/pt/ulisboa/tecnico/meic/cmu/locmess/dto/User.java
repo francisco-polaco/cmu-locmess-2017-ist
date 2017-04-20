@@ -13,7 +13,7 @@ public class User {
     private String password;
     private List<Pair> pairs;
 
-    public User(){
+    public User() {
     }
 
     public User(String username, String password) {

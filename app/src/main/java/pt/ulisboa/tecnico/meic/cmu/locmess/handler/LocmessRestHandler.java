@@ -15,7 +15,7 @@ public class LocmessRestHandler extends JsonHttpResponseHandler {
 
     private LocmessCallback callback;
 
-    public LocmessRestHandler(LocmessCallback callback){
+    public LocmessRestHandler(LocmessCallback callback) {
         this.callback = callback;
     }
 

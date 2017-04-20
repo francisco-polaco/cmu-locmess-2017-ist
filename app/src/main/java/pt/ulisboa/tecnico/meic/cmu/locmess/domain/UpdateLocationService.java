@@ -26,7 +26,7 @@ public final class UpdateLocationService extends Service implements LocationList
         return null;
     }
 
-      @Override
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, UpdateLocationService.class.getSimpleName() + " onStartCommand");
         super.onStartCommand(intent, flags, startId);
@@ -51,7 +51,8 @@ public final class UpdateLocationService extends Service implements LocationList
                 != PackageManager.PERMISSION_GRANTED) {
             /*NotificationManager.getInstance(getApplicationContext())
                     .sendPermissionErrorLocationNotification(getApplicationContext().getString(R.string.app_name));
-            */return;
+            */
+            return;
         }
         LocationRequest mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -67,7 +68,7 @@ public final class UpdateLocationService extends Service implements LocationList
     public void onLocationChanged(Location location) {
         // comment operation below to get the old way back
         //stopLocationUpdates();
-        if(isBetterLocation(oldLocation, location)) {
+        if (isBetterLocation(oldLocation, location)) {
             oldLocation = location;
             LocationRepository.getInstance().addActualLocation(location);
         }
