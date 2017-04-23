@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -59,12 +60,19 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
         findViewById(R.id.wifi_location).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!debug) {
+                    God.getInstance().startLocationUpdates();
+                }else
+                    God.getInstance().stopLocationUpdates();
+                debug = !debug;
                 Toast.makeText(getApplicationContext(), "WIFI", Toast.LENGTH_SHORT).show();
                 //startActivity(new Intent(getApplicationContext(), GPSLocationPicker.class));
             }
         });
 
     }
+
+    boolean debug;//FIXME delete
 
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
@@ -110,26 +118,7 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
     }
 
     public void selectDrawerItem(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case R.id.Message:
-                Intent message = new Intent(this, MainScreen.class);
-                startActivity(message);
-                break;
-            case R.id.Locations:
-                Intent location = new Intent(this, LocationScreen.class);
-                startActivity(location);
-                break;
-            case R.id.EditProfile:
-                Intent editprofile = new Intent(this, EditProfile.class);
-                startActivity(editprofile);
-                break;
-            case R.id.Logout:
-                new LogoutWebService(getApplicationContext(), this).execute();
-                break;
-        }
-        menuItem.setCheckable(false);
-        drawerLayout.closeDrawers();
-
+        DrawerCode.selectDrawerItem(menuItem, this, drawerLayout, getApplicationContext());
     }
 
     @Override

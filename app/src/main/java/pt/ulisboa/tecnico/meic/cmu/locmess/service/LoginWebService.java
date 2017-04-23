@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.service;
 
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONObject;
 
@@ -19,6 +20,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
 
 public final class LoginWebService extends LocmessWebService implements LocmessCallback {
 
+    private static final String TAG = LoginWebService.class.getSimpleName();
     private final User user;
     private boolean autologin;
 
@@ -45,7 +47,7 @@ public final class LoginWebService extends LocmessWebService implements LocmessC
         God.getInstance().setToken(token);
         if(autologin) God.getInstance().saveCredentials(user.getUsername(), user.getPassword());
         getActivityCallback().onSuccess(null);
-        System.out.println(token.getToken());
+        Log.d(TAG, token.getToken());
     }
 
     @Override

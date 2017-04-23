@@ -5,17 +5,23 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
+import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.GoogleApiCallbacks;
 
-public final class UpdateLocationService extends Service implements LocationListener {
+public final class UpdateLocationService extends Service implements LocationListener, GoogleApiCallbacks {
 
     private static final String TAG = UpdateLocationService.class.getSimpleName();
 
@@ -30,7 +36,8 @@ public final class UpdateLocationService extends Service implements LocationList
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, UpdateLocationService.class.getSimpleName() + " onStartCommand");
         super.onStartCommand(intent, flags, startId);
-        startLocationUpdates();
+        GoogleAPI.init(getApplicationContext(), false);
+        GoogleAPI.getInstance().connect(this);
         return START_STICKY;
     }
 
@@ -42,16 +49,19 @@ public final class UpdateLocationService extends Service implements LocationList
     }
 
     private void stopLocationUpdates() {
+        Log.d(TAG, "Stop Location Updates");
         LocationServices.FusedLocationApi.removeLocationUpdates(
                 GoogleAPI.getInstance().getGoogleApiClient(), this);
     }
 
     private void startLocationUpdates() {
+        Log.d(TAG, "Starting Location Updates");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             /*NotificationManager.getInstance(getApplicationContext())
                     .sendPermissionErrorLocationNotification(getApplicationContext().getString(R.string.app_name));
             */
+            Log.d(TAG, "No Permissions");
             return;
         }
         LocationRequest mLocationRequest = LocationRequest.create();
@@ -68,6 +78,7 @@ public final class UpdateLocationService extends Service implements LocationList
     public void onLocationChanged(Location location) {
         // comment operation below to get the old way back
         //stopLocationUpdates();
+        Log.d(TAG, "New Location " + location);
         if (isBetterLocation(oldLocation, location)) {
             oldLocation = location;
             LocationRepository.getInstance().addActualLocation(location);
@@ -78,6 +89,8 @@ public final class UpdateLocationService extends Service implements LocationList
         if (currentBestLocation == null) {
             // A new location is always better than no location //keeping this comment because it's awesome
             return true;
+        }else if(location == null){
+            return false;
         }
 
         long timeDelta = location.getTime() - currentBestLocation.getTime();
@@ -116,4 +129,18 @@ public final class UpdateLocationService extends Service implements LocationList
         return provider1.equals(provider2);
     }
 
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        startLocationUpdates();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        stopLocationUpdates();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        stopLocationUpdates();
+    }
 }

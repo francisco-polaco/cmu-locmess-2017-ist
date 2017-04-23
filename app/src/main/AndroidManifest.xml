@@ -15,8 +15,6 @@
         <activity
             android:name=".presentation.MainScreen"
             android:label="MainScreen"/>
-        <activity android:name=".presentation.Bootstrap">
-        </activity>
         <activity android:name=".presentation.Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -64,6 +62,9 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
         </receiver>
+
+        <service android:name=".domain.UpdateLocationService" android:exported="false"/>
+
     </application>
 
 </manifest>

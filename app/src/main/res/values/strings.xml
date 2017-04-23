@@ -36,6 +36,8 @@
     <string name="hint_password">Password</string>
     <string name="hint_username">Username</string>
     <string name="create_account">Create Account</string>
+    <string name="dialog_login">Logging. Please wait...</string>
+    <string name="dialog_create_account">Creating account...</string>
 
 
 </resources>

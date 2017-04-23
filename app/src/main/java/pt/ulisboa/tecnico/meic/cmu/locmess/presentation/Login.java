@@ -1,8 +1,13 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.presentation;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -18,11 +23,16 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.LoginWebService;
 
+import static pt.ulisboa.tecnico.meic.cmu.locmess.presentation.WidgetConstructors.getLoadingDialog;
+
 /**
  * Created by jp_s on 4/12/2017.
  */
 
 public class Login extends AppCompatActivity implements ActivityCallback {
+
+    private static final String TAG = Login.class.getSimpleName();
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,25 +51,30 @@ public class Login extends AppCompatActivity implements ActivityCallback {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(credentials != null)
+        if(credentials != null) {
+            Log.d(TAG, "We have found credentials.");
             new LoginWebService(getApplicationContext(), this,
                     new User(credentials[0], credentials[1]), true).execute();
+        }
     }
-
     public void registerScreen(View view) {
         Intent intent = new Intent(this, Register.class);
         startActivity(intent);
     }
-
     public void mainScreen(View view) {
         String username = ((EditText) this.findViewById(R.id.Username)).getText().toString();
         String password = ((EditText) this.findViewById(R.id.Pass)).getText().toString();
         boolean autoLogin = ((CheckBox) findViewById(R.id.autologin)).isChecked();
-        new LoginWebService(getApplicationContext(), this, new User(username, password), autoLogin).execute();
+        dialog = getLoadingDialog(Login.this, getString(R.string.dialog_login));
+        new LoginWebService(getApplicationContext(), Login.this,
+                new User(username, password), autoLogin).execute();
+        dialog.show();
     }
 
     @Override
     public void onSuccess(Message result) {
+        if(dialog != null)
+            dialog.cancel();
         Intent intent = new Intent(this, MainScreen.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -67,7 +82,9 @@ public class Login extends AppCompatActivity implements ActivityCallback {
 
     @Override
     public void onFailure(Message result) {
+        if(dialog!= null) dialog.cancel();
         Toast.makeText(getApplicationContext(), R.string.toast_login_error, Toast.LENGTH_LONG).show();
     }
+
 }
 

@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.service;
 
 import android.content.Context;
+import android.util.Log;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
@@ -41,9 +42,10 @@ public abstract class LocmessWebService {
     }
 
     private void addTokenHeader() {
-        if (God.getInstance().getToken() != null)
+        if (God.getInstance().getToken() != null) {
             this.httpService.getHttpClient().addHeader(getContext().getString(R.string.token_header),
                     God.getInstance().getToken().getToken());
+        }
     }
 
     public ActivityCallback getActivityCallback() {

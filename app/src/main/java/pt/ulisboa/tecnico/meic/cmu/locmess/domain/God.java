@@ -13,6 +13,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -99,6 +100,14 @@ public class God {
             credentials[0] = objectInputStream.readUTF();
             credentials[1] = objectInputStream.readUTF();
             return credentials;
+        }
+    }
+
+    public void clearCredentials() throws IOException{
+        File file = new File(context.getFilesDir().getPath() + "/" +  Constants.CREDENTIALS_FILENAME);
+        if(file.exists()) {
+            boolean delete = file.delete();
+            Log.d(TAG, "File was " + delete);
         }
     }
 }

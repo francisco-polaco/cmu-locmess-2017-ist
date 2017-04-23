@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
@@ -60,9 +61,8 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
         NavigationView nvDrawer = (NavigationView) findViewById(R.id.nvView);
         setupDrawerContent(nvDrawer);
 
-        Log.d(TAG, "HELLO");
-        GoogleAPI googleAPI = GoogleAPI.getInstance();
-        googleAPI.connect();
+        GoogleAPI.init(getApplicationContext(), false);
+        GoogleAPI.getInstance().connect();
 
     }
 
@@ -94,7 +94,6 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -121,28 +120,8 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
     }
 
     public void selectDrawerItem(MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case R.id.Message:
-                Intent message = new Intent(this, MainScreen.class);
-                startActivity(message);
-                break;
-            case R.id.Locations:
-                Intent location = new Intent(this, LocationScreen.class);
-                startActivity(location);
-                break;
-            case R.id.EditProfile:
-                Intent editprofile = new Intent(this, EditProfile.class);
-                startActivity(editprofile);
-                break;
-            case R.id.Logout:
-                new LogoutWebService(getApplicationContext(), this).execute();
-                break;
-        }
-        menuItem.setCheckable(false);
-        drawerLayout.closeDrawers();
-
+        DrawerCode.selectDrawerItem(menuItem, this, drawerLayout, getApplicationContext());
     }
-
 
     private void checkBasePermission() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -208,14 +187,14 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
 
     @Override
     public void onSuccess(Message result) {
+        Log.d(TAG, "success");
         Intent intent = new Intent(this, Login.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-
     }
 
     @Override
     public void onFailure(Message result) {
-
+        Toast.makeText(getApplicationContext(), "Can't logout", Toast.LENGTH_LONG).show();
     }
 }

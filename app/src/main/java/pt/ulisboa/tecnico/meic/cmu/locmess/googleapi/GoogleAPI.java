@@ -16,6 +16,7 @@ import com.google.android.gms.location.LocationServices;
 import java.util.ArrayList;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.NotificationAgent;
+import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.GoogleApiCallbacks;
 
 import static com.google.android.gms.common.api.GoogleApiClient.Builder;
 import static com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
@@ -68,8 +69,8 @@ public final class GoogleAPI implements ConnectionCallbacks, OnConnectionFailedL
         NotificationAgent.getInstance().sendNotification(getGoogleApiClient().getContext(), 123);
         // Do what needs to be done when the system is connected.
         //callOnConnectedToRegisteredCallbacks(bundle);
-        /* if(mObjectToCallback != null) mObjectToCallback.onConnected(bundle);
-         mObjectToCallback = null;*/
+        if(mObjectToCallback != null) mObjectToCallback.onConnected(bundle);
+        mObjectToCallback = null;
     }
 
     @Override
@@ -79,8 +80,8 @@ public final class GoogleAPI implements ConnectionCallbacks, OnConnectionFailedL
 
         // Do what needs to be done when the connection is suspended.
         //callOnConnectionSuspendedToRegisteredCallbacks(i);
-        /*if(mObjectToCallback != null) mObjectToCallback.onConnectionSuspended(i);
-        mObjectToCallback = null;*/
+        if(mObjectToCallback != null) mObjectToCallback.onConnectionSuspended(i);
+        mObjectToCallback = null;
     }
 
     @Override
@@ -90,8 +91,8 @@ public final class GoogleAPI implements ConnectionCallbacks, OnConnectionFailedL
 
         // Do what needs to be done when the connection fails.
         //callOnConnectionFailedToRegisteredCallbacks(connectionResult);
-        /*if(mObjectToCallbackFail != null) mObjectToCallbackFail.onConnectionFailed(connectionResult);
-        mObjectToCallbackFail = null;*/
+        if(mObjectToCallbackFail != null) mObjectToCallbackFail.onConnectionFailed(connectionResult);
+        mObjectToCallbackFail = null;
     }
 
     private void callOnConnectedToRegisteredCallbacks(@Nullable final Bundle bundle) {
@@ -201,12 +202,24 @@ public final class GoogleAPI implements ConnectionCallbacks, OnConnectionFailedL
         mGoogleApiClient.connect();
     }
 
+    public void connect(GoogleApiCallbacks classToCallback) {
+        mObjectToCallback = classToCallback;
+        mObjectToCallbackFail = classToCallback;
+        mGoogleApiClient.connect();
+    }
+
     public void disconnect() {
         mGoogleApiClient.disconnect();
     }
 
     public void disconnect(ConnectionCallbacks classToCallback) {
         mObjectToCallback = classToCallback;
+        mGoogleApiClient.disconnect();
+    }
+
+    public void disconnect(GoogleApiCallbacks classToCallback) {
+        mObjectToCallback = classToCallback;
+        mObjectToCallbackFail = classToCallback;
         mGoogleApiClient.disconnect();
     }
 

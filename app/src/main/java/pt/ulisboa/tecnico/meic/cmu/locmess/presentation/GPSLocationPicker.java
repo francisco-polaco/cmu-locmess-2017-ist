@@ -130,9 +130,8 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
     }
 
     private void drawCenter() {
-        if (myLocation != null) {
+        if (myLocation != null)
             drawMyPosition();
-        } else new DrawPositionTask().execute(null, null, null);
     }
 
     @Override
@@ -283,36 +282,5 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
         //mMapCircle = mMap.addCircle(circleOptions);
     }
 
-    private class DrawPositionTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            //if(stop == true) this.cancel(true);
-            /*GetLastLocationService lastLocation = new GetLastLocationService(getApplicationContext());
-            lastLocation.execute();
-            int attempts = 0;
-            while (lastLocation.result() == null && attempts < 5){
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                attempts++;
-            }
-            if (attempts == 5) {
-                Toast.makeText(getApplicationContext(), "It was impossible to get your location.", Toast.LENGTH_LONG).show();
-                this.cancel(true);
-            }
-
-            myLocation = lastLocation.result();*/
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            drawMyPosition();
-
-        }
-    }
 
 }
