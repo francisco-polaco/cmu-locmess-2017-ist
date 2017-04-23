@@ -24,7 +24,7 @@ public final class LogoutWebService extends LocmessWebService implements Locmess
     }
 
     @Override
-    public void onSucess(JSONObject object) {
+    public void onSuccess(JSONObject object) {
         System.out.println(object.toString());
     }
 

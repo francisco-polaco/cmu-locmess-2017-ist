@@ -16,7 +16,6 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.concurrent.ConcurrentHashMap;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.ImpossibleToGetLocationException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.PermissionNotGrantedException;
@@ -32,7 +31,6 @@ public class God {
 
     private God(Context context) {
         this.context = context;
-        loadState();
     }
 
     public static God getInstance() {
@@ -82,25 +80,25 @@ public class God {
 
     public void setToken(Token token) {
         this.token = token;
-        saveState();
     }
 
-    public void saveState(){
-        if(token == null) return;
+    public void saveCredentials(String username, String password){
         try(ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(
-                context.openFileOutput(Constants.TOKEN_FILENAME, Context.MODE_PRIVATE)))) {
-            objectOutputStream.writeObject(token);
+                context.openFileOutput(Constants.CREDENTIALS_FILENAME, Context.MODE_PRIVATE)))) {
+            objectOutputStream.writeUTF(username);
+            objectOutputStream.writeUTF(password);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void loadState(){
+    public String[] getCredentials() throws IOException{
+        String[] credentials = new String[2];
         try(ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
-                context.openFileInput(Constants.TOKEN_FILENAME)))){
-            token = (Token) objectInputStream.readObject();
-        } catch (ClassNotFoundException | IOException e) {
-            e.printStackTrace();
+                context.openFileInput(Constants.CREDENTIALS_FILENAME)))){
+            credentials[0] = objectInputStream.readUTF();
+            credentials[1] = objectInputStream.readUTF();
+            return credentials;
         }
     }
 }

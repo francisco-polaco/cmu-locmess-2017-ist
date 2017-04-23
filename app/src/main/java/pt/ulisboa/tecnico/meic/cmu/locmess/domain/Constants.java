@@ -8,5 +8,5 @@ class Constants {
     static final int UPDATE_INTERVAL = 1000 * 60;
     static final int TWO_MINUTES = UPDATE_INTERVAL;
     static final int FASTEST_UPDATE_INTERVAL = 1000;
-    public static final String TOKEN_FILENAME = "token.dat";
+    public static final String CREDENTIALS_FILENAME = "token.dat";
 }

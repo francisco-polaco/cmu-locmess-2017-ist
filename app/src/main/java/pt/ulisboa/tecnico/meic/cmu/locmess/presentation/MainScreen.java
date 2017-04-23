@@ -26,7 +26,6 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.LogoutWebService;
-import pt.ulisboa.tecnico.meic.cmu.locmess.service.SaveStatusService;
 
 /**
  * Created by jp_s on 4/14/2017.

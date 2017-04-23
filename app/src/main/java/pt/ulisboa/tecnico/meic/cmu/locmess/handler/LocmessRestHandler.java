@@ -21,7 +21,7 @@ public class LocmessRestHandler extends JsonHttpResponseHandler {
 
     @Override
     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-        callback.onSucess(response);
+        callback.onSuccess(response);
     }
 
     @Override

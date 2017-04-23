@@ -4,12 +4,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.IOException;
+
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.User;
+import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.LoginWebService;
 
@@ -23,6 +28,22 @@ public class Login extends AppCompatActivity implements ActivityCallback {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+        God.init(getApplicationContext());
+        GoogleAPI.init(getApplicationContext(), false);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        String[] credentials = null;
+        try {
+            credentials = God.getInstance().getCredentials();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(credentials != null)
+            new LoginWebService(getApplicationContext(), this,
+                    new User(credentials[0], credentials[1]), true).execute();
     }
 
     public void registerScreen(View view) {
@@ -33,7 +54,8 @@ public class Login extends AppCompatActivity implements ActivityCallback {
     public void mainScreen(View view) {
         String username = ((EditText) this.findViewById(R.id.Username)).getText().toString();
         String password = ((EditText) this.findViewById(R.id.Pass)).getText().toString();
-        new LoginWebService(getApplicationContext(), this, new User(username, password)).execute();
+        boolean autoLogin = ((CheckBox) findViewById(R.id.autologin)).isChecked();
+        new LoginWebService(getApplicationContext(), this, new User(username, password), autoLogin).execute();
     }
 
     @Override

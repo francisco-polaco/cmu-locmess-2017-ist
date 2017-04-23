@@ -36,7 +36,7 @@
             android:layout_weight="0.04"
             android:gravity="center"
             android:onClick="registerScreen"
-            android:text="Create Account"
+            android:text="@string/create_account"
             android:textColor="@color/colorPrimary"
             android:textSize="20dp" />
 
@@ -50,7 +50,7 @@
             android:layout_weight="0.04"
             android:ems="10"
             android:gravity="center"
-            android:hint="Username"
+            android:hint="@string/hint_username"
             android:inputType="textPersonName"
             android:textSize="30dp" />
 
@@ -63,9 +63,18 @@
             android:layout_weight="0.04"
             android:ems="10"
             android:gravity="center"
-            android:hint="Password"
+            android:hint="@string/hint_password"
             android:inputType="textPassword"
             android:textSize="30dp" />
+
+        <CheckBox
+            android:id="@+id/autologin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:checked="true"
+            android:gravity="center"
+            android:text="@string/auto_login" />
 
         <Button
             android:id="@+id/Login"
@@ -77,7 +86,7 @@
             android:layout_marginTop="21dp"
             android:layout_weight="0.04"
             android:onClick="mainScreen"
-            android:text="Login"
+            android:text="@string/login"
             android:textSize="20dp" />
 
     </LinearLayout>

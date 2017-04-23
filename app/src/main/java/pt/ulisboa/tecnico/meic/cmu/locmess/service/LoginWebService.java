@@ -20,10 +20,12 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
 public final class LoginWebService extends LocmessWebService implements LocmessCallback {
 
     private final User user;
+    private boolean autologin;
 
-    public LoginWebService(Context context, ActivityCallback activityCallback, User user) {
+    public LoginWebService(Context context, ActivityCallback activityCallback, User user, boolean autologin) {
         super(context, activityCallback);
         this.user = user;
+        this.autologin = autologin;
     }
 
     @Override
@@ -38,9 +40,10 @@ public final class LoginWebService extends LocmessWebService implements LocmessC
     }
 
     @Override
-    public void onSucess(JSONObject object) {
+    public void onSuccess(JSONObject object) {
         Token token = (Token) getJsonService().transformJsonToObj(object.toString(), Token.class);
         God.getInstance().setToken(token);
+        if(autologin) God.getInstance().saveCredentials(user.getUsername(), user.getPassword());
         getActivityCallback().onSuccess(null);
         System.out.println(token.getToken());
     }

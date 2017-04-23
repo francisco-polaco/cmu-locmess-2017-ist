@@ -16,12 +16,13 @@
             android:name=".presentation.MainScreen"
             android:label="MainScreen"/>
         <activity android:name=".presentation.Bootstrap">
+        </activity>
+        <activity android:name=".presentation.Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".presentation.Login" />
         <activity
             android:name=".presentation.Register"
             android:label="Register"
