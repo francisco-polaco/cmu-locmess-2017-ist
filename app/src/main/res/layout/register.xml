@@ -24,8 +24,8 @@
             android:layout_marginTop="0dp"
             android:ems="10"
             android:gravity="center"
-            android:hint="Username"
-            android:inputType="textPersonName"
+            android:hint="@string/register_hint_username"
+            android:inputType="text"
             android:textSize="35dp" />
 
         <EditText
@@ -37,7 +37,7 @@
             android:layout_marginTop="16dp"
             android:ems="10"
             android:gravity="center"
-            android:hint="Password"
+            android:hint="@string/register_hint_password"
             android:inputType="textPassword"
             android:textSize="35dp" />
 
@@ -50,7 +50,7 @@
             android:layout_marginTop="24dp"
             android:ems="10"
             android:gravity="center"
-            android:hint="Repeat Password"
+            android:hint="@string/register_hint_repeat_password"
             android:inputType="textPassword"
             android:textSize="35dp" />
 
@@ -63,7 +63,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="38dp"
             android:onClick="register"
-            android:text="Register"
+            android:text="@string/button_register"
             android:textSize="20dp" />
     </LinearLayout>
 
