@@ -19,7 +19,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.ImpossibleToGetLocationException;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.PermissionNotGrantedException;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.geofence.GeofenceManager;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Token;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 
@@ -35,13 +37,13 @@ public class God {
     }
 
     public static God getInstance() {
-        if (ourInstance == null) throw new RuntimeException(God.class.getSimpleName() +
-                " not initialized.");
+        if (ourInstance == null) throw new NotInitializedException(God.class.getSimpleName());
         return ourInstance;
     }
 
     public static void init(Context context) {
         ourInstance = new God(context);
+        GeofenceManager.init(context);
     }
 
     public boolean isLogged() {
@@ -83,8 +85,8 @@ public class God {
         this.token = token;
     }
 
-    public void saveCredentials(String username, String password){
-        try(ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(
+    public void saveCredentials(String username, String password) {
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(
                 context.openFileOutput(Constants.CREDENTIALS_FILENAME, Context.MODE_PRIVATE)))) {
             objectOutputStream.writeUTF(username);
             objectOutputStream.writeUTF(password);
@@ -93,19 +95,19 @@ public class God {
         }
     }
 
-    public String[] getCredentials() throws IOException{
+    public String[] getCredentials() throws IOException {
         String[] credentials = new String[2];
-        try(ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
-                context.openFileInput(Constants.CREDENTIALS_FILENAME)))){
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
+                context.openFileInput(Constants.CREDENTIALS_FILENAME)))) {
             credentials[0] = objectInputStream.readUTF();
             credentials[1] = objectInputStream.readUTF();
             return credentials;
         }
     }
 
-    public void clearCredentials() throws IOException{
-        File file = new File(context.getFilesDir().getPath() + "/" +  Constants.CREDENTIALS_FILENAME);
-        if(file.exists()) {
+    public void clearCredentials() throws IOException {
+        File file = new File(context.getFilesDir().getPath() + "/" + Constants.CREDENTIALS_FILENAME);
+        if (file.exists()) {
             boolean delete = file.delete();
             Log.d(TAG, "File was " + delete);
         }

@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.presentation;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,6 +17,8 @@ import android.widget.Toast;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.geofence.GeofenceManager;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.geofence.MyGeofence;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -62,8 +65,11 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
             public void onClick(View v) {
                 if(!debug) {
                     God.getInstance().startLocationUpdates();
-                }else
+                    GeofenceManager.getInstance().addGeofence(new MyGeofence("teste", 38.7355793, -9.1329183, 20000.0f));
+                }else {
                     God.getInstance().stopLocationUpdates();
+                    GeofenceManager.getInstance().removeAllGeofences();
+                }
                 debug = !debug;
                 Toast.makeText(getApplicationContext(), "WIFI", Toast.LENGTH_SHORT).show();
                 //startActivity(new Intent(getApplicationContext(), GPSLocationPicker.class));

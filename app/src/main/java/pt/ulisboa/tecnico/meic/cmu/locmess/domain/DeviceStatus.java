@@ -1,18 +1,17 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.domain;
 
 import android.content.Context;
-import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 public class DeviceStatus {
     private static final DeviceStatus ourInstance = new DeviceStatus();
 
-    public static DeviceStatus getInstance() {
-        return ourInstance;
+    private DeviceStatus() {
     }
 
-    private DeviceStatus() {
+    public static DeviceStatus getInstance() {
+        return ourInstance;
     }
 
     // FIXME CHECK IF NEEDED
@@ -35,7 +34,7 @@ public class DeviceStatus {
         }
     }
 */
-    public boolean isInternetAvailable(Context context){
+    public boolean isInternetAvailable(Context context) {
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 

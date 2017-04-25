@@ -64,6 +64,7 @@
         </receiver>
 
         <service android:name=".domain.UpdateLocationService" android:exported="false"/>
+        <service android:name=".domain.geofence.GeofenceTransitionsIntentService" />
 
     </application>
 

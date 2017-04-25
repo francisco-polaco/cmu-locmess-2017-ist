@@ -13,7 +13,6 @@ import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -76,9 +75,7 @@ public final class UpdateLocationService extends Service implements LocationList
 
     @Override
     public void onLocationChanged(Location location) {
-        // comment operation below to get the old way back
-        //stopLocationUpdates();
-        Log.d(TAG, "New Location " + location);
+        //Log.d(TAG, "New Location " + location);
         if (isBetterLocation(oldLocation, location)) {
             oldLocation = location;
             LocationRepository.getInstance().addActualLocation(location);
@@ -89,7 +86,7 @@ public final class UpdateLocationService extends Service implements LocationList
         if (currentBestLocation == null) {
             // A new location is always better than no location //keeping this comment because it's awesome
             return true;
-        }else if(location == null){
+        } else if (location == null) {
             return false;
         }
 
