@@ -28,4 +28,5 @@ public class LocmessRestHandler extends JsonHttpResponseHandler {
     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
         callback.onFailure(errorResponse);
     }
+
 }
