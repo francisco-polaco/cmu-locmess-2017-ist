@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -26,14 +27,14 @@ import static pt.ulisboa.tecnico.meic.cmu.locmess.R.layout.register;
 
 public class Register extends AppCompatActivity implements ActivityCallback {
 
-    private Toolbar toolbar;
+    private static final String TAG = Register.class.getSimpleName();
     private ProgressDialog dialog;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(register);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -48,7 +49,7 @@ public class Register extends AppCompatActivity implements ActivityCallback {
             Toast.makeText(this, "Passwords don't match!", Toast.LENGTH_LONG).show();
             return;
         }
-        dialog = WidgetConstructors.getLoadingDialog(getApplicationContext(), getString(R.string.dialog_create_account));
+        dialog = WidgetConstructors.getLoadingDialog(this, getString(R.string.dialog_create_account));
         new SignupWebService(getApplicationContext(), this, new User(username, password)).execute();
         dialog.show();
     }
