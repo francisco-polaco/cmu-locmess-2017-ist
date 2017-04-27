@@ -20,12 +20,19 @@
         android:layout_height="fill_parent"
         android:gravity="center" />
 
-    <ListView
-        android:id="@+id/LocationsList"
+    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipe_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="57dp" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="57dp"
+        android:visibility="visible">
 
+        <ListView
+            android:id="@+id/LocationsList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="57dp" />
+    </android.support.v4.widget.SwipeRefreshLayout>
     <include
         android:id="@+id/drawer_layout"
         layout="@layout/hamburger" />

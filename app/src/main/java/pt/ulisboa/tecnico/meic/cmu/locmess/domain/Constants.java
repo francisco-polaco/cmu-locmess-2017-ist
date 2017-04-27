@@ -9,4 +9,5 @@ class Constants {
             ;
     static final int TWO_MINUTES = UPDATE_INTERVAL; //fixme bad name
     static final int FASTEST_UPDATE_INTERVAL = 1000;
+    public static final String CACHED_MGS = "cachedmessages.dat";
 }

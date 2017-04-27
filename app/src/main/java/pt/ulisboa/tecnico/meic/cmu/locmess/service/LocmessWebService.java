@@ -4,6 +4,7 @@ import android.content.Context;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 
 public abstract class LocmessWebService {
@@ -48,6 +49,18 @@ public abstract class LocmessWebService {
     }
 
     public ActivityCallback getActivityCallback() {
+        // just to avoid null ptrs
+        if(activityCallback == null) return new ActivityCallback() {
+            @Override
+            public void onSuccess(Message result) {
+
+            }
+
+            @Override
+            public void onFailure(Message result) {
+
+            }
+        };
         return activityCallback;
     }
 }

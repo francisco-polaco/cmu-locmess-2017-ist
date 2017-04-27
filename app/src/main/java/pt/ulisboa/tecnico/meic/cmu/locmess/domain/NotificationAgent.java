@@ -28,9 +28,9 @@ public class NotificationAgent {
         return ourInstance;
     }
 
-    public void sendNotification(Context context, int messageId) {
+    public void sendNotification(Context context) {
 
-        NotificationCompat.Builder builder = getNotificationDefaultBuilder(context, messageId);
+        NotificationCompat.Builder builder = getNotificationDefaultBuilder(context);
 
         // Get an instance of the Notification manager
         android.app.NotificationManager mNotificationManager =
@@ -41,17 +41,15 @@ public class NotificationAgent {
     }
 
     @NonNull
-    private NotificationCompat.Builder getNotificationDefaultBuilder(Context context, int messageId) {
+    private NotificationCompat.Builder getNotificationDefaultBuilder(Context context) {
         Log.d(TAG, "Sending Notification...");
         // Create an explicit content Intent that starts the main Activity.
-        Intent notificationIntent = new Intent(context, NewMessage.class); // TODO change this to read activity
-        notificationIntent.putExtra("messageid", messageId);
-
+        Intent notificationIntent = new Intent(context, MainScreen.class); // TODO change this to read activity
         // Construct a task stack.
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
 
-        // Add the main Activity to the task stack as the parent.
-        stackBuilder.addParentStack(MainScreen.class);
+       /* // Add the main Activity to the task stack as the parent.
+        stackBuilder.addParentStack(MainScreen.class);*/
 
         // Push the content Intent onto the stack.
         stackBuilder.addNextIntent(notificationIntent);

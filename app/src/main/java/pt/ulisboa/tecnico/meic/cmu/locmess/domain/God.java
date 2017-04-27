@@ -40,9 +40,12 @@ public class God {
     // profile represents the key values of the user
     private List<Pair> profile;
     private List<GPSLocation> locations;
+    private List<String> titleMessages;
+    private List<String> cachedMessages;
 
     private God(Context context) {
         this.context = context;
+        loadState();
     }
 
     public static God getInstance() {
@@ -103,6 +106,14 @@ public class God {
             e.printStackTrace();
         }
     }
+    public void saveState() {
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(
+                context.openFileOutput(Constants.CACHED_MGS, Context.MODE_PRIVATE)))) {
+            objectOutputStream.writeObject(cachedMessages);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public String[] getCredentials() throws IOException {
         String[] credentials = new String[2];
@@ -111,6 +122,15 @@ public class God {
             credentials[0] = objectInputStream.readUTF();
             credentials[1] = objectInputStream.readUTF();
             return credentials;
+        }
+    }
+
+    public void loadState() {
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
+                context.openFileInput(Constants.CREDENTIALS_FILENAME)))) {
+            cachedMessages = (List<String>) objectInputStream.readObject();
+        } catch (ClassNotFoundException | IOException e) {
+            cachedMessages = new ArrayList<>();
         }
     }
 
@@ -136,13 +156,46 @@ public class God {
         GeofenceManager.getInstance().removeAllGeofences();
         ArrayList<MyGeofence> myGeofenceArrayList = new ArrayList<>();
         for(GPSLocation l : locations){
-            myGeofenceArrayList.add(new MyGeofence(l.getName(), l.getLatitude(), l.getLongitude(), (float)l.getRadius() +1.0f));
+            myGeofenceArrayList.add(new MyGeofence(l.getName(), l.getLatitude(), l.getLongitude(), l.getRadius() +1.0f));
         }
         Log.d(TAG, ""+myGeofenceArrayList);
+        if(myGeofenceArrayList.size() == 0){
+            // No locations, it's useless to keep trying to get our location
+            // Lets wait a bit and then check again
+            stopLocationUpdates();
+            new Thread(){
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(Constants.UPDATE_INTERVAL);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    startLocationUpdates();
+                }
+            }.start();
+            return;
+        }
+        startLocationUpdates();
         GeofenceManager.getInstance().addGeofences(myGeofenceArrayList);
     }
 
     public List<GPSLocation> getLocations() {
         return locations;
+    }
+
+    public void setTitleMessages(List<String> titleMessages) {
+        this.titleMessages = titleMessages;
+    }
+
+    public List<String> getCachedMessages() {
+        return cachedMessages;
+    }
+
+    public String getMessage(int index){
+        // call service
+        // when return
+        cachedMessages.add(titleMessages.get(index));
+        return titleMessages.get(index);
     }
 }

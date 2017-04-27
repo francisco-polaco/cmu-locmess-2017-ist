@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 
 import com.google.android.gms.location.Geofence;
 
+import java.util.ArrayList;
+
 public class MyGeofence {
 
     private static final String TAG = MyGeofence.class.getSimpleName();

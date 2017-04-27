@@ -33,7 +33,6 @@ public final class UpdateLocationService extends Service implements LocationList
     private static final String TAG = UpdateLocationService.class.getSimpleName();
 
     private Location oldLocation;
-    private ProgressDialog dialog;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -89,6 +88,7 @@ public final class UpdateLocationService extends Service implements LocationList
             oldLocation = location;
             new LocationWebService(getApplicationContext(), this, location).execute();
             new ListLocationsService(getApplicationContext(), this).execute();
+            //update server
             //LocationRepository.getInstance().addActualLocation(location);
         }
     }

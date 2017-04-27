@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -29,6 +30,8 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
+
+import static android.support.v4.widget.SwipeRefreshLayout.*;
 
 /**
  * Created by jp_s on 4/14/2017.
@@ -85,6 +88,15 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
             }
         });
 
+        SwipeRefreshLayout swip = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        swip.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshLocations();
+            }
+        });
+        swip.setColorSchemeResources(R.color.accent_material_light, R.color.colorPrimary);;
+
     }
 
     boolean debug;//FIXME delete
@@ -93,6 +105,10 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
     @Override
     protected void onStart() {
         super.onStart();
+        refreshLocations();
+    }
+
+    private void refreshLocations() {
         new ListLocationsService(getApplicationContext(), this).execute();
         dialog = WidgetConstructors.getLoadingDialog(this, "Getting locations...");
         dialog.show();
@@ -173,6 +189,7 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
 
     @Override
     protected void onDestroy() {
+        God.getInstance().saveState();
         GoogleAPI.getInstance().disconnect();
         super.onDestroy();
     }

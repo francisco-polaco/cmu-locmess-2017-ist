@@ -59,11 +59,12 @@ public class GeofenceManager implements ResultCallback<Status> {
     }
 
     public void addGeofences(List<MyGeofence> toAdd) {
-        Log.d(TAG, "Adding Geofence...");
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             throw new PermissionNotGrantedException("Fine location");
         }
+        if(toAdd.size() == 0) return;
+        Log.d(TAG, "Adding Geofence...");
         ArrayList<Geofence> list = new ArrayList<>();
         for (MyGeofence geofence : toAdd) {
             list.add(geofence.getGeofence());
