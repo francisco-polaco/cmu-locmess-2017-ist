@@ -1,7 +1,6 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.presentation;
 
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,7 +21,6 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.domain.geofence.MyGeofence;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
-import pt.ulisboa.tecnico.meic.cmu.locmess.service.LogoutWebService;
 
 /**
  * Created by jp_s on 4/14/2017.

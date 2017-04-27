@@ -1,10 +1,7 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.presentation;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;

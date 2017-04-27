@@ -1,6 +1,5 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.handler;
 
-import com.google.gson.JsonObject;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;

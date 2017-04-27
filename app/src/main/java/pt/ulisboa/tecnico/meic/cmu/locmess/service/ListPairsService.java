@@ -1,10 +1,8 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.service;
 
 import android.content.Context;
-import android.widget.Toast;
 
 import java.util.Arrays;
-import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;

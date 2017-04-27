@@ -75,7 +75,7 @@ public final class UpdateLocationService extends Service implements LocationList
 
     @Override
     public void onLocationChanged(Location location) {
-        //Log.d(TAG, "New Location " + location);
+        Log.d(TAG, "New Location " + location);
         if (isBetterLocation(oldLocation, location)) {
             oldLocation = location;
             LocationRepository.getInstance().addActualLocation(location);

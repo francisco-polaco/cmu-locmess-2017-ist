@@ -4,10 +4,8 @@ import android.content.Context;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 
 import cz.msebera.android.httpclient.HttpEntity;
-import cz.msebera.android.httpclient.client.HttpClient;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 
 /**

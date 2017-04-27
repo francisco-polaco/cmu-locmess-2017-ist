@@ -20,7 +20,6 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.ImpossibleToGetLocationException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
@@ -29,7 +28,6 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.domain.geofence.GeofenceManager;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Token;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
-import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListPairsService;
 
 public class God {
 

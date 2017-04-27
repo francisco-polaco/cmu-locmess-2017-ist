@@ -26,7 +26,6 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
-import pt.ulisboa.tecnico.meic.cmu.locmess.service.LogoutWebService;
 
 /**
  * Created by jp_s on 4/14/2017.
@@ -63,7 +62,6 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
 
         GoogleAPI.init(getApplicationContext(), false);
         GoogleAPI.getInstance().connect();
-
     }
 
     @Override
