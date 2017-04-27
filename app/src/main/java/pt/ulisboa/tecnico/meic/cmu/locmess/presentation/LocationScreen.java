@@ -41,6 +41,7 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private ProgressDialog dialog;
+    private ArrayList<String> locations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,15 +149,14 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
     public void onSuccess(Message result) {
         if(result.getMessage().equals("LLs")){
             ListView lv = (ListView) findViewById(R.id.LocationsList);
-            ArrayList<String> list = new ArrayList<>();
-
+            locations = new ArrayList<>();
             for (GPSLocation location : God.getInstance().getLocations()){
-                list.add(location.toString());
+                locations.add(location.toString());
             }
             ArrayAdapter<String> aa =
-                    new ArrayAdapter<>(getApplicationContext(),
+                    new ArrayAdapter<>(this,
                             android.R.layout.simple_list_item_1,
-                            list);
+                            locations);
             lv.setAdapter(aa);
             if(dialog != null) dialog.cancel();
         }else{
