@@ -19,10 +19,12 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
 public class RemovePairService extends LocmessWebService implements LocmessCallback {
 
     private Pair pair;
+    private int index;
 
-    public RemovePairService(Context context, ActivityCallback activityCallback, Pair pair) {
+    public RemovePairService(Context context, ActivityCallback activityCallback, Pair pair, int index) {
         super(context, activityCallback);
         this.pair = pair;
+        this.index = index;
     }
 
     @Override
@@ -38,12 +40,12 @@ public class RemovePairService extends LocmessWebService implements LocmessCallb
 
     @Override
     public void onSuccess(Object object) {
-        getActivityCallback().onSuccess(new Message("Removed pair with success!"));
+        getActivityCallback().onSuccess(new Message(getContext().getString(R.string.LM_2), index));
     }
 
     @Override
     public void onFailure(Object object) {
-        getActivityCallback().onFailure(new Message("Removed pair failed!"));
+        getActivityCallback().onFailure(new Message(getContext().getString(R.string.LM_2)));
     }
 
 

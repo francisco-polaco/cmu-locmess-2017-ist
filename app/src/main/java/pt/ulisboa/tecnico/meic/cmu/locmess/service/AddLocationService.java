@@ -38,12 +38,12 @@ public class AddLocationService extends LocmessWebService implements LocmessCall
 
     @Override
     public void onSuccess(Object object) {
-        getActivityCallback().onSuccess(new Message("Success"));
+        getActivityCallback().onSuccess(new Message("Added location with success!"));
     }
 
     @Override
     public void onFailure(Object object) {
-        getActivityCallback().onFailure(new Message("Failed"));
+        getActivityCallback().onFailure(new Message("Failed to add location!"));
 
     }
 

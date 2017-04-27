@@ -38,14 +38,12 @@ public class AddPairService extends LocmessWebService implements LocmessCallback
 
     @Override
     public void onSuccess(Object object) {
-        getActivityCallback().onSuccess(
-                new Message(getContext().getString(R.string.webserver_pair_create)));
+        getActivityCallback().onSuccess(new Message(getContext().getString(R.string.LM_1)));
     }
 
     @Override
     public void onFailure(Object object) {
-        getActivityCallback().onFailure(
-                new Message(getContext().getString(R.string.webserver_pair_create)));
+        getActivityCallback().onFailure(new Message(getContext().getString(R.string.LM_1)));
     }
 
 

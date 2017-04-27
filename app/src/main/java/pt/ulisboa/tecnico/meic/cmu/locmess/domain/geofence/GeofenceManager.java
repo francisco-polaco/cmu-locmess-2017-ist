@@ -123,19 +123,20 @@ public class GeofenceManager implements ResultCallback<Status> {
 
     @Override
     public void onResult(@NonNull Status status) {
+        // TODO: Annoying messages!
         if (status.isSuccess()) {
             //Log.i(TAG, "O servico executou com sucesso");
-            Toast.makeText(
+            /*Toast.makeText(
                     context,
                     "Geofance add/removed",
                     Toast.LENGTH_SHORT
-            ).show();
+            ).show();*/
         } else {
-            Toast.makeText(
+            /*Toast.makeText(
                     context,
                     "Error in thread",
                     Toast.LENGTH_SHORT
-            ).show();
+            ).show();*/
         }
     }
 }

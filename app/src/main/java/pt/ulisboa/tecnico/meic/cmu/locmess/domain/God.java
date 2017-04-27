@@ -41,7 +41,7 @@ public class God {
     private Token token;
     // profile represents the key values of the user
     private List<Pair> profile;
-    private List<GPSLocation> locations;
+    private ArrayList<GPSLocation> locations;
     private List<String> titleMessages;
     private List<String> cachedMessages;
 
@@ -155,8 +155,9 @@ public class God {
 
     public void setLocations(List<GPSLocation> locations) {
         Log.d(TAG, "Setting locations and renewing all geofences.");
-        this.locations = locations;
-        GeofenceManager.getInstance().removeAllGeofences();
+        this.locations = new ArrayList<>(locations);
+        // TODO: Geofences chateado!
+        /*GeofenceManager.getInstance().removeAllGeofences();
         ArrayList<MyGeofence> myGeofenceArrayList = new ArrayList<>();
         for(GPSLocation l : locations){
             myGeofenceArrayList.add(new MyGeofence(l.getName(), l.getLatitude(), l.getLongitude(), l.getRadius() +1.0f));
@@ -180,7 +181,7 @@ public class God {
             return;
         }
         startLocationUpdates();
-        GeofenceManager.getInstance().addGeofences(myGeofenceArrayList);
+        GeofenceManager.getInstance().addGeofences(myGeofenceArrayList);*/
     }
 
     public List<GPSLocation> getLocations() {
