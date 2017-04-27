@@ -43,5 +43,8 @@
     <string name="register_hint_repeat_password">Repeat Password</string>
     <string name="button_register">Register</string>
 
+    <!-- location endpoints -->
+    <string name="webserver_endpoint_hearthbeat">/location/actions/heartbeat</string>
+
 
 </resources>
