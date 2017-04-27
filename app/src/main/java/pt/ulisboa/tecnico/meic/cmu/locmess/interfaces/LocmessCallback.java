@@ -7,7 +7,7 @@ import org.json.JSONObject;
  */
 
 public interface LocmessCallback {
-    public void onSuccess(JSONObject object);
+    public void onSuccess(Object object);
 
-    public void onFailure(JSONObject object);
+    public void onFailure(Object object);
 }

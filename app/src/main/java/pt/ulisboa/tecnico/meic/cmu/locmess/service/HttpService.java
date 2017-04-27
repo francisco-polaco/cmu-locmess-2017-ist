@@ -7,6 +7,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import cz.msebera.android.httpclient.HttpEntity;
+import cz.msebera.android.httpclient.client.HttpClient;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 
 /**
@@ -27,8 +28,8 @@ public class HttpService {
         return httpClient;
     }
 
-    public void get(String endpoint, RequestParams params, AsyncHttpResponseHandler responseHandler) {
-        httpClient.get(absoluteURL(endpoint), params, responseHandler);
+    public void get(String endpoint, HttpEntity body, String contentType, AsyncHttpResponseHandler responseHandler) {
+        httpClient.get(context, absoluteURL(endpoint), body, contentType, responseHandler);
     }
 
     public void post(String endpoint, HttpEntity body, String contentType, AsyncHttpResponseHandler responseHandler) {

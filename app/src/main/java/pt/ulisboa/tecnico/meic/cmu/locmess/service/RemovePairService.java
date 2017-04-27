@@ -2,8 +2,6 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.service;
 
 import android.content.Context;
 
-import org.json.JSONObject;
-
 import java.io.UnsupportedEncodingException;
 
 import cz.msebera.android.httpclient.entity.StringEntity;
@@ -38,12 +36,12 @@ public class RemovePairService extends LocmessWebService implements LocmessCallb
     }
 
     @Override
-    public void onSuccess(JSONObject object) {
+    public void onSuccess(Object object) {
         System.out.println(object.toString());
     }
 
     @Override
-    public void onFailure(JSONObject object) {
+    public void onFailure(Object object) {
         System.out.println(object.toString());
     }
 

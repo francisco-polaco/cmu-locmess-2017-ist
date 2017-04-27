@@ -17,13 +17,19 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.ImpossibleToGetLocationException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.PermissionNotGrantedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.geofence.GeofenceManager;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Token;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListPairsService;
 
 public class God {
 
@@ -31,6 +37,8 @@ public class God {
     private static God ourInstance;
     private Context context;
     private Token token;
+    // profile represents the key values of the user
+    private List<HashMap<String, String>> profile;
 
     private God(Context context) {
         this.context = context;
@@ -111,5 +119,20 @@ public class God {
             boolean delete = file.delete();
             Log.d(TAG, "File was " + delete);
         }
+    }
+
+    public void setProfile(List<Pair> profile) {
+        List<HashMap<String, String>> newProfile = new ArrayList<>();
+        for (Pair pair : profile){
+            HashMap<String, String> toAdd = new HashMap<>();
+            toAdd.put("Key", pair.getKey());
+            toAdd.put("Value", pair.getValue());
+            newProfile.add(toAdd);
+        }
+        this.profile = newProfile;
+    }
+
+    public List<HashMap<String, String>> getProfile() {
+        return profile;
     }
 }

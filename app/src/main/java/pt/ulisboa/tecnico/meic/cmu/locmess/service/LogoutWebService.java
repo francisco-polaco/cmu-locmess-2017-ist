@@ -4,8 +4,6 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.service;
 import android.content.Context;
 import android.util.Log;
 
-import org.json.JSONObject;
-
 import java.io.IOException;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
@@ -30,7 +28,7 @@ public final class LogoutWebService extends LocmessWebService implements Locmess
     }
 
     @Override
-    public void onSuccess(JSONObject object) {
+    public void onSuccess(Object object) {
         Log.d(TAG, object.toString());
         try {
             God.getInstance().clearCredentials();
@@ -41,7 +39,7 @@ public final class LogoutWebService extends LocmessWebService implements Locmess
     }
 
     @Override
-    public void onFailure(JSONObject object) {
+    public void onFailure(Object object) {
         System.out.println(object.toString());
         getActivityCallback().onFailure(null);
 

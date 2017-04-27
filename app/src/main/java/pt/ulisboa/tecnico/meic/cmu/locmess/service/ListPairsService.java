@@ -1,13 +1,14 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.service;
 
 import android.content.Context;
+import android.widget.Toast;
 
-import org.json.JSONObject;
+import java.util.Arrays;
+import java.util.List;
 
-import java.io.UnsupportedEncodingException;
-
-import cz.msebera.android.httpclient.entity.StringEntity;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -27,17 +28,19 @@ public class ListPairsService extends LocmessWebService implements LocmessCallba
     protected void dispatch() {
         String endpoint = getContext().getString(R.string.webserver_endpoint_user_listpairs);
         String contentType = getContext().getString(R.string.content_type_json);
-        getHttpService().post(endpoint, null, contentType, new LocmessRestHandler(this));
+        getHttpService().get(endpoint, null, contentType, new LocmessRestHandler(this));
     }
 
     @Override
-    public void onSuccess(JSONObject object) {
-        System.out.println(object.toString());
+    public void onSuccess(Object object) {
+        Pair[] pairsList = (Pair[]) getJsonService().transformJsonToObj(object.toString(), Pair[].class);
+        God.getInstance().setProfile(Arrays.asList(pairsList));
+        getActivityCallback().onSuccess(new Message(getContext().getString(R.string.webserver_pair_list)));
     }
 
     @Override
-    public void onFailure(JSONObject object) {
-        System.out.println(object.toString());
+    public void onFailure(Object object) {
+        getActivityCallback().onFailure(new Message(getContext().getString(R.string.webserver_pair_list)));
     }
 
 }

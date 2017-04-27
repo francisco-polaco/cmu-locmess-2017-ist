@@ -25,8 +25,13 @@
     <string name="webserver_endpoint_user_signup">/user/signup</string>
     <string name="webserver_endpoint_user_login">/user/login</string>
     <string name="webserver_endpoint_user_logout">/user/logout</string>
+
     <string name="webserver_endpoint_user_listpairs">/user/listpairs</string>
+    <string name="webserver_pair_list">PL</string>
+
     <string name="webserver_endpoint_user_addpair">/user/addpair</string>
+    <string name="webserver_pair_create">PC</string>
+
     <string name="webserver_endpoint_user_removepair">/user/removepair</string>
     <!-- location endpoints -->
     <string name="webserver_endpoint_location_create">/location/create</string>
@@ -50,6 +55,7 @@
     <string name="register_hint_password">Password</string>
     <string name="register_hint_repeat_password">Repeat Password</string>
     <string name="button_register">Register</string>
+    <string name="dialog_retrieve_profile">Retrieving profile...</string>
 
 
 </resources>

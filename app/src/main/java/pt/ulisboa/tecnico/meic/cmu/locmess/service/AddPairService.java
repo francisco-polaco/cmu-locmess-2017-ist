@@ -2,12 +2,11 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.service;
 
 import android.content.Context;
 
-import org.json.JSONObject;
-
 import java.io.UnsupportedEncodingException;
 
 import cz.msebera.android.httpclient.entity.StringEntity;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -38,13 +37,15 @@ public class AddPairService extends LocmessWebService implements LocmessCallback
     }
 
     @Override
-    public void onSuccess(JSONObject object) {
-        System.out.println(object.toString());
+    public void onSuccess(Object object) {
+        getActivityCallback().onSuccess(
+                new Message(getContext().getString(R.string.webserver_pair_create)));
     }
 
     @Override
-    public void onFailure(JSONObject object) {
-        System.out.println(object.toString());
+    public void onFailure(Object object) {
+        getActivityCallback().onFailure(
+                new Message(getContext().getString(R.string.webserver_pair_create)));
     }
 
 

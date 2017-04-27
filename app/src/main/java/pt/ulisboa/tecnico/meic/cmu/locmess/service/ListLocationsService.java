@@ -2,13 +2,7 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.service;
 
 import android.content.Context;
 
-import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-
-import cz.msebera.android.httpclient.entity.StringEntity;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.DeviceLocation;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
@@ -31,12 +25,12 @@ public class ListLocationsService extends LocmessWebService implements LocmessCa
     }
 
     @Override
-    public void onSuccess(JSONObject object) {
+    public void onSuccess(Object object) {
         System.out.println(object.toString());
     }
 
     @Override
-    public void onFailure(JSONObject object) {
+    public void onFailure(Object object) {
         System.out.println(object.toString());
     }
 
