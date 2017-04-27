@@ -7,6 +7,6 @@ class Constants {
     // Update Location Service
     static final int UPDATE_INTERVAL = 1000 /** 60*/
             ;
-    static final int TWO_MINUTES = UPDATE_INTERVAL;
+    static final int TWO_MINUTES = UPDATE_INTERVAL; //fixme bad name
     static final int FASTEST_UPDATE_INTERVAL = 1000;
 }

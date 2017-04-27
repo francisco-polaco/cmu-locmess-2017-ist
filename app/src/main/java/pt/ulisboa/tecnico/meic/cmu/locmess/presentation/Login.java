@@ -1,10 +1,7 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.presentation;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -48,19 +45,19 @@ public class Login extends AppCompatActivity implements ActivityCallback {
         String[] credentials = null;
         try {
             credentials = God.getInstance().getCredentials();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException ignored) {}
         if(credentials != null) {
             Log.d(TAG, "We have found credentials.");
             new LoginWebService(getApplicationContext(), this,
                     new User(credentials[0], credentials[1]), true).execute();
         }
     }
+
     public void registerScreen(View view) {
         Intent intent = new Intent(this, Register.class);
         startActivity(intent);
     }
+
     public void mainScreen(View view) {
         String username = ((EditText) this.findViewById(R.id.Username)).getText().toString();
         String password = ((EditText) this.findViewById(R.id.Pass)).getText().toString();

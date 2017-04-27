@@ -2,8 +2,6 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.service;
 
 import android.content.Context;
 
-import org.json.JSONObject;
-
 import java.io.UnsupportedEncodingException;
 
 import cz.msebera.android.httpclient.entity.StringEntity;
@@ -39,7 +37,7 @@ public class SignupWebService extends LocmessWebService implements LocmessCallba
     }
 
     @Override
-    public void onSuccess(JSONObject object) {
+    public void onSuccess(Object object) {
         Message message = (Message) new JsonService().transformJsonToObj(object.toString(), Message.class);
         System.out.println(message.getMessage());
         getActivityCallback().onSuccess(message);
@@ -48,7 +46,7 @@ public class SignupWebService extends LocmessWebService implements LocmessCallba
     }
 
     @Override
-    public void onFailure(JSONObject object) {
+    public void onFailure(Object object) {
         Message message = (Message) new JsonService().transformJsonToObj(object.toString(), Message.class);
         getActivityCallback().onFailure(message);
         System.out.println(message.getMessage());

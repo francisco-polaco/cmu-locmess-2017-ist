@@ -1,6 +1,5 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.googleapi;
 
-import android.app.Notification;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,7 +14,6 @@ import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
 
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.NotificationAgent;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.GoogleApiCallbacks;
 
 import static com.google.android.gms.common.api.GoogleApiClient.Builder;

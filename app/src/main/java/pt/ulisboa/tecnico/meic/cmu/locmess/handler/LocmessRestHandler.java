@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.handler;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
@@ -25,7 +26,29 @@ public class LocmessRestHandler extends JsonHttpResponseHandler {
     }
 
     @Override
+    public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+        callback.onSuccess(response);
+    }
+
+    @Override
+    public void onSuccess(int statusCode, Header[] headers, String responseString) {
+        callback.onSuccess(responseString);
+    }
+
+    @Override
     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
         callback.onFailure(errorResponse);
     }
+
+    @Override
+    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+        callback.onFailure(errorResponse);
+    }
+
+    @Override
+    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+        callback.onFailure(throwable);
+    }
+
+
 }

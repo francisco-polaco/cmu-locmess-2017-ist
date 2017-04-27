@@ -1,7 +1,7 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.presentation;
 
+import android.app.ProgressDialog;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
@@ -28,9 +29,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.ImpossibleToGetLocationException;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.GPSLocation;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.AddLocationService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.GetLastLocationService;
 
-public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCallback {
+public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCallback, ActivityCallback {
 
     private static final String TAG = GPSLocationPicker.class.getSimpleName();
     private static final int ZOOM_LEVEL = 17;
@@ -41,6 +46,7 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
     private Place mPlace;
     private LatLng myLocation; //needs to e dynamic update
     private Circle mMapCircle;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -222,7 +228,17 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_accept:
-                Toast.makeText(getApplicationContext(), "yey accepted", Toast.LENGTH_LONG).show();
+                String name = ((EditText)findViewById(R.id.gps_location_name)).getText().toString();
+                if(name.equals("")){
+                    Toast.makeText(getApplicationContext(), "Name is empty.", Toast.LENGTH_LONG).show();
+                    return true;
+                }
+                new AddLocationService(getApplicationContext(),
+                        this,
+                        new GPSLocation(((EditText)findViewById(R.id.gps_location_name)).getText().toString(),
+                                latLong, mRadius)).execute();
+                dialog = WidgetConstructors.getLoadingDialog(this, getString(R.string.dialog_message_add_gps_location));
+                dialog.show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -283,4 +299,18 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
     }
 
 
+    @Override
+    public void onSuccess(Message result) {
+        if(dialog != null) dialog.cancel();
+        Log.d(TAG, result.getMessage());
+        Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_LONG).show();
+        finish();
+    }
+
+    @Override
+    public void onFailure(Message result) {
+        if(dialog != null) dialog.cancel();
+        Log.d(TAG, result.getMessage());
+        Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_LONG).show();
+    }
 }
