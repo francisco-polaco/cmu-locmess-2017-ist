@@ -6,7 +6,7 @@ import java.io.UnsupportedEncodingException;
 
 import cz.msebera.android.httpclient.entity.StringEntity;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.DeviceLocation;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.GPSLocation;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
@@ -17,9 +17,9 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
 
 public class AddLocationService extends LocmessWebService implements LocmessCallback {
 
-    private DeviceLocation location;
+    private GPSLocation location;
 
-    public AddLocationService(Context context, ActivityCallback activityCallback, DeviceLocation location) {
+    public AddLocationService(Context context, ActivityCallback activityCallback, GPSLocation location) {
         super(context, activityCallback);
         this.location = location;
     }

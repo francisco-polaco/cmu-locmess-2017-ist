@@ -56,6 +56,7 @@
     <string name="register_hint_repeat_password">Repeat Password</string>
     <string name="button_register">Register</string>
     <string name="dialog_retrieve_profile">Retrieving profile...</string>
+    <string name="dialog_message_add_gps_location">Adding Location...</string>
 
 
 </resources>
