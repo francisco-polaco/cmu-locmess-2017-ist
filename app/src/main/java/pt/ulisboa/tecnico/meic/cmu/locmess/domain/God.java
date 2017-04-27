@@ -1,6 +1,8 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.domain;
 
 import android.Manifest;
+import android.app.ActivityManager;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -81,7 +83,18 @@ public class God {
 
     public void startLocationUpdates() {
         Log.d(TAG, "Starting up the update location service.");
-        context.startService(new Intent(context, UpdateLocationService.class));
+        if(!isMyServiceRunning(UpdateLocationService.class))
+            context.startService(new Intent(context, UpdateLocationService.class));
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void stopLocationUpdates() {
