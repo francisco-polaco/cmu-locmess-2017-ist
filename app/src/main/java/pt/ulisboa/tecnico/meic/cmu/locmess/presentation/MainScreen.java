@@ -69,7 +69,6 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
             God.init(getApplicationContext());
         }
         GoogleAPI.init(getApplicationContext(), false);
-        GoogleAPI.getInstance().connect();
         new ListLocationsService(getApplicationContext(), null).execute();
     }
 
@@ -77,6 +76,7 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
     protected void onStart() {
         super.onStart();
         checkBasePermission();
+        GoogleAPI.getInstance().connect();
         //refresh msgs
     }
 
@@ -190,7 +190,7 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
     @Override
     protected void onDestroy() {
         God.getInstance().saveState();
-        GoogleAPI.getInstance().disconnect();
+        //GoogleAPI.getInstance().disconnect();
         super.onDestroy();
     }
 

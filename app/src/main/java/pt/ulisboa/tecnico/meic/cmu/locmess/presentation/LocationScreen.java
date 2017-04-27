@@ -105,6 +105,7 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
     @Override
     protected void onStart() {
         super.onStart();
+        GoogleAPI.getInstance().connect();
         refreshLocations();
     }
 
@@ -190,7 +191,7 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
     @Override
     protected void onDestroy() {
         God.getInstance().saveState();
-        GoogleAPI.getInstance().disconnect();
+        //GoogleAPI.getInstance().disconnect();
         super.onDestroy();
     }
 }
