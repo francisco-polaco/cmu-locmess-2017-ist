@@ -58,5 +58,8 @@
     <string name="dialog_retrieve_profile">Retrieving profile...</string>
     <string name="dialog_message_add_gps_location">Adding Location...</string>
 
+    <!-- location endpoints -->
+    <string name="webserver_endpoint_hearthbeat">/location/actions/heartbeat</string>
+
 
 </resources>

@@ -50,7 +50,7 @@ public class Register extends AppCompatActivity implements ActivityCallback {
         }
         dialog = WidgetConstructors.getLoadingDialog(this, getString(R.string.dialog_create_account));
         new SignupWebService(getApplicationContext(), this, new User(username, password)).execute();
-        dialog.show();
+       // dialog.show();
     }
 
     @Override
