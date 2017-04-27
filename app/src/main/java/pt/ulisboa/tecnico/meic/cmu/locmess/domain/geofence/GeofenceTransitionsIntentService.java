@@ -74,6 +74,7 @@ public final class GeofenceTransitionsIntentService extends IntentService {
 
         // Test that the reported transition was of interest.
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) { // Entering
+            // Ask server for messages
             NotificationAgent.getInstance().sendNotification(getApplicationContext(), 0);
         } else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) { // Exiting
             NotificationAgent.getInstance().sendNotification(getApplicationContext(), 1);

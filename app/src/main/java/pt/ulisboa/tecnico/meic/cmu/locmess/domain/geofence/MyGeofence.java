@@ -81,4 +81,14 @@ public class MyGeofence {
                 .build();
     }
 
+    @Override
+    public String toString() {
+        return "MyGeofence{" +
+                "mName='" + mName + '\'' +
+                ", mLatitude=" + mLatitude +
+                ", mLongitude=" + mLongitude +
+                ", mRadius=" + mRadius +
+                '}';
+    }
+
 }

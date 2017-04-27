@@ -82,12 +82,12 @@ public class WifiLocationPicker extends AppCompatActivity {
             size = size - 1;
             while (size >= 0)
             {
-                HashMap<String, String> item = new HashMap<String, String>();
+                /*HashMap<String, String> item = new HashMap<String, String>();
                 item.put(ITEM_KEY, results.get(size).SSID + "  " + results.get(size).capabilities);
 
                 arraylist.add(item);
                 size--;
-                adapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();*/
             }
         }
         catch (Exception e)

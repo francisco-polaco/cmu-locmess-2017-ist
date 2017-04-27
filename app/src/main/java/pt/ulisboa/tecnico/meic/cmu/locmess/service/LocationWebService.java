@@ -43,7 +43,6 @@ public class LocationWebService extends LocmessWebService implements LocmessCall
         }
     }
 
-    @Override
     public void onSuccess(JSONObject object) {
         Message message;
         if(object != null)
@@ -55,7 +54,6 @@ public class LocationWebService extends LocmessWebService implements LocmessCall
     }
 
 
-    @Override
     public void onFailure(JSONObject object) {
         Message message;
         if(object != null)
@@ -64,5 +62,15 @@ public class LocationWebService extends LocmessWebService implements LocmessCall
             message = new Message("NULL");
         getActivityCallback().onFailure(message);
         System.out.println(message);
+    }
+
+    @Override
+    public void onSuccess(Object object) {
+
+    }
+
+    @Override
+    public void onFailure(Object object) {
+
     }
 }

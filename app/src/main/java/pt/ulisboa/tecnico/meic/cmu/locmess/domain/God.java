@@ -25,6 +25,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.ImpossibleToGetLocat
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.PermissionNotGrantedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.geofence.GeofenceManager;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.geofence.MyGeofence;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.GPSLocation;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Token;
@@ -130,7 +131,15 @@ public class God {
     }
 
     public void setLocations(List<GPSLocation> locations) {
+        Log.d(TAG, "Setting locations and renewing all geofences.");
         this.locations = locations;
+        GeofenceManager.getInstance().removeAllGeofences();
+        ArrayList<MyGeofence> myGeofenceArrayList = new ArrayList<>();
+        for(GPSLocation l : locations){
+            myGeofenceArrayList.add(new MyGeofence(l.getName(), l.getLatitude(), l.getLongitude(), (float)l.getRadius() +1.0f));
+        }
+        Log.d(TAG, ""+myGeofenceArrayList);
+        GeofenceManager.getInstance().addGeofences(myGeofenceArrayList);
     }
 
     public List<GPSLocation> getLocations() {

@@ -74,13 +74,13 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
             public void onClick(View v) {
                 if(!debug) {
                     God.getInstance().startLocationUpdates();
-                    GeofenceManager.getInstance().addGeofence(new MyGeofence("teste", 38.7355793, -9.1329183, 20000.0f));
+                   // GeofenceManager.getInstance().addGeofence(new MyGeofence("teste", 38.7355793, -9.1329183, 20000.0f));
                 }else {
                     God.getInstance().stopLocationUpdates();
-                    GeofenceManager.getInstance().removeAllGeofences();
+                    //GeofenceManager.getInstance().removeAllGeofences();
                 }
                 debug = !debug;
-                Toast.makeText(getApplicationContext(), "WIFI", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "WIFI", Toast.LENGTH_SHORT).show();
                 //startActivity(new Intent(getApplicationContext(), GPSLocationPicker.class));
             }
         });
