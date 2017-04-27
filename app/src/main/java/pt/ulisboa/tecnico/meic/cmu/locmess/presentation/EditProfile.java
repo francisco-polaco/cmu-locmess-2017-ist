@@ -4,7 +4,9 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -21,6 +23,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.AddPairService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListPairsService;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.RemovePairService;
 
 
 public class EditProfile extends AppCompatActivity implements ActivityCallback {
@@ -61,8 +64,23 @@ public class EditProfile extends AppCompatActivity implements ActivityCallback {
             adapter = new SimpleAdapter(this, itemlist, R.layout.listview,
                     new String[]{"Key", "Value"},
                     new int[]{R.id.textView, R.id.textView2});
-            ListView listValues = (ListView) findViewById(R.id.keyvalue);
+            final ListView listValues = (ListView) findViewById(R.id.keyvalue);
             listValues.setAdapter(adapter);
+
+            // in order to remove an item from the listview
+            listValues.setClickable(true);
+            listValues.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int arg2, long arg3) {
+                    HashMap<String, String> keyValue = (HashMap<String, String>) parent.getItemAtPosition(arg2);
+                    Pair toRemove = new Pair(keyValue.get("Key"), keyValue.get("Value"));
+                    new RemovePairService(getApplicationContext(), EditProfile.this, toRemove).execute();
+                    God.getInstance().getProfile().remove(toRemove);
+                    itemlist.remove(keyValue);
+                    adapter.notifyDataSetChanged();
+                    return true;
+                }
+            });
             if(dialog != null) dialog.cancel();
         }
         else if(result.getMessage().equals(getApplicationContext().getString(R.string.webserver_pair_create))) {

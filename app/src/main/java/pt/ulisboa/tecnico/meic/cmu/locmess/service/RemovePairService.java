@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 
 import cz.msebera.android.httpclient.entity.StringEntity;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -37,12 +38,12 @@ public class RemovePairService extends LocmessWebService implements LocmessCallb
 
     @Override
     public void onSuccess(Object object) {
-        System.out.println(object.toString());
+        getActivityCallback().onSuccess(new Message("Removed pair with success!"));
     }
 
     @Override
     public void onFailure(Object object) {
-        System.out.println(object.toString());
+        getActivityCallback().onFailure(new Message("Removed pair failed!"));
     }
 
 
