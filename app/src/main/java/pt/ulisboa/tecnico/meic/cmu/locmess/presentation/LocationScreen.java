@@ -78,6 +78,12 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
 
     boolean debug;//FIXME delete
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {

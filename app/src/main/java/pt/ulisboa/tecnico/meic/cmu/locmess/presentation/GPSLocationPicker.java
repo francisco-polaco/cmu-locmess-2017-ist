@@ -303,7 +303,7 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
     public void onSuccess(Message result) {
         if(dialog != null) dialog.cancel();
         Log.d(TAG, result.getMessage());
-        Toast.makeText(getApplicationContext(), "Yey Accepted!", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_LONG).show();
         finish();
     }
 
@@ -311,6 +311,6 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
     public void onFailure(Message result) {
         if(dialog != null) dialog.cancel();
         Log.d(TAG, result.getMessage());
-        Toast.makeText(getApplicationContext(), "Failed!", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_LONG).show();
     }
 }

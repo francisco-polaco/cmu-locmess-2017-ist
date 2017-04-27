@@ -3,7 +3,7 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.dto;
 import com.google.android.gms.maps.model.LatLng;
 
 public final class GPSLocation {
-    public final String SERVER_CLASS = "GPSLocation";
+    public final String type = "GPSLocation";
     private String name;
     private double latitude;
     private double longitude;

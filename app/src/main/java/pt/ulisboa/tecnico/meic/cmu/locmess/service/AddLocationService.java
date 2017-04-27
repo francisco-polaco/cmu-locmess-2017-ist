@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import cz.msebera.android.httpclient.entity.StringEntity;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.GPSLocation;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
@@ -37,12 +38,13 @@ public class AddLocationService extends LocmessWebService implements LocmessCall
 
     @Override
     public void onSuccess(Object object) {
-        System.out.println(object.toString());
+        getActivityCallback().onSuccess(new Message("Success"));
     }
 
     @Override
     public void onFailure(Object object) {
-        System.out.println(object.toString());
+        getActivityCallback().onFailure(new Message("Failed"));
+
     }
 
 
