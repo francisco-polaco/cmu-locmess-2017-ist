@@ -25,14 +25,19 @@ public final class ConnectivityChangedReceiver extends BroadcastReceiver {
                 }
                 attempts++;
             }
-            if (DeviceStatus.getInstance().isInternetAvailable(context)) {
-                Log.d(TAG, "Start updating server.");
-                // Voltar aos heartbeats
-                context.startService(new Intent(context, UpdateLocationService.class));
-            } else {
-                Log.d(TAG, "No Internet. Stop Contacting the server.");
-                context.stopService(new Intent(context, UpdateLocationService.class));
-                // Desligar Heartbeats
+            synchronized (this) {
+                if (DeviceStatus.getInstance().isInternetAvailable(context)) {
+                    Log.d(TAG, "Start updating server.");
+                    // Voltar aos heartbeats
+                    if (!Utils.isMyServiceRunning(context, UpdateLocationService.class))
+                        context.startService(new Intent(context, UpdateLocationService.class));
+                    else
+                        Log.d(TAG, "Skipping, service already running.");
+                } else {
+                    Log.d(TAG, "No Internet. Stop Contacting the server.");
+                    context.stopService(new Intent(context, UpdateLocationService.class));
+                    // Desligar Heartbeats
+                }
             }
         }
     }
