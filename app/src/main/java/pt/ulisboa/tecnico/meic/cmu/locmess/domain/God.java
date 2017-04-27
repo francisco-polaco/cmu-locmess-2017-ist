@@ -36,7 +36,7 @@ public class God {
     private Context context;
     private Token token;
     // profile represents the key values of the user
-    private List<HashMap<String, String>> profile;
+    private List<Pair> profile;
 
     private God(Context context) {
         this.context = context;
@@ -120,17 +120,10 @@ public class God {
     }
 
     public void setProfile(List<Pair> profile) {
-        List<HashMap<String, String>> newProfile = new ArrayList<>();
-        for (Pair pair : profile){
-            HashMap<String, String> toAdd = new HashMap<>();
-            toAdd.put("Key", pair.getKey());
-            toAdd.put("Value", pair.getValue());
-            newProfile.add(toAdd);
-        }
-        this.profile = newProfile;
+        this.profile = profile;
     }
 
-    public List<HashMap<String, String>> getProfile() {
+    public List<Pair> getProfile() {
         return profile;
     }
 }

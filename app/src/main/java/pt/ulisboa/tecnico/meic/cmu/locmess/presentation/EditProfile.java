@@ -10,6 +10,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -46,8 +47,6 @@ public class EditProfile extends AppCompatActivity implements ActivityCallback {
     }
 
     public void DisplayKeyValues(View view) {
-        ListView listValues = (ListView) findViewById(R.id.keyvalue);
-
         EditText value = (EditText) findViewById(R.id.Value);
         EditText key = (EditText) findViewById(R.id.Key);
 
@@ -58,7 +57,7 @@ public class EditProfile extends AppCompatActivity implements ActivityCallback {
     @Override
     public void onSuccess(Message result) {
         if(result.getMessage().equals(getApplicationContext().getString(R.string.webserver_pair_list))){
-            itemlist = God.getInstance().getProfile();
+            itemlist = parsePairs(God.getInstance().getProfile());
             adapter = new SimpleAdapter(this, itemlist, R.layout.listview,
                     new String[]{"Key", "Value"},
                     new int[]{R.id.textView, R.id.textView2});
@@ -76,6 +75,17 @@ public class EditProfile extends AppCompatActivity implements ActivityCallback {
         }
         else
             Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
+    }
+
+    private List<HashMap<String,String>> parsePairs(List<Pair> profile) {
+        List<HashMap<String, String>> newProfile = new ArrayList<>();
+        for (Pair pair : profile){
+            HashMap<String, String> toAdd = new HashMap<>();
+            toAdd.put("Key", pair.getKey());
+            toAdd.put("Value", pair.getValue());
+            newProfile.add(toAdd);
+        }
+        return newProfile;
     }
 
     @Override
