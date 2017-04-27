@@ -8,6 +8,9 @@ public final class GPSLocation extends Location {
     private double longitude;
     private double radius;
 
+    public GPSLocation(){
+    }
+
     public GPSLocation(String name, LatLng location, float radius) {
         super(name);
         latitude = location.latitude;
@@ -36,4 +39,5 @@ public final class GPSLocation extends Location {
                 ", radius=" + radius +
                 '}';
     }
+
 }

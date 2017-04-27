@@ -25,6 +25,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.ImpossibleToGetLocat
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.PermissionNotGrantedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.geofence.GeofenceManager;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.GPSLocation;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Token;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
@@ -37,6 +38,7 @@ public class God {
     private Token token;
     // profile represents the key values of the user
     private List<Pair> profile;
+    private List<GPSLocation> locations;
 
     private God(Context context) {
         this.context = context;
@@ -125,5 +127,13 @@ public class God {
 
     public List<Pair> getProfile() {
         return profile;
+    }
+
+    public void setLocations(List<GPSLocation> locations) {
+        this.locations = locations;
+    }
+
+    public List<GPSLocation> getLocations() {
+        return locations;
     }
 }

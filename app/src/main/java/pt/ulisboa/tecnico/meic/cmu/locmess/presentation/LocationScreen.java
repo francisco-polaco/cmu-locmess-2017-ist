@@ -23,6 +23,8 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.geofence.GeofenceManager;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.geofence.MyGeofence;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.GPSLocation;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -147,9 +149,14 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
         if(result.getMessage().equals("LLs")){
             ListView lv = (ListView) findViewById(R.id.LocationsList);
             ArrayList<String> list = new ArrayList<>();
+
+            for (GPSLocation location : God.getInstance().getLocations()){
+                list.add(location.toString());
+            }
             ArrayAdapter<String> aa =
                     new ArrayAdapter<>(getApplicationContext(),
-                            android.R.layout.simple_list_item_1, list);
+                            android.R.layout.simple_list_item_1,
+                            list);
             lv.setAdapter(aa);
             if(dialog != null) dialog.cancel();
         }else{

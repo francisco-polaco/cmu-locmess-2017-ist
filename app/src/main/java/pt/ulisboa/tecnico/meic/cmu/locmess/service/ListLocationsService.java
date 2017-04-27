@@ -2,7 +2,12 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.service;
 
 import android.content.Context;
 
+import java.util.Arrays;
+
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.GPSLocation;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -27,6 +32,8 @@ public class ListLocationsService extends LocmessWebService implements LocmessCa
 
     @Override
     public void onSuccess(Object object) {
+        GPSLocation[] locations = (GPSLocation[]) getJsonService().transformJsonToObj(object.toString(), GPSLocation[].class);
+        God.getInstance().setLocations(Arrays.asList(locations));
         getActivityCallback().onSuccess(new Message("LLs"));
     }
 

@@ -8,6 +8,9 @@ public class APLocation extends Location {
 
     public final String type = "APLocation";
 
+    public APLocation(){
+    }
+
     public APLocation(String name){
         super(name);
     }
