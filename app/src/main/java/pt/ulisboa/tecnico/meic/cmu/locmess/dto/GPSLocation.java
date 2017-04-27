@@ -2,22 +2,17 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.dto;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public final class GPSLocation {
+public final class GPSLocation extends Location {
     public final String type = "GPSLocation";
-    private String name;
     private double latitude;
     private double longitude;
     private double radius;
 
     public GPSLocation(String name, LatLng location, float radius) {
-        this.name = name;
+        super(name);
         latitude = location.latitude;
         longitude = location.longitude;
         this.radius = radius;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public double getLatitude() {
@@ -35,7 +30,7 @@ public final class GPSLocation {
     @Override
     public String toString() {
         return "GPSLocation{" +
-                "name=" + name +
+                "name=" + getName() +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 ", radius=" + radius +
