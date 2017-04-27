@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.presentation;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -8,11 +9,15 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
@@ -21,6 +26,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.domain.geofence.MyGeofence;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
 
 /**
  * Created by jp_s on 4/14/2017.
@@ -28,9 +34,11 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 
 public class LocationScreen extends AppCompatActivity implements ActivityCallback {
 
+    private static final String TAG = LocationScreen.class.getSimpleName();
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +90,9 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
     @Override
     protected void onStart() {
         super.onStart();
+        new ListLocationsService(getApplicationContext(), this).execute();
+        dialog = WidgetConstructors.getLoadingDialog(this, "Getting locations...");
+        dialog.show();
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -133,15 +144,24 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
 
     @Override
     public void onSuccess(Message result) {
-        Intent intent = new Intent(this, Login.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-
+        if(result.getMessage().equals("LLs")){
+            ListView lv = (ListView) findViewById(R.id.LocationsList);
+            ArrayList<String> list = new ArrayList<>();
+            ArrayAdapter<String> aa =
+                    new ArrayAdapter<>(getApplicationContext(),
+                            android.R.layout.simple_list_item_1, list);
+            lv.setAdapter(aa);
+            if(dialog != null) dialog.cancel();
+        }else{
+            Intent intent = new Intent(this, Login.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
     }
 
     @Override
     public void onFailure(Message result) {
-
+        if(dialog != null) dialog.cancel();
     }
 
     @Override
