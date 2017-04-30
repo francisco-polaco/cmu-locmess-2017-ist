@@ -22,6 +22,7 @@
             android:gravity="center"/>
 
         <ListView
+            android:id="@+id/wifi_list"
             android:layout_width="wrap_content"
             android:layout_height="514dp"
             android:layout_weight="0.36" />
