@@ -34,12 +34,12 @@ public class ListLocationsService extends LocmessWebService implements LocmessCa
     public void onSuccess(Object object) {
         GPSLocation[] locations = (GPSLocation[]) getJsonService().transformJsonToObj(object.toString(), GPSLocation[].class);
         God.getInstance().setLocations(Arrays.asList(locations));
-        getActivityCallback().onSuccess(new Message("LLs"));
+        getActivityCallback().onSuccess(new Message(getContext().getString(R.string.LM_0)));
     }
 
     @Override
     public void onFailure(Object object) {
-        getActivityCallback().onFailure(new Message("LLf"));;
+        getActivityCallback().onFailure(new Message(getContext().getString(R.string.LM_0)));;
     }
 
 }

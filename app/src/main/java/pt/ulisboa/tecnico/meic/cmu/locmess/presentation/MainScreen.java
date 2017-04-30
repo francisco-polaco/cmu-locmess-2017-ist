@@ -23,9 +23,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
 
 /**
  * Created by jp_s on 4/14/2017.
@@ -60,14 +63,21 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
         NavigationView nvDrawer = (NavigationView) findViewById(R.id.nvView);
         setupDrawerContent(nvDrawer);
 
+        try {
+            God.getInstance();
+        }catch (NotInitializedException e){
+            God.init(getApplicationContext());
+        }
         GoogleAPI.init(getApplicationContext(), false);
-        GoogleAPI.getInstance().connect();
+        new ListLocationsService(getApplicationContext(), null).execute();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         checkBasePermission();
+        GoogleAPI.getInstance().connect();
+        //refresh msgs
     }
 
     //toolbar reference.
@@ -179,7 +189,8 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
 
     @Override
     protected void onDestroy() {
-        GoogleAPI.getInstance().disconnect();
+        God.getInstance().saveState();
+        //GoogleAPI.getInstance().disconnect();
         super.onDestroy();
     }
 

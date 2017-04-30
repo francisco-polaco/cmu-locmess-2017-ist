@@ -74,14 +74,23 @@ public final class GeofenceTransitionsIntentService extends IntentService {
 
         // Test that the reported transition was of interest.
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) { // Entering
-            NotificationAgent.getInstance().sendNotification(getApplicationContext(), 0);
+            // Ask server for messages
+            if(isAnyMessageOfMyInterest()){
+                NotificationAgent.getInstance().sendNotification(getApplicationContext());
+            }
         } else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) { // Exiting
-            NotificationAgent.getInstance().sendNotification(getApplicationContext(), 1);
+            // clear msgs not received
+            NotificationAgent.getInstance().sendNotification(getApplicationContext());
         } else {
             // Log the error.
             Log.e(TAG, "Invalid Transition " + geofenceTransition);
         }
 
+    }
+
+    private boolean isAnyMessageOfMyInterest() {
+        // get a value and if needed get also the list of cenas
+        return true;
     }
 
     private List<Geofence> getTriggeredGeofencesList(GeofencingEvent geofencingEvent, int geofenceTransition) {

@@ -6,12 +6,13 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -21,14 +22,14 @@ import java.util.ArrayList;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.geofence.GeofenceManager;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.geofence.MyGeofence;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.GPSLocation;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.RemoveLocationService;
+
+import static android.support.v4.widget.SwipeRefreshLayout.*;
 
 /**
  * Created by jp_s on 4/14/2017.
@@ -41,6 +42,8 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private ProgressDialog dialog;
+    private ArrayList<String> locations;
+    private ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,16 +76,25 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
             public void onClick(View v) {
                 if(!debug) {
                     God.getInstance().startLocationUpdates();
-                    GeofenceManager.getInstance().addGeofence(new MyGeofence("teste", 38.7355793, -9.1329183, 20000.0f));
+                   // GeofenceManager.getInstance().addGeofence(new MyGeofence("teste", 38.7355793, -9.1329183, 20000.0f));
                 }else {
                     God.getInstance().stopLocationUpdates();
-                    GeofenceManager.getInstance().removeAllGeofences();
+                    //GeofenceManager.getInstance().removeAllGeofences();
                 }
                 debug = !debug;
-                Toast.makeText(getApplicationContext(), "WIFI", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "WIFI", Toast.LENGTH_SHORT).show();
                 //startActivity(new Intent(getApplicationContext(), GPSLocationPicker.class));
             }
         });
+
+        SwipeRefreshLayout swip = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        swip.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshLocations();
+            }
+        });
+        swip.setColorSchemeResources(R.color.accent_material_light, R.color.colorPrimary);;
 
     }
 
@@ -92,6 +104,11 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
     @Override
     protected void onStart() {
         super.onStart();
+        GoogleAPI.getInstance().connect();
+        refreshLocations();
+    }
+
+    private void refreshLocations() {
         new ListLocationsService(getApplicationContext(), this).execute();
         dialog = WidgetConstructors.getLoadingDialog(this, "Getting locations...");
         dialog.show();
@@ -146,34 +163,62 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
 
     @Override
     public void onSuccess(Message result) {
-        if(result.getMessage().equals("LLs")){
+        String toastText = "";
+        if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_0))){
             ListView lv = (ListView) findViewById(R.id.LocationsList);
-            ArrayList<String> list = new ArrayList<>();
 
-            for (GPSLocation location : God.getInstance().getLocations()){
-                list.add(location.toString());
-            }
-            ArrayAdapter<String> aa =
-                    new ArrayAdapter<>(getApplicationContext(),
-                            android.R.layout.simple_list_item_1,
-                            list);
-            lv.setAdapter(aa);
+            locations = new ArrayList<>();
+            for (GPSLocation location : God.getInstance().getLocations())
+                locations.add(location.toString());
+
+            adapter = new ArrayAdapter<>(
+                    this,
+                    android.R.layout.simple_list_item_1,
+                    locations
+            );
+            lv.setAdapter(adapter);
+
+            // the remove is done through a long click
+            lv.setClickable(true);
+            lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int arg2, long arg3) {
+                    new RemoveLocationService(getApplicationContext(), LocationScreen.this,
+                            God.getInstance().getLocations().get(arg2), arg2).execute();
+                    return true;
+                }
+            });
             if(dialog != null) dialog.cancel();
-        }else{
-            Intent intent = new Intent(this, Login.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
+            return; // avoid toast
         }
+        else if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_2))){
+            int index = (int) result.getPiggyback();
+            locations.remove(index);
+            God.getInstance().getLocations().remove(index);
+            adapter.notifyDataSetChanged();
+            toastText += "Removed location with success!";
+        }
+        Toast.makeText(this, toastText, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onFailure(Message result) {
+        String toastText = "";
         if(dialog != null) dialog.cancel();
+        if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_0))){
+            toastText += "Failed to retrieve the locations!";
+            finish();
+        }
+        else if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_2)))
+            toastText += "Failed to remove the location!";
+
+        Toast.makeText(this, toastText, Toast.LENGTH_LONG).show();
     }
 
     @Override
     protected void onDestroy() {
-        GoogleAPI.getInstance().disconnect();
+        God.getInstance().saveState();
+        //GoogleAPI.getInstance().disconnect();
         super.onDestroy();
     }
 }

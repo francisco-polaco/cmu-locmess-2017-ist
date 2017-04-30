@@ -59,11 +59,12 @@ public class GeofenceManager implements ResultCallback<Status> {
     }
 
     public void addGeofences(List<MyGeofence> toAdd) {
-        Log.d(TAG, "Adding Geofence...");
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             throw new PermissionNotGrantedException("Fine location");
         }
+        if(toAdd.size() == 0) return;
+        Log.d(TAG, "Adding Geofence...");
         ArrayList<Geofence> list = new ArrayList<>();
         for (MyGeofence geofence : toAdd) {
             list.add(geofence.getGeofence());
@@ -122,19 +123,20 @@ public class GeofenceManager implements ResultCallback<Status> {
 
     @Override
     public void onResult(@NonNull Status status) {
+        // TODO: Annoying messages!
         if (status.isSuccess()) {
             //Log.i(TAG, "O servico executou com sucesso");
-            Toast.makeText(
+            /*Toast.makeText(
                     context,
                     "Geofance add/removed",
                     Toast.LENGTH_SHORT
-            ).show();
+            ).show();*/
         } else {
-            Toast.makeText(
+            /*Toast.makeText(
                     context,
                     "Error in thread",
                     Toast.LENGTH_SHORT
-            ).show();
+            ).show();*/
         }
     }
 }

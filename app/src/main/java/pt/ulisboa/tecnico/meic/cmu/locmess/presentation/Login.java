@@ -36,7 +36,7 @@ public class Login extends AppCompatActivity implements ActivityCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
         God.init(getApplicationContext());
-        GoogleAPI.init(getApplicationContext(), false);
+        God.getInstance().startLocationUpdates();
     }
 
     @Override

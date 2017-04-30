@@ -7,9 +7,17 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.dto;
 public class Message {
 
     private String message;
+    // usually used to pass additional objects to the domain logic
+    // ex: index to remove an item on remove pair
+    private Object piggyback;
 
     public Message(String message) {
         this.message = message;
+    }
+
+    public Message(String message, Object piggyback) {
+        this.message = message;
+        this.piggyback = piggyback;
     }
 
     public Message() {
@@ -21,5 +29,13 @@ public class Message {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public Object getPiggyback() {
+        return piggyback;
+    }
+
+    public void setPiggyback(Object piggyback) {
+        this.piggyback = piggyback;
     }
 }

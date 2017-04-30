@@ -59,7 +59,8 @@ public class EditProfile extends AppCompatActivity implements ActivityCallback {
 
     @Override
     public void onSuccess(Message result) {
-        if(result.getMessage().equals(getApplicationContext().getString(R.string.webserver_pair_list))){
+        String toastText = "";
+        if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_0))){
             itemlist = parsePairs(God.getInstance().getProfile());
             adapter = new SimpleAdapter(this, itemlist, R.layout.listview,
                     new String[]{"Key", "Value"},
@@ -74,25 +75,32 @@ public class EditProfile extends AppCompatActivity implements ActivityCallback {
                 public boolean onItemLongClick(AdapterView<?> parent, View view, int arg2, long arg3) {
                     HashMap<String, String> keyValue = (HashMap<String, String>) parent.getItemAtPosition(arg2);
                     Pair toRemove = new Pair(keyValue.get("Key"), keyValue.get("Value"));
-                    new RemovePairService(getApplicationContext(), EditProfile.this, toRemove).execute();
-                    God.getInstance().getProfile().remove(toRemove);
-                    itemlist.remove(keyValue);
-                    adapter.notifyDataSetChanged();
+                    new RemovePairService(getApplicationContext(), EditProfile.this, toRemove, arg2).execute();
                     return true;
                 }
             });
             if(dialog != null) dialog.cancel();
+            return; // avoid Toast
         }
-        else if(result.getMessage().equals(getApplicationContext().getString(R.string.webserver_pair_create))) {
-            HashMap<String, String> resultmap = new HashMap<String, String>();
-            resultmap.put("Key", toAdd.getKey());
-            resultmap.put("Value", toAdd.getValue());
-            itemlist.add(resultmap);
+        else if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_1))) {
+            HashMap<String, String> toAdd = new HashMap<String, String>();
+            toAdd.put("Key", this.toAdd.getKey());
+            toAdd.put("Value", this.toAdd.getValue());
+            itemlist.add(toAdd);
             ListView listValues = (ListView) findViewById(R.id.keyvalue);
             listValues.setAdapter(adapter);
+            toastText += "Pair successfully added!";
         }
-        else
-            Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
+        else if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_2))){
+            int index = (int) result.getPiggyback();
+            HashMap<String, String> keyValue = (HashMap<String, String>) adapter.getItem(index);
+            Pair toRemove = new Pair(keyValue.get("Key"), keyValue.get("Value"));
+            God.getInstance().getProfile().remove(toRemove);
+            itemlist.remove(keyValue);
+            adapter.notifyDataSetChanged();
+            toastText += "Pair successfully removed!";
+        }
+        Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();
     }
 
     private List<HashMap<String,String>> parsePairs(List<Pair> profile) {
@@ -108,14 +116,17 @@ public class EditProfile extends AppCompatActivity implements ActivityCallback {
 
     @Override
     public void onFailure(Message result) {
-        if(result.getMessage().equals(getApplicationContext().getString(R.string.webserver_pair_list))) {
+        String toastText = "";
+        if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_0))) {
             if(dialog != null) dialog.cancel();
-            Toast.makeText(getApplicationContext(), "Failed to retrieve the profile!", Toast.LENGTH_LONG).show();
+            toastText += "Failed to retrieve the profile!";
             finish();
         }
-        else if(result.getMessage().equals(getApplicationContext().getString(R.string.webserver_pair_create)))
-            Toast.makeText(getApplicationContext(), "Failed to add pair to profile!", Toast.LENGTH_LONG).show();
-        else
-            Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
+        else if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_1)))
+            toastText += "Failed to add pair!";
+        else if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_2)))
+            toastText += "Failed to remove pair!";
+
+        Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();
     }
 }

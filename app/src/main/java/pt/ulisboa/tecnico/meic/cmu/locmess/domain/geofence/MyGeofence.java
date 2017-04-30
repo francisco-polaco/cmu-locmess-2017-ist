@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 
 import com.google.android.gms.location.Geofence;
 
+import java.util.ArrayList;
+
 public class MyGeofence {
 
     private static final String TAG = MyGeofence.class.getSimpleName();
@@ -79,6 +81,16 @@ public class MyGeofence {
                 //.setLoiteringDelay(TIME_UNTIL_BEING_ALERTED)
                 //.setNotificationResponsiveness(TIME_TO_REFRESH_POSITION)
                 .build();
+    }
+
+    @Override
+    public String toString() {
+        return "MyGeofence{" +
+                "mName='" + mName + '\'' +
+                ", mLatitude=" + mLatitude +
+                ", mLongitude=" + mLongitude +
+                ", mRadius=" + mRadius +
+                '}';
     }
 
 }

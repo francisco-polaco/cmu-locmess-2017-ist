@@ -6,7 +6,7 @@ public final class GPSLocation extends Location {
     public final String type = "GPSLocation";
     private double latitude;
     private double longitude;
-    private double radius;
+    private float radius;
 
     public GPSLocation(){
     }
@@ -26,7 +26,7 @@ public final class GPSLocation extends Location {
         return longitude;
     }
 
-    public double getRadius() {
+    public float getRadius() {
         return radius;
     }
 
