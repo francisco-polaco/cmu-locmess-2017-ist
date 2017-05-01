@@ -22,13 +22,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListMessagesService;
 
 /**
  * Created by jp_s on 4/14/2017.
@@ -70,6 +74,18 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
         }
         GoogleAPI.init(getApplicationContext(), false);
         new ListLocationsService(getApplicationContext(), null).execute();
+        new ListMessagesService(getApplicationContext(), new ActivityCallback() {
+            @Override
+            public void onSuccess(Message result) {
+                Log.d(TAG, "" + result.getPiggyback());
+            }
+
+            @Override
+            public void onFailure(Message result) {
+                Log.d(TAG, "FALHA");
+
+            }
+        });
     }
 
     @Override
