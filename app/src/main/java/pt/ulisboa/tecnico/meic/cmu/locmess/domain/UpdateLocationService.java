@@ -77,8 +77,9 @@ public final class UpdateLocationService extends Service implements LocationList
         mLocationRequest.setFastestInterval(Constants.FASTEST_UPDATE_INTERVAL);
         /*mLocationRequest.setNumUpdates(5);
         mLocationRequest.setExpirationDuration(5000);*/
-        LocationServices.FusedLocationApi.requestLocationUpdates(
-                GoogleAPI.getInstance().getGoogleApiClient(), mLocationRequest, this);
+        // TODO: BLOWING UP
+        /*LocationServices.FusedLocationApi.requestLocationUpdates(
+                GoogleAPI.getInstance().getGoogleApiClient(), mLocationRequest, this);*/
     }
 
     @Override

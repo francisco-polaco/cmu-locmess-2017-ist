@@ -56,6 +56,5 @@ public final class LoginWebService extends LocmessWebService implements LocmessC
         else
             message = new Message("NULL");
         getActivityCallback().onFailure(message);
-        System.out.println(message);
     }
 }
