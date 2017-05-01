@@ -35,7 +35,8 @@
     <string name="webserver_endpoint_location_create">/location/create</string>
     <string name="webserver_endpoint_location_remove">/location/remove</string>
     <string name="webserver_endpoint_location_list">/location/list</string>
-
+    <!-- misc endpoints -->
+    <string name="webserver_endpoint_misc_listpairs">/misc/listPairs</string>
 
     <string name="toast_error_last_known_location">Impossible to get your last location.</string>
     <string name="notification_title">You have a new message!</string>

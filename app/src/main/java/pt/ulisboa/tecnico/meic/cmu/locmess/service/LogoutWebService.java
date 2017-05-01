@@ -40,8 +40,6 @@ public final class LogoutWebService extends LocmessWebService implements Locmess
 
     @Override
     public void onFailure(Object object) {
-        System.out.println(object.toString());
         getActivityCallback().onFailure(null);
-
     }
 }

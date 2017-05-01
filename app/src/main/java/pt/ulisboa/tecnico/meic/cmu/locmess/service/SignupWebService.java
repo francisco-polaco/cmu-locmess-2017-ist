@@ -39,16 +39,12 @@ public class SignupWebService extends LocmessWebService implements LocmessCallba
     @Override
     public void onSuccess(Object object) {
         Message message = (Message) new JsonService().transformJsonToObj(object.toString(), Message.class);
-        System.out.println(message.getMessage());
         getActivityCallback().onSuccess(message);
-
-        System.out.println(message.getMessage());
     }
 
     @Override
     public void onFailure(Object object) {
         Message message = (Message) new JsonService().transformJsonToObj(object.toString(), Message.class);
         getActivityCallback().onFailure(message);
-        System.out.println(message.getMessage());
     }
 }
