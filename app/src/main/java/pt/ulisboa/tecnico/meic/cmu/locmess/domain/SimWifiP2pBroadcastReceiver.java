@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.domain;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.Toast;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
@@ -11,6 +12,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.presentation.WifiLocationPicker;
 
 public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
 
+    private static final String TAG = pt.ulisboa.tecnico.meic.cmu.locmess.domain.SimWifiP2pBroadcastReceiver.class.getSimpleName();
     private WifiLocationPicker mActivity;
 
     public SimWifiP2pBroadcastReceiver(WifiLocationPicker activity) {
@@ -31,6 +33,7 @@ public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
             if (state == SimWifiP2pBroadcast.WIFI_P2P_STATE_ENABLED) {
         		Toast.makeText(mActivity, "WiFi Direct enabled",
         				Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "onReceive: Entrei!Aqui");
             } else {
         		Toast.makeText(mActivity, "WiFi Direct disabled",
         				Toast.LENGTH_SHORT).show();

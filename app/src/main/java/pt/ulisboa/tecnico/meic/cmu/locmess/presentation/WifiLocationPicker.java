@@ -16,6 +16,7 @@ import android.os.IBinder;
 import android.os.Messenger;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
 import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
@@ -61,18 +63,34 @@ public class WifiLocationPicker extends AppCompatActivity implements
             toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+            // register broadcast receiver
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
+            filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
+            filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
+            filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
+            mReceiver = new SimWifiP2pBroadcastReceiver(this);
+            registerReceiver(mReceiver, filter);
+
     }
 
-
-    public void onStart(View view)
+    @Override
+    public void onStart()
     {
+        super.onStart();
         Intent intent = new Intent(getApplicationContext(), SimWifiP2pService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    public void getDevices(View view){
         mManager.requestPeers(mChannel, this);
     }
 
-    public void onStop(View view)
+    @Override
+    public void onStop()
     {
+        super.onStop();
         unbindService(mConnection);
     }
 
@@ -97,21 +115,22 @@ public class WifiLocationPicker extends AppCompatActivity implements
 
     @Override
     public void onPeersAvailable(SimWifiP2pDeviceList peers) {
-        ArrayList<String> peersStr = new ArrayList<>();
+        Log.d(TAG, "onPeersAvailable: Entrei111111");
+        if(peers != null) {
+            ArrayList<String> peersStr = new ArrayList<>();
 
-        // compile list of devices in range
-        for (SimWifiP2pDevice device : peers.getDeviceList()) {
-            String devstr =device.deviceName + " (" + device.getVirtIp() + ")";
-            peersStr.add(devstr);
+            // compile list of devices in range
+            for (SimWifiP2pDevice device : peers.getDeviceList()) {
+                String devstr = device.deviceName + " (" + device.getVirtIp() + ")";
+                peersStr.add(devstr);
+            }
+
+            ArrayAdapter adapter = new ArrayAdapter<String>(this,
+                    android.R.layout.simple_list_item_1, peersStr);
+
+            ListView listview = (ListView) findViewById(R.id.wifi_list);
+            listview.setAdapter(adapter);
         }
-
-        ArrayAdapter adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, peersStr);
-
-        ListView listview= (ListView) findViewById(R.id.wifi_list);
-        listview.setAdapter(adapter);
-        //TODO: ListAdaptar
-
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -119,6 +138,7 @@ public class WifiLocationPicker extends AppCompatActivity implements
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
+            Log.d(TAG, "mConnection: Entrei!");
             mManager = new SimWifiP2pManager(new Messenger(service));
             mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
         }
