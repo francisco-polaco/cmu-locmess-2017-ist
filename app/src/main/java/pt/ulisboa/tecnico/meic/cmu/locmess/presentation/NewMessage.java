@@ -45,45 +45,46 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
     private Toolbar toolbar;
     private ArrayAdapter spinnerKeys;
     private MultiSpinner multispinner;
+    private List<String> keys = new ArrayList<>();
+
     private MultiSpinner.MultiSpinnerListener onSelectedListener = new MultiSpinner.MultiSpinnerListener() {
         public void onItemsSelected(boolean[] selected) {
             // Do something here with the selected items
             String s = "";
             for (int i = 0; i < selected.length; i++)
-                if (selected[i] == true)
+                if (selected[i])
                     s += " " + spinnerKeys.getItem(i).toString() + "\n";
 
             multispinner = (MultiSpinner) findViewById(R.id.spinnerMulti);
-            multispinner.setText(s);
+            multispinner.setText(s.equals("") ? getText(R.string.multispinner_placeholder) : s);
         }
     };
-    private List<String> keys = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.newmessage);
 
-        //-----------------------Toolbar-------------------------
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //-------------------------------------------------------
 
-        //--------------------------Spinner------------------------
+        dialog = WidgetConstructors.getLoadingDialog(this, getString(R.string.dialog_retrieve_profile));
+        dialog.show();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> spinnerLocations = ArrayAdapter.createFromResource(this, R.array.locations, android.R.layout.simple_spinner_item);
         spinnerLocations.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerLocations);
-        //-----------------------------------------------------------
 
-
-        //--------------------------MultiSpinner--------------------------------
         multispinner = (MultiSpinner) findViewById(R.id.spinnerMulti);
-        multispinner.setOnTouchListener(new PairsListener(this, this));
-
-        //------------------------------------------------------------------------
-
+        new PairsListener(this).execute();
     }
 
     public void showDatePickerDialog(View v) {
@@ -154,24 +155,16 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
 
     }
 
-    public class PairsListener implements View.OnTouchListener, ActivityCallback {
+    public class PairsListener implements ActivityCallback {
 
         private Context context;
-        private NewMessage newMessage;
 
-        public PairsListener(Context context, NewMessage newMessage){
-            this.context = context;
-            this.newMessage = newMessage;
+        public PairsListener(NewMessage newMessage){
+            this.context = newMessage;
         }
 
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if(motionEvent.getAction()  == MotionEvent.ACTION_DOWN){
-                dialog = WidgetConstructors.getLoadingDialog(context, getString(R.string.dialog_retrieve_profile));
-                dialog.show();
-                new ListAllProfilePairsService(context, this).execute();
-            }
-            return false;
+        public void execute() {
+            new ListAllProfilePairsService(context, this).execute();
         }
 
         @Override
@@ -191,18 +184,18 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
             if(pairs == null)
                 return;
 
-            newMessage.keys.clear();
+            keys.clear();
             for(Pair p : pairs)
-                newMessage.keys.add(p.toString() + "");
+                keys.add(p.toString() + "");
 
-            if(newMessage.spinnerKeys == null){
-                newMessage.spinnerKeys = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, newMessage.keys);
-                newMessage.spinnerKeys.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                newMessage.multispinner.setAdapter(newMessage.spinnerKeys, false, newMessage.onSelectedListener);
-                multispinner.setText("Select Keys");
+            if(spinnerKeys == null){
+                spinnerKeys = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, keys);
+                spinnerKeys.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                multispinner.setAdapter(spinnerKeys, false, onSelectedListener);
+                multispinner.setText(context.getText(R.string.multispinner_placeholder));
             }
             else
-                 newMessage.spinnerKeys.notifyDataSetChanged();
+                spinnerKeys.notifyDataSetChanged();
 
             if(dialog != null) dialog.cancel();
         }

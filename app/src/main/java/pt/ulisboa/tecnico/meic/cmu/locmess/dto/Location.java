@@ -4,7 +4,7 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.dto;
  * Created by Diogo on 27/04/2017.
  */
 
-public class Location  {
+public abstract class Location  {
 
     private String name;
 
@@ -22,4 +22,5 @@ public class Location  {
     public void setName(String name) {
         this.name = name;
     }
+
 }

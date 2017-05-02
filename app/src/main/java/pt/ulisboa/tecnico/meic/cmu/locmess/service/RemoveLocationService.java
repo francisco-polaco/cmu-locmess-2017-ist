@@ -8,6 +8,7 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.GPSLocation;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -19,10 +20,10 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
 
 public class RemoveLocationService extends LocmessWebService implements LocmessCallback {
 
-    private GPSLocation location;
+    private Location location;
     private int index;
 
-    public RemoveLocationService(Context context, ActivityCallback activityCallback, GPSLocation location, int index) {
+    public RemoveLocationService(Context context, ActivityCallback activityCallback, Location location, int index) {
         super(context, activityCallback);
         this.location = location;
         this.index = index;

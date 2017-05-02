@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.GPSLocation;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -169,7 +171,7 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
             ListView lv = (ListView) findViewById(R.id.LocationsList);
 
             locations = new ArrayList<>();
-            for (GPSLocation location : God.getInstance().getLocations())
+            for (Location location : God.getInstance().getLocations())
                 locations.add(location.toString());
 
             adapter = new ArrayAdapter<>(
@@ -178,17 +180,19 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
                     locations
             );
             lv.setAdapter(adapter);
-
+            System.out.println("XD");
             // the remove is done through a long click
             lv.setClickable(true);
             lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, int arg2, long arg3) {
+                    System.out.println(arg2);
                     new RemoveLocationService(getApplicationContext(), LocationScreen.this,
                             God.getInstance().getLocations().get(arg2), arg2).execute();
                     return true;
                 }
             });
+
             if(dialog != null) dialog.cancel();
             return; // avoid toast
         }
