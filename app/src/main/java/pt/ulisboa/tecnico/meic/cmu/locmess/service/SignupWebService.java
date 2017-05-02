@@ -6,7 +6,7 @@ import java.io.UnsupportedEncodingException;
 
 import cz.msebera.android.httpclient.entity.StringEntity;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.User;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -38,13 +38,13 @@ public class SignupWebService extends LocmessWebService implements LocmessCallba
 
     @Override
     public void onSuccess(Object object) {
-        Message message = (Message) new JsonService().transformJsonToObj(object.toString(), Message.class);
-        getActivityCallback().onSuccess(message);
+        Result result = (Result) new JsonService().transformJsonToObj(object.toString(), Result.class);
+        getActivityCallback().onSuccess(result);
     }
 
     @Override
     public void onFailure(Object object) {
-        Message message = (Message) new JsonService().transformJsonToObj(object.toString(), Message.class);
-        getActivityCallback().onFailure(message);
+        Result result = (Result) new JsonService().transformJsonToObj(object.toString(), Result.class);
+        getActivityCallback().onFailure(result);
     }
 }

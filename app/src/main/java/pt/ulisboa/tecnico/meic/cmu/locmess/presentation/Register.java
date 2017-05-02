@@ -13,7 +13,7 @@ import java.io.IOException;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.User;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.SignupWebService;
@@ -54,7 +54,7 @@ public class Register extends AppCompatActivity implements ActivityCallback {
     }
 
     @Override
-    public void onSuccess(Message result) {
+    public void onSuccess(Result result) {
         try {
             God.getInstance().clearCredentials();
         } catch (IOException e) {
@@ -67,7 +67,7 @@ public class Register extends AppCompatActivity implements ActivityCallback {
     }
 
     @Override
-    public void onFailure(Message result) {
+    public void onFailure(Result result) {
         // reset the layout
         // TODO : reset the layout!
         if(dialog != null) dialog.cancel();

@@ -30,7 +30,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.ImpossibleToGetLocationException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.GPSLocation;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.AddLocationService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.GetLastLocationService;
@@ -300,7 +300,7 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
 
 
     @Override
-    public void onSuccess(Message result) {
+    public void onSuccess(Result result) {
         if(dialog != null) dialog.cancel();
         Log.d(TAG, result.getMessage());
         Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_LONG).show();
@@ -308,7 +308,7 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
     }
 
     @Override
-    public void onFailure(Message result) {
+    public void onFailure(Result result) {
         if(dialog != null) dialog.cancel();
         Log.d(TAG, result.getMessage());
         Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_LONG).show();

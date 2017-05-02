@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -18,7 +17,7 @@ import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.AddPairService;
@@ -58,7 +57,7 @@ public class EditProfile extends AppCompatActivity implements ActivityCallback {
     }
 
     @Override
-    public void onSuccess(Message result) {
+    public void onSuccess(Result result) {
         String toastText = "";
         if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_0))){
             itemlist = parsePairs(God.getInstance().getProfile());
@@ -115,7 +114,7 @@ public class EditProfile extends AppCompatActivity implements ActivityCallback {
     }
 
     @Override
-    public void onFailure(Message result) {
+    public void onFailure(Result result) {
         String toastText = "";
         if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_0))) {
             if(dialog != null) dialog.cancel();

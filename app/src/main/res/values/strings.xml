@@ -34,11 +34,14 @@
     <string name="webserver_endpoint_location_create">/location/create</string>
     <string name="webserver_endpoint_location_remove">/location/remove</string>
     <string name="webserver_endpoint_location_list">/location/list</string>
+    <!-- message endpoints -->
+    <string name="webserver_endpoint_message_post">/message/post</string>
+
     <!-- misc endpoints -->
     <string name="webserver_endpoint_misc_listpairs">/misc/listPairs</string>
 
     <string name="toast_error_last_known_location">Impossible to get your last location.</string>
-    <string name="notification_title">You have a new message!</string>
+    <string name="notification_title">You have a new result!</string>
     <string name="notification_text">Click here to retrieve it and read it!</string>
     <string name="auto_login">Auto Login</string>
     <string name="login">Login</string>
@@ -62,5 +65,8 @@
     <string name="LM_0">LM_0</string>
     <string name="LM_1">LM_1</string>
     <string name="LM_2">LM_2</string>
+    <string name="radio_backlist">B</string>
+    <string name="radio_whitelist">W</string>
+    <string name="Send_Message">Post</string>
 
 </resources>

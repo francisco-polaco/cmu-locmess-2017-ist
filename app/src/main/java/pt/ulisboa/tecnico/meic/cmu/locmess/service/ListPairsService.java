@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -33,12 +33,12 @@ public class ListPairsService extends LocmessWebService implements LocmessCallba
     public void onSuccess(Object object) {
         Pair[] pairsList = (Pair[]) getJsonService().transformJsonToObj(object.toString(), Pair[].class);
         God.getInstance().setProfile(Arrays.asList(pairsList));
-        getActivityCallback().onSuccess(new Message(getContext().getString(R.string.LM_0)));
+        getActivityCallback().onSuccess(new Result(getContext().getString(R.string.LM_0)));
     }
 
     @Override
     public void onFailure(Object object) {
-        getActivityCallback().onFailure(new Message(getContext().getString(R.string.LM_0)));
+        getActivityCallback().onFailure(new Result(getContext().getString(R.string.LM_0)));
     }
 
 }

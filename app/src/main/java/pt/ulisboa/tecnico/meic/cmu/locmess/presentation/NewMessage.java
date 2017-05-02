@@ -10,10 +10,12 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -21,19 +23,24 @@ import android.widget.Toast;
 
 import com.thomashaertel.widget.MultiSpinner;
 
-import java.sql.SQLOutput;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import java.util.Random;
+import java.util.Locale;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
-import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListAllProfilePairsService;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.PostMessageService;
 
 /**
  * Created by jp_s on 4/15/2017.
@@ -43,9 +50,15 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
 
     private ProgressDialog dialog;
     private Toolbar toolbar;
+
+    private Spinner spinner;
+
     private ArrayAdapter spinnerKeys;
+    private ArrayAdapter spinnerLocations;
     private MultiSpinner multispinner;
+    private List<Pair> keysInPairs;
     private List<String> keys = new ArrayList<>();
+    private List<String> locations = new ArrayList<>();
 
     private MultiSpinner.MultiSpinnerListener onSelectedListener = new MultiSpinner.MultiSpinnerListener() {
         public void onItemsSelected(boolean[] selected) {
@@ -78,35 +91,41 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
     protected void onStart() {
         super.onStart();
 
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> spinnerLocations = ArrayAdapter.createFromResource(this, R.array.locations, android.R.layout.simple_spinner_item);
-        spinnerLocations.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(spinnerLocations);
+        // the order here is important, since I am relying on it to close the dialog!
+        spinner = (Spinner) findViewById(R.id.spinner);
+        new LocationsListener(this).execute();
 
         multispinner = (MultiSpinner) findViewById(R.id.spinnerMulti);
         new PairsListener(this).execute();
     }
 
     public void showDatePickerDialog(View v) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("type", v.getId() == R.id.EndDate ? 1 : 0);
         DialogFragment newFragment = new DatePickerFragment();
+        newFragment.setArguments(bundle);
         newFragment.show(getSupportFragmentManager(), "datePicker");
     }
 
     public void showTimePickerDialog(View v) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("type", v.getId() == R.id.EndTime ? 1 : 0);
         DialogFragment newFragment = new TimePickerFragment();
+        newFragment.setArguments(bundle);
         newFragment.show(getSupportFragmentManager(), "timePicker");
-    }
-
-    public void setSpinnerKeys(ArrayAdapter spinnerKeys) {
-        this.spinnerKeys = spinnerKeys;
     }
 
     public static class TimePickerFragment extends DialogFragment
             implements TimePickerDialog.OnTimeSetListener {
 
+        // 1 represents end date
+        // 0 represents begin date
+        private int type;
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            this.type = getArguments().getInt("type");
             // Use the current time as the default values for the picker
             final Calendar c = Calendar.getInstance();
             int hour = c.get(Calendar.HOUR_OF_DAY);
@@ -118,16 +137,23 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
         }
 
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            TextView textView = (TextView) getActivity().findViewById(R.id.Time);
-            textView.setText("Hour: " + view.getCurrentHour() + " Minute: " + view.getCurrentMinute());
+            TextView textView = type == 1 ? (TextView) getActivity().findViewById(R.id.EndTime) :
+                    (TextView) getActivity().findViewById(R.id.BeginTime);
+            textView.setText(hourOfDay + ":" + minute);
         }
     }
 
     public static class DatePickerFragment extends DialogFragment
             implements DatePickerDialog.OnDateSetListener {
 
+        // 1 represents end date
+        // 0 represents begin date
+        private int type;
+
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            this.type = getArguments().getInt("type");
             // Use the current date as the default date in the picker
             final Calendar c = Calendar.getInstance();
             int year = c.get(Calendar.YEAR);
@@ -139,65 +165,166 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
         }
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
-            TextView textView = (TextView) getActivity().findViewById(R.id.Date);
-            textView.setText("Month: " + view.getMonth() + " Day: " + view.getDayOfMonth());
+            TextView textView = type == 1 ? (TextView) getActivity().findViewById(R.id.EndDate) :
+                    (TextView) getActivity().findViewById(R.id.BeginDate);
+            textView.setText(day + "/" + month + "/" + year);
         }
     }
 
+    public void sendMessage(View view) {
+        String title = ((EditText) this.findViewById(R.id.msgtitle)).getText().toString();
+        if(title.equals("")){
+            Toast.makeText(this, "You need a title!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String content = ((EditText) this.findViewById(R.id.content)).getText().toString();
+        if(content.equals("")){
+            Toast.makeText(this, "A message has to have content!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Location location = God.getInstance().getLocations().get(spinner.getSelectedItemPosition());
+        if(location == null){
+            Toast.makeText(this, "You must add locations first!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-    @Override
-    public void onSuccess(Message result) {
+        String beginTime = ((TextView) this.findViewById(R.id.BeginTime)).getText().toString();
+        String beginDate = ((TextView) this.findViewById(R.id.BeginDate)).getText().toString();
+        if(beginDate.equals("") || beginTime.equals("")){
+            Toast.makeText(this, "You must fill the begin date!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        String endTime = ((TextView) this.findViewById(R.id.EndTime)).getText().toString();
+        String endDate = ((TextView) this.findViewById(R.id.EndDate)).getText().toString();
+        if(endDate.equals("") || endTime.equals("")){
+            Toast.makeText(this, "You must fill the expiration date!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if(keysInPairs == null)
+            keysInPairs = new ArrayList<>();
+
+        RadioGroup group = ((RadioGroup) this.findViewById(R.id.radio));
+        int id = group.getCheckedRadioButtonId();
+        View radioButton = this.findViewById(id);
+        int radioId = group.indexOfChild(radioButton);
+        RadioButton btn = (RadioButton) group.getChildAt(radioId);
+        String policy = (String) btn.getText();
+
+        // TODO: FIX ME PLEASE!
+        // Preciso isto num ISO Format.... Tou cansado!
+        Date bDate = new Date();
+        Date eDate = new Date();
+
+        Message message = new Message(title,location,policy,keysInPairs,bDate,eDate,content);
+        new PostMessageService(getApplicationContext(), this, message).execute();
     }
 
     @Override
-    public void onFailure(Message result) {
-
+    public void onSuccess(Result result) {
+        System.out.println(result.getMessage());
+        if(dialog != null) dialog.cancel();
     }
 
-    public class PairsListener implements ActivityCallback {
+    @Override
+    public void onFailure(Result result) {
+        System.out.println(result.getMessage());
+        if(dialog != null) dialog.cancel();
+        Toast.makeText(this, result.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    public class Listener {
 
         private Context context;
 
-        public PairsListener(NewMessage newMessage){
-            this.context = newMessage;
+        public Listener(Context context){
+            this.context = context;
+        }
+
+        public Context getContext() {
+            return context;
+        }
+    }
+
+    public class LocationsListener extends Listener implements ActivityCallback {
+
+        public LocationsListener(Context context){
+            super(context);
         }
 
         public void execute() {
-            new ListAllProfilePairsService(context, this).execute();
+            new ListLocationsService(getContext(), this).execute();
         }
 
         @Override
-        public void onSuccess(Message result) {
-            List<Pair> piggyback = (List<Pair>) result.getPiggyback();
-            setPairs(piggyback);
+        public void onSuccess(Result result) {
+            setLocations(God.getInstance().getLocations());
         }
 
         @Override
-        public void onFailure(Message result) {
-            // if no connection use my own profile
-            setPairs(God.getInstance().getProfile());
-            Toast.makeText(context, "Using the profile keypairs!", Toast.LENGTH_LONG).show();
+        public void onFailure(Result result) {
+            NewMessage.this.onFailure(new Result("Failed to retrieve the list of locations!"));
         }
 
-        public void setPairs(List<Pair> pairs) {
+        private void setLocations(List<Location> locs) {
+            if(locs == null)
+                return;
+
+            locations.clear();
+            for(Location l : locs)
+                locations.add(l.toString());
+
+            if(spinnerLocations == null){
+                spinnerLocations = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, locations);
+                spinnerLocations.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinner.setAdapter(spinnerLocations);
+            }
+            else
+                spinnerLocations.notifyDataSetChanged();
+        }
+    }
+
+
+    public class PairsListener extends Listener implements ActivityCallback {
+
+        public PairsListener(Context context){
+            super(context);
+        }
+
+        public void execute() {
+            new ListAllProfilePairsService(getContext(), this).execute();
+        }
+
+        @Override
+        public void onSuccess(Result result) {
+            setPairs((List<Pair>) result.getPiggyback());
+            NewMessage.this.onSuccess(new Result());
+        }
+
+        @Override
+        public void onFailure(Result result) {
+            NewMessage.this.onFailure(new Result("Failed to retrieve the list of pairs!"));
+        }
+
+        private void setPairs(List<Pair> pairs) {
             if(pairs == null)
                 return;
+
+            keysInPairs = pairs;
 
             keys.clear();
             for(Pair p : pairs)
                 keys.add(p.toString() + "");
 
             if(spinnerKeys == null){
-                spinnerKeys = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, keys);
+                spinnerKeys = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, keys);
                 spinnerKeys.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 multispinner.setAdapter(spinnerKeys, false, onSelectedListener);
-                multispinner.setText(context.getText(R.string.multispinner_placeholder));
+                multispinner.setText(getContext().getText(R.string.multispinner_placeholder));
             }
             else
                 spinnerKeys.notifyDataSetChanged();
-
-            if(dialog != null) dialog.cancel();
         }
     }
 

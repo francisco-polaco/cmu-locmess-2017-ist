@@ -14,9 +14,8 @@ import java.io.IOException;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.User;
-import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.LoginWebService;
 
@@ -69,7 +68,7 @@ public class Login extends AppCompatActivity implements ActivityCallback {
     }
 
     @Override
-    public void onSuccess(Message result) {
+    public void onSuccess(Result result) {
         if(dialog != null)
             dialog.cancel();
         Intent intent = new Intent(this, MainScreen.class);
@@ -78,7 +77,7 @@ public class Login extends AppCompatActivity implements ActivityCallback {
     }
 
     @Override
-    public void onFailure(Message result) {
+    public void onFailure(Result result) {
         if(dialog!= null) dialog.cancel();
         Toast.makeText(getApplicationContext(), R.string.toast_login_error, Toast.LENGTH_LONG).show();
     }
