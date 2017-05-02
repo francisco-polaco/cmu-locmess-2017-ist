@@ -8,11 +8,11 @@
     tools:context=".presentation.LocationScreen">
 
 
-    <RelativeLayout
+    <!--<RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </RelativeLayout>
+    </RelativeLayout>-->
 
     <TextView
         android:id="@+id/EmptyList"
@@ -20,26 +20,71 @@
         android:layout_height="fill_parent"
         android:gravity="center" />
 
-    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/swipe_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="57dp"
-        android:visibility="visible">
-    </android.support.v4.widget.SwipeRefreshLayout>
-
-    <ListView
-        android:id="@+id/LocationsList"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="57dp" />
-
-    <include
+    <!--<include
         android:id="@+id/drawer_layout"
-        layout="@layout/hamburger" />
+        layout="@layout/hamburger" >
+
+        <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/swipe_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="57dp"
+            android:visibility="visible">
+            <ListView
+                android:id="@+id/LocationsList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="57dp"
+                android:clickable="true"/>
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+    </include>-->
+
+    <android.support.v4.widget.DrawerLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <include
+                android:id="@+id/toolbar"
+                layout="@layout/toolbar" />
+        </RelativeLayout>
+
+        <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/swipe_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="57dp"
+            android:visibility="visible">
+            <ListView
+                android:id="@+id/LocationsList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="57dp"
+                android:clickable="true"/>
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <android.support.design.widget.NavigationView
+            android:id="@+id/nvView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="@android:color/white"
+            app:menu="@menu/burger"
+            app:itemIconTint="@android:color/black" />
+
+    </android.support.v4.widget.DrawerLayout>
+
+
 
     <com.github.clans.fab.FloatingActionMenu
-         android:id="@+id/plus_button"
+        android:id="@+id/plus_button"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentBottom="true"

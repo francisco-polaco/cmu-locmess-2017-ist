@@ -12,6 +12,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -66,6 +67,30 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
 
         NavigationView nvDrawer = (NavigationView) findViewById(R.id.nvView);
         setupDrawerContent(nvDrawer);
+
+        final SwipeRefreshLayout swip = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        swip.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new ListMessagesService(getApplicationContext(), new ActivityCallback() {
+                    @Override
+                    public void onSuccess(Message result) {
+                        Log.d(TAG, "" + result.getPiggyback());
+                    }
+
+                    @Override
+                    public void onFailure(Message result) {
+                        Log.d(TAG, "FALHA");
+
+                    }
+                });
+                if(swip.isRefreshing()) {
+                    swip.setRefreshing(false);
+                }
+            }
+        });
+        swip.setColorSchemeResources(R.color.accent_material_light, R.color.colorPrimary);
+
 
         try {
             God.getInstance();
