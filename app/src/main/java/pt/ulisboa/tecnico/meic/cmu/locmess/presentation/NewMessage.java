@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
@@ -14,8 +15,10 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -29,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
@@ -212,10 +214,10 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
         RadioButton btn = (RadioButton) group.getChildAt(radioId);
         String policy = (String) btn.getText();
 
-        // TODO: FIX ME PLEASE!
-        // Preciso isto num ISO Format.... Tou cansado!
-        Date bDate = new Date();
-        Date eDate = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        String bDate = simpleDateFormat.format(new Date(beginTime + " " + beginDate));
+        String eDate = simpleDateFormat.format(new Date(endTime + " " + endDate));
+
 
         Message message = new Message(title,location,policy,keysInPairs,bDate,eDate,content);
         new PostMessageService(getApplicationContext(), this, message).execute();
@@ -223,13 +225,30 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
 
     @Override
     public void onSuccess(Result result) {
-        System.out.println(result.getMessage());
         if(dialog != null) dialog.cancel();
+        String message = result.getMessage();
+        if(message != null) {
+            if (message.equals(getString(R.string.LM_2))) {
+                message = "Message was posted with success!";
+                //TODO : maybe there is a better way
+                reset();
+            }
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void reset() {
+        ((EditText) this.findViewById(R.id.msgtitle)).setText("");
+        ((EditText) this.findViewById(R.id.content)).setText("");
+        ((TextView) this.findViewById(R.id.BeginTime)).setText(getString(R.string.select_time));
+        ((TextView) this.findViewById(R.id.BeginDate)).setText(getString(R.string.select_date));
+        ((TextView) this.findViewById(R.id.EndTime)).setText(getString(R.string.select_time));
+        ((TextView) this.findViewById(R.id.EndDate)).setText(getString(R.string.select_date));
+        multispinner.setText(getText(R.string.multispinner_placeholder));
     }
 
     @Override
     public void onFailure(Result result) {
-        System.out.println(result.getMessage());
         if(dialog != null) dialog.cancel();
         Toast.makeText(this, result.getMessage(), Toast.LENGTH_LONG).show();
     }

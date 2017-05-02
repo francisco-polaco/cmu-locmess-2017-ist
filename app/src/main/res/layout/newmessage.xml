@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/nm_layout">
     <include
         android:id="@+id/toolbar"
         layout="@layout/toolbar" />
@@ -51,7 +52,7 @@
                 android:layout_weight="0.05"
                 android:gravity="center"
                 android:onClick="showTimePickerDialog"
-                android:text="Select Time"
+                android:text="@string/select_time"
                 android:textSize="30dp" />
 
             <TextView
@@ -61,7 +62,7 @@
                 android:layout_weight="0.05"
                 android:gravity="center"
                 android:onClick="showDatePickerDialog"
-                android:text="Select Date"
+                android:text="@string/select_date"
                 android:textSize="30dp" />
 
         </LinearLayout>

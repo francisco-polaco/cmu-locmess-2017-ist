@@ -1,6 +1,5 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.dto;
 
-import java.util.Date;
 import java.util.List;
 
 public class Message {
@@ -8,13 +7,13 @@ public class Message {
     private String title;
     private Location location;
     private String policy;
-    private Date beginDate;
-    private Date endDate;
+    private String beginDate;
+    private String endDate;
     private String owner;
     private String content;
     private List<Pair> pairs;
 
-    public Message(String title, Location location, String policy, List<Pair> keys, Date beginDate, Date endDate, String content) {
+    public Message(String title, Location location, String policy, List<Pair> keys, String beginDate, String endDate, String content) {
         this.title = title;
         this.location = location;
         this.policy = policy;
@@ -51,19 +50,19 @@ public class Message {
         this.pairs = pairs;
     }
 
-    public Date getBeginDate() {
+    public String getBeginDate() {
         return beginDate;
     }
 
-    public void setBeginDate(Date beginDate) {
+    public void setBeginDate(String beginDate) {
         this.beginDate = beginDate;
     }
 
-    public Date getEndDate() {
+    public String getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
 

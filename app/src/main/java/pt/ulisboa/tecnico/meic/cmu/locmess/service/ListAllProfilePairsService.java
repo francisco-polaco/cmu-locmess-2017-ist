@@ -33,12 +33,12 @@ public class ListAllProfilePairsService extends LocmessWebService implements Loc
     public void onSuccess(Object object) {
         Pair[] pairsList = (Pair[]) getJsonService().transformJsonToObj(object.toString(), Pair[].class);
         List<Pair> pairs = Arrays.asList(pairsList);
-        getActivityCallback().onSuccess(new Result(getContext().getString(R.string.LM_0), pairs));
+        getActivityCallback().onSuccess(new Result(null, pairs));
     }
 
     @Override
     public void onFailure(Object object) {
-        getActivityCallback().onFailure(new Result(getContext().getString(R.string.LM_0)));
+        getActivityCallback().onFailure(new Result());
     }
 
 }

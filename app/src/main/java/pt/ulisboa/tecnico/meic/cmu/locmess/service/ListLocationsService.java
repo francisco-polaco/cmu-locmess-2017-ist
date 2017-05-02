@@ -41,12 +41,12 @@ public class ListLocationsService extends LocmessWebService implements LocmessCa
 
         Location[] locations = gson.fromJson(object.toString(), Location[].class);
         God.getInstance().setLocations(Arrays.asList(locations));
-        getActivityCallback().onSuccess(new Result(getContext().getString(R.string.LM_0)));
+        getActivityCallback().onSuccess(new Result());
     }
 
     @Override
     public void onFailure(Object object) {
-        getActivityCallback().onFailure(new Result(getContext().getString(R.string.LM_0)));;
+        getActivityCallback().onFailure(new Result());;
     }
 
 }

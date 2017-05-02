@@ -39,7 +39,7 @@ public class PostMessageService extends LocmessWebService implements LocmessCall
 
     @Override
     public void onSuccess(Object object) {
-        getActivityCallback().onSuccess(new Result("Message was posted with sucess!"));
+        getActivityCallback().onSuccess(new Result(getContext().getString(R.string.LM_2)));
     }
 
     @Override

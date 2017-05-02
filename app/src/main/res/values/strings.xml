@@ -68,5 +68,7 @@
     <string name="radio_backlist">B</string>
     <string name="radio_whitelist">W</string>
     <string name="Send_Message">Post</string>
+    <string name="select_time">Select Time</string>
+    <string name="select_date">Select Date</string>
 
 </resources>
