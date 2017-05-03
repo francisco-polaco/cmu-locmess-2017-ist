@@ -10,6 +10,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
@@ -37,12 +38,12 @@ public class ListMessagesService extends LocmessWebService implements LocmessCal
         MessageDto[] messageDtos = (MessageDto[]) getJsonService().transformJsonToObj(object.toString(), MessageDto[].class);
         System.out.println(messageDtos);
         List<MessageDto> messageDtoList = Arrays.asList(messageDtos);
-        getActivityCallback().onSuccess(new Message("LM", messageDtoList));
+        getActivityCallback().onSuccess(new Result("LM", messageDtoList));
     }
 
     @Override
     public void onFailure(Object object) {
-        getActivityCallback().onFailure(new Message("LM"));
+        getActivityCallback().onFailure(new Result("LM"));
     }
 
 }

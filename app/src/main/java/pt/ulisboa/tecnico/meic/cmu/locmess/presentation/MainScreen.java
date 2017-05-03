@@ -78,12 +78,12 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
             public void onRefresh() {
                 new ListMessagesService(getApplicationContext(), new ActivityCallback() {
                     @Override
-                    public void onSuccess(Message result) {
+                    public void onSuccess(Result result) {
                         Log.d(TAG, "" + result.getPiggyback());
                     }
 
                     @Override
-                    public void onFailure(Message result) {
+                    public void onFailure(Result result) {
                         Log.d(TAG, "FALHA");
 
                     }
@@ -105,12 +105,12 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
         new ListLocationsService(getApplicationContext(), null).execute();
         new ListMessagesService(getApplicationContext(), new ActivityCallback() {
             @Override
-            public void onSuccess(Message result) {
+            public void onSuccess(Result result) {
                 Log.d(TAG, "" + result.getPiggyback());
             }
 
             @Override
-            public void onFailure(Message result) {
+            public void onFailure(Result result) {
                 Log.d(TAG, "FALHA");
 
             }

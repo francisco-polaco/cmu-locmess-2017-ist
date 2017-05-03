@@ -90,17 +90,16 @@ public final class UpdateLocationService extends Service implements LocationList
 
     @Override
     public void onLocationChanged(Location location) {
-       // Log.d(TAG, "New Location " + location);
        // if (isBetterLocation(oldLocation, location)) {
             oldLocation = location;
             new LocationWebService(getApplicationContext(), new ActivityCallback() {
                 @Override
-                public void onSuccess(Message result) {
+                public void onSuccess(Result result) {
                     Log.d(TAG, "Location updated");
                 }
 
                 @Override
-                public void onFailure(Message result) {
+                public void onFailure(Result result) {
                     Log.d(TAG, "Location update failed.");
 
                 }
