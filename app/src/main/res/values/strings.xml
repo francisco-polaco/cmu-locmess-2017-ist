@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">LocMess</string>
+    <string name="app_name">ALocMess</string>
     <string name="drawer_open">Drawer Open</string>
     <string name="drawer_close">Drawer Close</string>
     <string name="map_radius">Radius</string>
@@ -18,8 +18,10 @@
     <string name="toast_login_error">Login Error</string>
 
 
-    <!--<string name="webserver_url">http://alkuentrus.ovh:8080/locmess</string>-->
-    <string name="webserver_url">http://192.168.1.64:8080/locmess</string>
+    <string name="webserver_url">http://alkuentrus.ovh:8080/locmess</string>
+    <!--<string name="webserver_url">http://192.168.1.75:8080/locmess</string>-->
+    <!--<string name="webserver_url">http://192.168.1.64:8080/locmess</string>-->
+
     <string name="content_type_json">application/json</string>
     <string name="token_header">X-Token</string>
 
@@ -48,18 +50,20 @@
     <string name="hint_password">Password</string>
     <string name="hint_username">Username</string>
     <string name="create_account">Create Account</string>
-    <string name="dialog_login">Logging. Please wait...</string>
-    <string name="dialog_create_account">Creating account...</string>
+    <string name="dialog_login">Logging. Please wait…</string>
+    <string name="dialog_create_account">Creating account…</string>
     <string name="register_hint_username">Username</string>
     <string name="register_hint_password">Password</string>
     <string name="register_hint_repeat_password">Repeat Password</string>
     <string name="button_register">Register</string>
-    <string name="dialog_retrieve_profile">Retrieving profile...</string>
-    <string name="dialog_message_add_gps_location">Adding Location...</string>
+    <string name="dialog_retrieve_profile">Retrieving profile…</string>
+    <string name="dialog_message_add_gps_location">Adding Location…</string>
+
     <string name="multispinner_placeholder">Select Keys</string>
 
+
     <!-- location endpoints -->
-    <string name="webserver_endpoint_hearthbeat">/location/actions/heartbeat</string>
+    <string name="webserver_endpoint_hearthbeat">/actions/heartbeat</string>
 
     <!-- status codes locmess -->
     <string name="LM_0">LM_0</string>

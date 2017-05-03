@@ -88,18 +88,19 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
             }
         });
 
-        SwipeRefreshLayout swip = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        final SwipeRefreshLayout swip = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
         swip.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh() {
                 refreshLocations();
+                if(swip.isRefreshing()) {
+                    swip.setRefreshing(false);
+                }
             }
         });
-        swip.setColorSchemeResources(R.color.accent_material_light, R.color.colorPrimary);;
+        swip.setColorSchemeResources(R.color.accent_material_light, R.color.colorPrimary);
 
     }
-
-    boolean debug;//FIXME delete
 
 
     @Override
@@ -128,7 +129,8 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
 
     //toolbar reference.
     private ActionBarDrawerToggle setupDrawerToggle() {
-        return new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
+        ActionBarDrawerToggle a = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
+        return a;
     }
 
     @Override

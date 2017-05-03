@@ -3,12 +3,19 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.service;
 import android.content.Context;
 import android.location.Location;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 
 import cz.msebera.android.httpclient.entity.StringEntity;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.GPSLocation;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Token;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.User;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -23,20 +30,21 @@ public class LocationWebService extends LocmessWebService implements LocmessCall
     private static final String TAG = LocationWebService.class.getSimpleName();
     private final Location location;
 
-    public LocationWebService(Context context, ActivityCallback activityCallback,Location location) {
+    public LocationWebService(Context context, ActivityCallback activityCallback, Location location) {
         super(context, activityCallback);
         this.location = location;
     }
 
     @Override
     protected void dispatch() {
-        String location = new JsonService().transformObjToJson(this.location);
+        String location = new JsonService().transformObjToJson(new GPSLocation("as",
+                new LatLng(this.location.getLatitude(), this.location.getLongitude()), 0));
         String endpoint = getContext().getString(R.string.webserver_endpoint_hearthbeat);
         String contentType = getContext().getString(R.string.content_type_json);
-        try {
+        /*try {
             getHttpService().post(endpoint, new StringEntity(location), contentType, new LocmessRestHandler(this));
         } catch (UnsupportedEncodingException ignored) {
-        }
+        }*/
     }
 
     public void onSuccess(JSONObject object) {
@@ -59,6 +67,7 @@ public class LocationWebService extends LocmessWebService implements LocmessCall
         getActivityCallback().onFailure(result);
         System.out.println(result);
     }
+
 
     @Override
     public void onSuccess(Object object) {

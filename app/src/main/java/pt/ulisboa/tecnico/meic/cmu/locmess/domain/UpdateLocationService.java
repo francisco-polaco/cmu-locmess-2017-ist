@@ -17,7 +17,12 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+
+import pt.ulisboa.tecnico.meic.cmu.locmess.R;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
+
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.GoogleApiCallbacks;
@@ -41,6 +46,11 @@ public final class UpdateLocationService extends Service implements LocationList
         super.onStartCommand(intent, flags, startId);
         GoogleAPI.init(getApplicationContext(), false);
         GoogleAPI.getInstance().connect(this);
+        try {
+            God.getInstance();
+        }catch (NotInitializedException e){
+            God.init(getApplicationContext());
+        }
         return START_STICKY;
     }
 
@@ -74,20 +84,31 @@ public final class UpdateLocationService extends Service implements LocationList
         /*mLocationRequest.setNumUpdates(5);
         mLocationRequest.setExpirationDuration(5000);*/
         // TODO: BLOWING UP
-        /*LocationServices.FusedLocationApi.requestLocationUpdates(
-                GoogleAPI.getInstance().getGoogleApiClient(), mLocationRequest, this);*/
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                GoogleAPI.getInstance().getGoogleApiClient(), mLocationRequest, this);
     }
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.d(TAG, "New Location " + location);
-        if (isBetterLocation(oldLocation, location)) {
+       // Log.d(TAG, "New Location " + location);
+       // if (isBetterLocation(oldLocation, location)) {
             oldLocation = location;
-            new LocationWebService(getApplicationContext(), this, location).execute();
+            new LocationWebService(getApplicationContext(), new ActivityCallback() {
+                @Override
+                public void onSuccess(Message result) {
+                    Log.d(TAG, "Location updated");
+                }
+
+                @Override
+                public void onFailure(Message result) {
+                    Log.d(TAG, "Location update failed.");
+
+                }
+            }, location).execute();
             new ListLocationsService(getApplicationContext(), this).execute();
             //update server
             //LocationRepository.getInstance().addActualLocation(location);
-        }
+       // }
     }
 
     protected boolean isBetterLocation(Location location, Location currentBestLocation) {
@@ -152,7 +173,6 @@ public final class UpdateLocationService extends Service implements LocationList
     @Override
     public void onSuccess(Result result) {
         Log.d(TAG, "Heartbeat Sucess");
-
     }
 
     @Override

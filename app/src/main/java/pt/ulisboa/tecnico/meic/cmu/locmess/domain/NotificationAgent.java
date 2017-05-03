@@ -70,7 +70,7 @@ public class NotificationAgent {
                 .setContentIntent(notificationPendingIntent);
         Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         builder.setSound(uri);
-        builder.setVibrate(VIBRATION_PATTERN);
+        //builder.setVibrate(VIBRATION_PATTERN);
         // Dismiss notification once the user touches it.
         builder.setAutoCancel(true);
         return builder;

@@ -154,10 +154,11 @@ public class God {
     }
 
     public void setLocations(List<pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location> locations) {
+        if(this.locations != null && this.locations.equals(locations))return;
         Log.d(TAG, "Setting locations and renewing all geofences.");
         this.locations = new ArrayList<>(locations);
-        // TODO: Geofences chateado!
-        /*GeofenceManager.getInstance().removeAllGeofences();
+        //TODO: Geofences chateado!
+        GeofenceManager.getInstance().removeAllGeofences();
         ArrayList<MyGeofence> myGeofenceArrayList = new ArrayList<>();
         for(GPSLocation l : locations){
             myGeofenceArrayList.add(new MyGeofence(l.getName(), l.getLatitude(), l.getLongitude(), l.getRadius() +1.0f));
@@ -181,7 +182,7 @@ public class God {
             return;
         }
         startLocationUpdates();
-        GeofenceManager.getInstance().addGeofences(myGeofenceArrayList);*/
+        GeofenceManager.getInstance().addGeofences(myGeofenceArrayList);
     }
 
     public List<pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location> getLocations() {
