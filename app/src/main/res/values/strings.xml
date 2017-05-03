@@ -17,9 +17,11 @@
     <string name="create_location_gps">GPS</string>
     <string name="toast_login_error">Login Error</string>
 
+
     <string name="webserver_url">http://alkuentrus.ovh:8080/locmess</string>
     <!--<string name="webserver_url">http://192.168.1.75:8080/locmess</string>-->
     <!--<string name="webserver_url">http://192.168.1.64:8080/locmess</string>-->
+
     <string name="content_type_json">application/json</string>
     <string name="token_header">X-Token</string>
 
@@ -34,11 +36,14 @@
     <string name="webserver_endpoint_location_create">/location/create</string>
     <string name="webserver_endpoint_location_remove">/location/remove</string>
     <string name="webserver_endpoint_location_list">/location/list</string>
+    <!-- message endpoints -->
+    <string name="webserver_endpoint_message_post">/message/post</string>
+
     <!-- misc endpoints -->
     <string name="webserver_endpoint_misc_listpairs">/misc/listPairs</string>
 
     <string name="toast_error_last_known_location">Impossible to get your last location.</string>
-    <string name="notification_title">You have a new message!</string>
+    <string name="notification_title">You have a new result!</string>
     <string name="notification_text">Click here to retrieve it and read it!</string>
     <string name="auto_login">Auto Login</string>
     <string name="login">Login</string>
@@ -54,6 +59,9 @@
     <string name="dialog_retrieve_profile">Retrieving profile…</string>
     <string name="dialog_message_add_gps_location">Adding Location…</string>
 
+    <string name="multispinner_placeholder">Select Keys</string>
+
+
     <!-- location endpoints -->
     <string name="webserver_endpoint_hearthbeat">/actions/heartbeat</string>
 
@@ -61,5 +69,10 @@
     <string name="LM_0">LM_0</string>
     <string name="LM_1">LM_1</string>
     <string name="LM_2">LM_2</string>
+    <string name="radio_backlist">B</string>
+    <string name="radio_whitelist">W</string>
+    <string name="Send_Message">Post</string>
+    <string name="select_time">Select Time</string>
+    <string name="select_date">Select Date</string>
 
 </resources>

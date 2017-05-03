@@ -41,7 +41,7 @@ public class God {
     private Token token;
     // profile represents the key values of the user
     private List<Pair> profile;
-    private ArrayList<GPSLocation> locations;
+    private ArrayList<pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location> locations;
     private List<String> titleMessages;
     private List<String> cachedMessages;
 
@@ -153,7 +153,7 @@ public class God {
         return profile;
     }
 
-    public void setLocations(List<GPSLocation> locations) {
+    public void setLocations(List<pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location> locations) {
         if(this.locations != null && this.locations.equals(locations))return;
         Log.d(TAG, "Setting locations and renewing all geofences.");
         this.locations = new ArrayList<>(locations);
@@ -185,7 +185,7 @@ public class God {
         GeofenceManager.getInstance().addGeofences(myGeofenceArrayList);
     }
 
-    public List<GPSLocation> getLocations() {
+    public List<pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location> getLocations() {
         return locations;
     }
 

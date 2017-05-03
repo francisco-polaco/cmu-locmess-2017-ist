@@ -2,13 +2,16 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.service;
 
 import android.content.Context;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.Arrays;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.GPSLocation;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
+import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocationDeserializer;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
@@ -32,14 +35,18 @@ public class ListLocationsService extends LocmessWebService implements LocmessCa
 
     @Override
     public void onSuccess(Object object) {
-        GPSLocation[] locations = (GPSLocation[]) getJsonService().transformJsonToObj(object.toString(), GPSLocation[].class);
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Location.class, new LocationDeserializer())
+                .create();
+
+        Location[] locations = gson.fromJson(object.toString(), Location[].class);
         God.getInstance().setLocations(Arrays.asList(locations));
-        getActivityCallback().onSuccess(new Message(getContext().getString(R.string.LM_0)));
+        getActivityCallback().onSuccess(new Result());
     }
 
     @Override
     public void onFailure(Object object) {
-        getActivityCallback().onFailure(new Message(getContext().getString(R.string.LM_0)));;
+        getActivityCallback().onFailure(new Result());;
     }
 
 }

@@ -28,8 +28,12 @@ import java.util.List;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
+
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
+
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
+
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
@@ -236,7 +240,7 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
     }
 
     @Override
-    public void onSuccess(Message result) {
+    public void onSuccess(Result result) {
         Log.d(TAG, "success");
         Intent intent = new Intent(this, Login.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -244,7 +248,7 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
     }
 
     @Override
-    public void onFailure(Message result) {
+    public void onFailure(Result result) {
         Toast.makeText(getApplicationContext(), "Can't logout", Toast.LENGTH_LONG).show();
     }
 }

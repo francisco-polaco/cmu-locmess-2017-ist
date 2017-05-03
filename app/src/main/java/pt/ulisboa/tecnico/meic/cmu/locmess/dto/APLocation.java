@@ -14,4 +14,11 @@ public class APLocation extends Location {
     public APLocation(String name){
         super(name);
     }
+
+    @Override
+    public String toString() {
+        return "APLocation{" +
+                "name='" + getName() + '\'' +
+                '}';
+    }
 }

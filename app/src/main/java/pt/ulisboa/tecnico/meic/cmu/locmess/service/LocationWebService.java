@@ -2,7 +2,6 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.service;
 
 import android.content.Context;
 import android.location.Location;
-import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -17,6 +16,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.dto.GPSLocation;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Token;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.User;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
@@ -48,24 +48,24 @@ public class LocationWebService extends LocmessWebService implements LocmessCall
     }
 
     public void onSuccess(JSONObject object) {
-        Message message;
+        Result result;
         if(object != null)
-            message = (Message) getJsonService().transformJsonToObj(object.toString(), Message.class);
+            result = (Result) getJsonService().transformJsonToObj(object.toString(), Result.class);
         else
-            message = new Message("NULL");
-        getActivityCallback().onSuccess(message);
-        System.out.println(message);
+            result = new Result("NULL");
+        getActivityCallback().onSuccess(result);
+        System.out.println(result);
     }
 
 
     public void onFailure(JSONObject object) {
-        Message message;
+        Result result;
         if(object != null)
-            message = (Message) getJsonService().transformJsonToObj(object.toString(), Message.class);
+            result = (Result) getJsonService().transformJsonToObj(object.toString(), Result.class);
         else
-            message = new Message("NULL");
-        getActivityCallback().onFailure(message);
-        System.out.println(message);
+            result = new Result("NULL");
+        getActivityCallback().onFailure(result);
+        System.out.println(result);
     }
 
 

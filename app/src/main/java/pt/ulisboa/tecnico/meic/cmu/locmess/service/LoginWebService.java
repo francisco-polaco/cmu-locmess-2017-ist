@@ -9,7 +9,7 @@ import java.io.UnsupportedEncodingException;
 import cz.msebera.android.httpclient.entity.StringEntity;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Token;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.User;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
@@ -50,11 +50,11 @@ public final class LoginWebService extends LocmessWebService implements LocmessC
 
     @Override
     public void onFailure(Object object) {
-        Message message;
+        Result result;
         if(object != null)
-            message = (Message) getJsonService().transformJsonToObj(object.toString(), Message.class);
+            result = (Result) getJsonService().transformJsonToObj(object.toString(), Result.class);
         else
-            message = new Message("NULL");
-        getActivityCallback().onFailure(message);
+            result = new Result("NULL");
+        getActivityCallback().onFailure(result);
     }
 }

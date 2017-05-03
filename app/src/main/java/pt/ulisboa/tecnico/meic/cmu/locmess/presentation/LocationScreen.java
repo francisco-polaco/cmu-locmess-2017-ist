@@ -22,8 +22,8 @@ import java.util.ArrayList;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.GPSLocation;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
@@ -165,13 +165,13 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
     }
 
     @Override
-    public void onSuccess(Message result) {
+    public void onSuccess(Result result) {
         String toastText = "";
         if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_0))){
             ListView lv = (ListView) findViewById(R.id.LocationsList);
 
             locations = new ArrayList<>();
-            for (GPSLocation location : God.getInstance().getLocations())
+            for (Location location : God.getInstance().getLocations())
                 locations.add(location.toString());
 
             adapter = new ArrayAdapter<>(
@@ -180,17 +180,19 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
                     locations
             );
             lv.setAdapter(adapter);
-
+            System.out.println("XD");
             // the remove is done through a long click
             lv.setClickable(true);
             lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, int arg2, long arg3) {
+                    System.out.println(arg2);
                     new RemoveLocationService(getApplicationContext(), LocationScreen.this,
                             God.getInstance().getLocations().get(arg2), arg2).execute();
                     return true;
                 }
             });
+
             if(dialog != null) dialog.cancel();
             return; // avoid toast
         }
@@ -205,7 +207,7 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
     }
 
     @Override
-    public void onFailure(Message result) {
+    public void onFailure(Result result) {
         String toastText = "";
         if(dialog != null) dialog.cancel();
         if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_0))){

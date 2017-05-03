@@ -1,7 +1,6 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.domain;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,20 +11,21 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
+
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.GoogleApiCallbacks;
-import pt.ulisboa.tecnico.meic.cmu.locmess.presentation.MainScreen;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.LocationWebService;
 
@@ -171,12 +171,12 @@ public final class UpdateLocationService extends Service implements LocationList
     }
 
     @Override
-    public void onSuccess(Message result) {
-        //Log.d(TAG, "Heartbeat Success");
+    public void onSuccess(Result result) {
+        Log.d(TAG, "Heartbeat Sucess");
     }
 
     @Override
-    public void onFailure(Message result) {
-       // Log.d(TAG, "Heartbeat Failed");
+    public void onFailure(Result result) {
+        Log.d(TAG, "Heartbeat Failed");
     }
 }
