@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.MySSLSocketFactory;
 
 import cz.msebera.android.httpclient.HttpEntity;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
@@ -20,6 +21,7 @@ public class HttpService {
     public HttpService(Context context) {
         this.context = context;
         this.httpClient = new AsyncHttpClient();
+        httpClient.setSSLSocketFactory(MySSLSocketFactory.getFixedSocketFactory());
     }
 
     public AsyncHttpClient getHttpClient() {

@@ -18,7 +18,8 @@
     <string name="toast_login_error">Login Error</string>
 
 
-    <string name="webserver_url">http://alkuentrus.ovh:8080/locmess</string>
+    <!--<string name="webserver_url">http://alkuentrus.ovh:8080/locmess</string>-->
+    <string name="webserver_url">https://192.168.1.87:8080/locmess</string>
     <!--<string name="webserver_url">http://192.168.1.75:8080/locmess</string>-->
     <!--<string name="webserver_url">http://192.168.1.64:8080/locmess</string>-->
 

@@ -41,10 +41,10 @@ public class LocationWebService extends LocmessWebService implements LocmessCall
                 new LatLng(this.location.getLatitude(), this.location.getLongitude()), 0));
         String endpoint = getContext().getString(R.string.webserver_endpoint_hearthbeat);
         String contentType = getContext().getString(R.string.content_type_json);
-        /*try {
+        try {
             getHttpService().post(endpoint, new StringEntity(location), contentType, new LocmessRestHandler(this));
         } catch (UnsupportedEncodingException ignored) {
-        }*/
+        }
     }
 
     public void onSuccess(JSONObject object) {
