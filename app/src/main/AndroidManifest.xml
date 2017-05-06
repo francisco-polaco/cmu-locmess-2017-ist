@@ -36,6 +36,10 @@
                 android:value="pt.ulisboa.tecnico.meic.cmu.locmess.presentation.Login" />
         </activity>
         <activity
+            android:name=".presentation.ShowMessage"
+            android:label="ShowMessage">
+        </activity>
+        <activity
             android:name=".presentation.NewMessage"
             android:label="NewMessage">
         </activity>

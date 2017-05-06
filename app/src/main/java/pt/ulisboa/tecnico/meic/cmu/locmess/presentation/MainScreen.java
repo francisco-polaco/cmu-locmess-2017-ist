@@ -24,9 +24,11 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
@@ -34,6 +36,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
@@ -41,6 +44,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.handler.MessagesRvAdapter;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListMessagesService;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.RemovePairService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.UnpostMessageService;
 
 /**
@@ -103,7 +107,7 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
 
     private void initRecyclerView() {
         msgListView = (RecyclerView) findViewById(R.id.MessageList);
-        adapter = new MessagesRvAdapter(messages);
+        adapter = new MessagesRvAdapter(messages, getApplicationContext());
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         msgListView.setLayoutManager(mLayoutManager);
         msgListView.setItemAnimator(new DefaultItemAnimator());
