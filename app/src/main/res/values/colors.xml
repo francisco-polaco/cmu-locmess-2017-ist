@@ -5,4 +5,6 @@
     <color name="colorAccent">#3F51B5</color>
     <color name="accent_material_light">#ff8c00</color>
     <color name="white">#FFFFFF</color>
+    <color name="bdate">#999999</color>
+    <color name="title">#222222</color>
 </resources>

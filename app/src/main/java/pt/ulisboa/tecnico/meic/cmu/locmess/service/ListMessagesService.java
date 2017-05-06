@@ -35,8 +35,8 @@ public class ListMessagesService extends LocmessWebService implements LocmessCal
     @Override
     public void onSuccess(Object object) {
         if(object == null) Log.d("message", "yey");
-        MessageDto[] messageDtos = (MessageDto[]) getJsonService().transformJsonToObj(object.toString(), MessageDto[].class);
-        System.out.println(messageDtos);
+        MessageDto[] messageDtos = (MessageDto[])
+                getJsonService().transformJsonToObj(object.toString(), MessageDto[].class);
         List<MessageDto> messageDtoList = Arrays.asList(messageDtos);
         getActivityCallback().onSuccess(new Result("LM", messageDtoList));
     }

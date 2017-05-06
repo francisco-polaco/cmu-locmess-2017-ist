@@ -15,26 +15,27 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
 
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
-
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
+import pt.ulisboa.tecnico.meic.cmu.locmess.handler.MessagesRvAdapter;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListMessagesService;
@@ -50,6 +51,9 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
+    private RecyclerView msgListView;
+    private RecyclerView.Adapter adapter;
+    private List<MessageDto> messages = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,25 +80,13 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
         swip.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new ListMessagesService(getApplicationContext(), new ActivityCallback() {
-                    @Override
-                    public void onSuccess(Result result) {
-                        Log.d(TAG, "" + result.getPiggyback());
-                    }
-
-                    @Override
-                    public void onFailure(Result result) {
-                        Log.d(TAG, "FALHA");
-
-                    }
-                });
+                new ListMessageListener();
                 if(swip.isRefreshing()) {
                     swip.setRefreshing(false);
                 }
             }
         });
         swip.setColorSchemeResources(R.color.accent_material_light, R.color.colorPrimary);
-
 
         try {
             God.getInstance();
@@ -103,18 +95,18 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
         }
         GoogleAPI.init(getApplicationContext(), false);
         new ListLocationsService(getApplicationContext(), null).execute();
-        new ListMessagesService(getApplicationContext(), new ActivityCallback() {
-            @Override
-            public void onSuccess(Result result) {
-                Log.d(TAG, "" + result.getPiggyback());
-            }
 
-            @Override
-            public void onFailure(Result result) {
-                Log.d(TAG, "FALHA");
+        new ListMessageListener();
+        initRecyclerView();
+    }
 
-            }
-        });
+    private void initRecyclerView() {
+        msgListView = (RecyclerView) findViewById(R.id.MessageList);
+        adapter = new MessagesRvAdapter(messages);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        msgListView.setLayoutManager(mLayoutManager);
+        msgListView.setItemAnimator(new DefaultItemAnimator());
+        msgListView.setAdapter(adapter);
     }
 
     @Override
@@ -155,10 +147,10 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
     }
 
     public void noMessageDisplay() {
-        ListView listview = (ListView) findViewById(R.id.MessageList);
+        /*ListView listview = (ListView) findViewById(R.id.MessageList);
         TextView textView = (TextView) findViewById(R.id.empty);
         textView.setText(R.string.main_no_messages);
-        listview.setEmptyView(textView);
+        listview.setEmptyView(textView);*/
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -251,4 +243,30 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
     public void onFailure(Result result) {
         Toast.makeText(getApplicationContext(), "Can't logout", Toast.LENGTH_LONG).show();
     }
+
+
+    public class ListMessageListener {
+
+        public ListMessageListener(){
+            new ListMessagesService(getApplicationContext(), new ActivityCallback() {
+                @Override
+                public void onSuccess(Result result) {
+                    messages.clear();
+                    messages.addAll((List<MessageDto>) result.getPiggyback());
+                    adapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onFailure(Result result) {
+                    Log.d(TAG, "FALHA");
+                }
+            }).execute();
+        }
+
+
+    }
+
+
+
+
 }

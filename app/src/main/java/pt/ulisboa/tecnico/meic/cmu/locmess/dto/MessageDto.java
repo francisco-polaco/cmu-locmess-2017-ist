@@ -5,99 +5,19 @@ import java.util.List;
 
 
 public class MessageDto {
-    public final String type = "Message";
 
     private Integer id;
-    private Location location;
-    private String policy;
-    private Date beginDate;
-    private Date endDate;
-    private String owner;
+    private String title;
     private String content;
-    private List<Pair> pairs;
+    private String publisher;
+    private Date publicationDate;
 
-    @Override
-    public String toString() {
-        return "MessageDto{" +
-                "type='" + type + '\'' +
-                ", id=" + id +
-                ", location=" + location +
-                ", policy='" + policy + '\'' +
-                ", beginDate=" + beginDate +
-                ", endDate=" + endDate +
-                ", owner='" + owner + '\'' +
-                ", content='" + content + '\'' +
-                ", pairs=" + pairs +
-                '}';
-    }
-
-    public MessageDto(Integer id, Location location, String policy, List<Pair> keys, Date beginDate, Date endDate, String content) {
+    public MessageDto(Integer id, String title, String content, String publisher, Date publicationDate) {
         this.id = id;
-        this.location = location;
-        this.policy = policy;
-        this.pairs = keys;
-        this.beginDate = beginDate;
-        this.endDate = endDate;
+        this.title = title;
         this.content = content;
-    }
-
-    public MessageDto(){
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public String getPolicy() {
-        return policy;
-    }
-
-    public void setPolicy(String policy) {
-        this.policy = policy;
-    }
-
-    public List<Pair> getPairs() {
-        return pairs;
-    }
-
-    public void setPairs(List<Pair> pairs) {
-        this.pairs = pairs;
-    }
-
-    public Date getBeginDate() {
-        return beginDate;
-    }
-
-    public void setBeginDate(Date beginDate) {
-        this.beginDate = beginDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
-    public String getOwner() {
-        return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
+        this.publisher = publisher;
+        this.publicationDate = publicationDate;
     }
 
     public String getContent() {
@@ -108,21 +28,73 @@ public class MessageDto {
         this.content = content;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if(o != null && o instanceof MessageDto){
-            MessageDto toCompare = (MessageDto) o;
-            return id.equals(toCompare.getId()) &&
-                    location.equals(toCompare.getLocation()) &&
-                    policy.equals(toCompare.getPolicy()) &&
-                    pairs.containsAll(toCompare.getPairs()) &&
-                    beginDate.equals(toCompare.getBeginDate()) &&
-                    endDate.equals(toCompare.getEndDate()) &&
-                    owner.equals(toCompare.getOwner()) &&
-                    content.equals(toCompare.getContent());
-        }
-        return false;
+    public String getPublisher() {
+        return publisher;
     }
 
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
 
+    public Date getPublicationDate() {
+        return publicationDate;
+    }
+
+    public void setPublicationDate(Date publicationDate) {
+        this.publicationDate = publicationDate;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MessageDto that = (MessageDto) o;
+
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (title != null ? !title.equals(that.title) : that.title != null) return false;
+        if (content != null ? !content.equals(that.content) : that.content != null) return false;
+        if (publisher != null ? !publisher.equals(that.publisher) : that.publisher != null)
+            return false;
+        return publicationDate != null ? publicationDate.equals(that.publicationDate) : that.publicationDate == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (content != null ? content.hashCode() : 0);
+        result = 31 * result + (publisher != null ? publisher.hashCode() : 0);
+        result = 31 * result + (publicationDate != null ? publicationDate.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "MessageDto{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", publisher='" + publisher + '\'' +
+                ", publicationDate=" + publicationDate +
+                '}';
+    }
 }
+

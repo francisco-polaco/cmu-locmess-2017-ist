@@ -180,13 +180,12 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
                     locations
             );
             lv.setAdapter(adapter);
-            System.out.println("XD");
+
             // the remove is done through a long click
             lv.setClickable(true);
             lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, int arg2, long arg3) {
-                    System.out.println(arg2);
                     new RemoveLocationService(getApplicationContext(), LocationScreen.this,
                             God.getInstance().getLocations().get(arg2), arg2).execute();
                     return true;
