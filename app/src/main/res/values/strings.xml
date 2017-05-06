@@ -39,6 +39,8 @@
     <string name="webserver_endpoint_location_list">/location/list</string>
     <!-- message endpoints -->
     <string name="webserver_endpoint_message_post">/message/post</string>
+    <string name="webserver_endpoint_message_unpost">/message/unpost</string>
+    <string name="webserver_endpoint_message_list">/message/list</string>
 
     <!-- misc endpoints -->
     <string name="webserver_endpoint_misc_listpairs">/misc/listPairs</string>

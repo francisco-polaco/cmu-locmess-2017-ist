@@ -1,8 +1,6 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.domain;
 
 import android.Manifest;
-import android.app.ActivityManager;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,15 +18,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.ImpossibleToGetLocationException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.PermissionNotGrantedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.geofence.GeofenceManager;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.geofence.MyGeofence;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.GPSLocation;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Token;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
@@ -43,7 +41,7 @@ public class God {
     private List<Pair> profile;
     private ArrayList<pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location> locations;
     private List<String> titleMessages;
-    private List<String> cachedMessages;
+    private TreeMap<Integer, MessageDto> cachedMessages;
 
     private God(Context context) {
         this.context = context;
@@ -131,9 +129,9 @@ public class God {
     public void loadState() {
         try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
                 context.openFileInput(Constants.CREDENTIALS_FILENAME)))) {
-            cachedMessages = (List<String>) objectInputStream.readObject();
+            cachedMessages = (TreeMap<Integer, MessageDto>) objectInputStream.readObject();
         } catch (ClassNotFoundException | IOException e) {
-            cachedMessages = new ArrayList<>();
+            cachedMessages = new TreeMap<>();
         }
     }
 
@@ -192,14 +190,13 @@ public class God {
         this.titleMessages = titleMessages;
     }
 
-    public List<String> getCachedMessages() {
+    public TreeMap<Integer, MessageDto> getCachedMessages() {
         return cachedMessages;
     }
 
-    public String getMessage(int index){
-        // call service
-        // when return
-        cachedMessages.add(titleMessages.get(index));
-        return titleMessages.get(index);
+    public void setCachedMessages(TreeMap<Integer, MessageDto> messages) {
+        this.cachedMessages = messages;
     }
+
+
 }

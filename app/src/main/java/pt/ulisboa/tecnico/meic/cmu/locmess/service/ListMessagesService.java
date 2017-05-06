@@ -1,12 +1,15 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.service;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeMap;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
@@ -27,18 +30,21 @@ public class ListMessagesService extends LocmessWebService implements LocmessCal
 
     @Override
     protected void dispatch() {
-        String endpoint = "/message/list";
+        String endpoint = getContext().getString(R.string.webserver_endpoint_message_list);
         String contentType = getContext().getString(R.string.content_type_json);
         getHttpService().get(endpoint, null, contentType, new LocmessRestHandler(this));
     }
 
     @Override
     public void onSuccess(Object object) {
-        if(object == null) Log.d("message", "yey");
         MessageDto[] messageDtos = (MessageDto[])
                 getJsonService().transformJsonToObj(object.toString(), MessageDto[].class);
-        List<MessageDto> messageDtoList = Arrays.asList(messageDtos);
-        getActivityCallback().onSuccess(new Result("LM", messageDtoList));
+        TreeMap<Integer,MessageDto> messageDtoTreeMap = new TreeMap<>();
+        for (MessageDto messageDto : Arrays.asList(messageDtos))
+            messageDtoTreeMap.put(messageDto.getId(), messageDto);
+        God.getInstance().setCachedMessages(messageDtoTreeMap);
+
+        getActivityCallback().onSuccess(new Result("LM"));
     }
 
     @Override

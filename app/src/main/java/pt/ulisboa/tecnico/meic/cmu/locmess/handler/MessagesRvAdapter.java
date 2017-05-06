@@ -58,6 +58,16 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
         return dataset.size();
     }
 
+    public void removeMsg(MessageDto messageDto) {
+        dataset.remove(messageDto);
+        notifyDataSetChanged();
+    }
+
+    public MessageDto getMessageById(int adapterPosition) {
+        return dataset.get(adapterPosition);
+    }
+
+
 }
 
 

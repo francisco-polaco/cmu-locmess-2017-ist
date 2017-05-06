@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.presentation;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,6 +20,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,6 +41,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.handler.MessagesRvAdapter;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListMessagesService;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.UnpostMessageService;
 
 /**
  * Created by jp_s on 4/14/2017.
@@ -52,7 +55,7 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private RecyclerView msgListView;
-    private RecyclerView.Adapter adapter;
+    private MessagesRvAdapter adapter;
     private List<MessageDto> messages = new ArrayList<>();
 
     @Override
@@ -107,6 +110,19 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
         msgListView.setLayoutManager(mLayoutManager);
         msgListView.setItemAnimator(new DefaultItemAnimator());
         msgListView.setAdapter(adapter);
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                new RemoveMessageListener(adapter.getMessageById(viewHolder.getAdapterPosition()));
+            }
+        };
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(msgListView);
     }
 
     @Override
@@ -247,23 +263,41 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
 
     public class ListMessageListener {
 
-        public ListMessageListener(){
+        public ListMessageListener() {
             new ListMessagesService(getApplicationContext(), new ActivityCallback() {
                 @Override
                 public void onSuccess(Result result) {
                     messages.clear();
-                    messages.addAll((List<MessageDto>) result.getPiggyback());
+                    messages.addAll(God.getInstance().getCachedMessages().values());
                     adapter.notifyDataSetChanged();
                 }
 
                 @Override
                 public void onFailure(Result result) {
-                    Log.d(TAG, "FALHA");
+                    Toast.makeText(getApplicationContext(), "Failed to retrieve messages!", Toast.LENGTH_LONG).show();
                 }
             }).execute();
         }
+    }
 
+    public class RemoveMessageListener {
 
+        public RemoveMessageListener(final MessageDto messageDto) {
+
+            new UnpostMessageService(getApplicationContext(), new ActivityCallback() {
+                @Override
+                public void onSuccess(Result result) {
+                    Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_LONG).show();
+                    adapter.removeMsg(messageDto);
+                }
+
+                @Override
+                public void onFailure(Result result) {
+                    adapter.notifyDataSetChanged();
+                    Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }, messageDto).execute();
+        }
     }
 
 
