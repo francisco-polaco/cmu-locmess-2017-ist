@@ -8,6 +8,20 @@ public final class GPSLocation extends Location {
     private double longitude;
     private float radius;
 
+    public GPSLocation(String name, LatLng location, float radius) {
+        super(name);
+        latitude = location.latitude;
+        longitude = location.longitude;
+        this.radius = radius;
+    }
+
+    public GPSLocation(Integer id, String name, LatLng location, float radius) {
+        super(id, name);
+        latitude = location.latitude;
+        longitude = location.longitude;
+        this.radius = radius;
+    }
+
     public GPSLocation(){
     }
 
@@ -36,13 +50,6 @@ public final class GPSLocation extends Location {
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + (getRadius() != +0.0f ? Float.floatToIntBits(getRadius()) : 0);
         return result;
-    }
-
-    public GPSLocation(String name, LatLng location, float radius) {
-        super(name);
-        latitude = location.latitude;
-        longitude = location.longitude;
-        this.radius = radius;
     }
 
     public double getLatitude() {

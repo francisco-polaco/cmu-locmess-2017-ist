@@ -6,12 +6,18 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.dto;
 
 public abstract class Location  {
 
+    private Integer id;
     private String name;
 
     public Location(){
     }
 
     public Location(String name) {
+        this.name = name;
+    }
+
+    public Location(Integer id, String name) {
+        this.id = id;
         this.name = name;
     }
 
