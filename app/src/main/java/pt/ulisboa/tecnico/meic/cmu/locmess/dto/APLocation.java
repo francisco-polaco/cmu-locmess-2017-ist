@@ -11,18 +11,23 @@ public class APLocation extends Location {
     public final String type = "APLocation";
     private List<String> aps;
 
+
     public APLocation(){
     }
 
-    public APLocation(String name){
+    public APLocation(String name, List<String> wifiLocations){
         super(name);
     }
 
-    public APLocation(Integer id, String name, List<String> aps){
+    public APLocation(Integer id, String name, List<String> wifiLocations){
             super(id, name);
         this.aps = aps;
     }
 
+    public String getType() {
+        return type;
+    }
+    
     @Override
     public String toString() {
         return "APLocation{" +

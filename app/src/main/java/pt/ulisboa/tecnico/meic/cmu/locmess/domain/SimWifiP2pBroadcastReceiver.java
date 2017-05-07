@@ -13,9 +13,9 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.presentation.WifiLocationPicker;
 public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
 
     private static final String TAG = pt.ulisboa.tecnico.meic.cmu.locmess.domain.SimWifiP2pBroadcastReceiver.class.getSimpleName();
-    private WifiLocationPicker mActivity;
+    private UpdateLocationService mActivity;
 
-    public SimWifiP2pBroadcastReceiver(WifiLocationPicker activity) {
+    public SimWifiP2pBroadcastReceiver(UpdateLocationService activity) {
         super();
         this.mActivity = activity;
     }
@@ -31,12 +31,13 @@ public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
 
             int state = intent.getIntExtra(SimWifiP2pBroadcast.EXTRA_WIFI_STATE, -1);
             if (state == SimWifiP2pBroadcast.WIFI_P2P_STATE_ENABLED) {
-                Toast.makeText(mActivity, "WiFi Direct enabled",
-                        Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "onReceive: Entrei!Aqui");
+        		Toast.makeText(mActivity, "WiFi Direct enabled",
+        				Toast.LENGTH_SHORT).show();
+                        UpdateLocationService.wifion = true;
             } else {
-                Toast.makeText(mActivity, "WiFi Direct disabled",
-                        Toast.LENGTH_SHORT).show();
+        		Toast.makeText(mActivity, "WiFi Direct disabled",
+        				Toast.LENGTH_SHORT).show();
+                        UpdateLocationService.wifion = true;
             }
 
         } else if (SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
