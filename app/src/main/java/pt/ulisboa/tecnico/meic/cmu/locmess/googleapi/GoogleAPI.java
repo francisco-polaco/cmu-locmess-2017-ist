@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -63,7 +62,6 @@ public final class GoogleAPI implements ConnectionCallbacks, OnConnectionFailedL
     @Override
     public void onConnected(@Nullable final Bundle bundle) {
         Log.d(TAG, "API Connected");
-        Toast.makeText(getGoogleApiClient().getContext(), "API Connected", Toast.LENGTH_SHORT).show();
         // Do what needs to be done when the system is connected.
         //callOnConnectedToRegisteredCallbacks(bundle);
         if (mObjectToCallback != null) mObjectToCallback.onConnected(bundle);
@@ -73,8 +71,6 @@ public final class GoogleAPI implements ConnectionCallbacks, OnConnectionFailedL
     @Override
     public void onConnectionSuspended(final int i) {
         Log.d(TAG, "API Suspended");
-        Toast.makeText(getGoogleApiClient().getContext(), "API Suspended", Toast.LENGTH_SHORT).show();
-
         // Do what needs to be done when the connection is suspended.
         //callOnConnectionSuspendedToRegisteredCallbacks(i);
         if (mObjectToCallback != null) mObjectToCallback.onConnectionSuspended(i);
@@ -84,8 +80,6 @@ public final class GoogleAPI implements ConnectionCallbacks, OnConnectionFailedL
     @Override
     public void onConnectionFailed(@NonNull final ConnectionResult connectionResult) {
         Log.d(TAG, "API Failed");
-        Toast.makeText(getGoogleApiClient().getContext(), "API Failed", Toast.LENGTH_SHORT).show();
-
         // Do what needs to be done when the connection fails.
         //callOnConnectionFailedToRegisteredCallbacks(connectionResult);
         if (mObjectToCallbackFail != null)

@@ -81,7 +81,7 @@ public final class UpdateLocationService extends Service implements LocationList
 
     @Override
     public void onLocationChanged(Location location) {
-        if (isBetterLocation(oldLocation, location)) {
+        //if (isBetterLocation(oldLocation, location)) {
             Log.d(TAG, location.toString());
             oldLocation = location;
             new LocationWebService(getApplicationContext(), new ActivityCallback() {
@@ -110,7 +110,7 @@ public final class UpdateLocationService extends Service implements LocationList
             new ListMessagesService(getApplicationContext(), new ActivityCallback() {
                 @Override
                 public void onSuccess(Result result) {
-                    if (God.getInstance().getCachedMessages().size() != 0)
+                    if (God.getInstance().getCachedMessages().size() != 0 && !((Boolean) result.getPiggyback()))
                         NotificationAgent.getInstance().sendNotification(getApplicationContext());
                 }
 
@@ -119,7 +119,7 @@ public final class UpdateLocationService extends Service implements LocationList
 
                 }
             }).execute();
-        }
+        //}
     }
 
     protected boolean isBetterLocation(Location location, Location currentBestLocation) {

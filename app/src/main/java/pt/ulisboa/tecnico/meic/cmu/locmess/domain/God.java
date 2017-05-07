@@ -38,8 +38,8 @@ public class God {
     // profile represents the key values of the user
     private List<Pair> profile;
     private ArrayList<pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location> locations;
-    private List<String> titleMessages;
     private TreeMap<Integer, MessageDto> cachedMessages;
+    private TreeMap<Integer, MessageDto> lastCachedMessages;
 
     private God(Context context) {
         this.context = context;
@@ -106,12 +106,12 @@ public class God {
     }
 
     public void saveState() {
-        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(
+        /*try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(
                 context.openFileOutput(Constants.CACHED_MGS, Context.MODE_PRIVATE)))) {
             objectOutputStream.writeObject(cachedMessages);
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     public String[] getCredentials() throws IOException {
@@ -125,12 +125,12 @@ public class God {
     }
 
     public void loadState() {
-        try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
+        /*try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
                 context.openFileInput(Constants.CREDENTIALS_FILENAME)))) {
             cachedMessages = (TreeMap<Integer, MessageDto>) objectInputStream.readObject();
         } catch (ClassNotFoundException | IOException e) {
             cachedMessages = new TreeMap<>();
-        }
+        }*/
     }
 
     public void clearCredentials() throws IOException {
@@ -161,16 +161,22 @@ public class God {
         else startLocationUpdates();
     }
 
-    public void setTitleMessages(List<String> titleMessages) {
-        this.titleMessages = titleMessages;
-    }
-
     public TreeMap<Integer, MessageDto> getCachedMessages() {
         return cachedMessages;
     }
 
-    public void setCachedMessages(TreeMap<Integer, MessageDto> messages) {
-        this.cachedMessages = messages;
+    public boolean setCachedMessages(TreeMap<Integer, MessageDto> messages) {
+        Log.d(TAG, messages.toString());
+        if (lastCachedMessages == null) {
+            this.lastCachedMessages = (TreeMap<Integer, MessageDto>) messages.clone();
+            this.cachedMessages = messages;
+            return false;
+        } else {
+            lastCachedMessages = (TreeMap<Integer, MessageDto>) cachedMessages.clone();
+            cachedMessages = messages;
+            return lastCachedMessages.equals(cachedMessages);
+        }
+
     }
 
 

@@ -37,9 +37,10 @@ public class ListMessagesService extends LocmessWebService implements LocmessCal
         TreeMap<Integer, MessageDto> messageDtoTreeMap = new TreeMap<>();
         for (MessageDto messageDto : Arrays.asList(messageDtos))
             messageDtoTreeMap.put(messageDto.getId(), messageDto);
-        God.getInstance().setCachedMessages(messageDtoTreeMap);
-
-        getActivityCallback().onSuccess(new Result("LM"));
+        boolean b = God.getInstance().setCachedMessages(messageDtoTreeMap);
+        Result lm = new Result("LM");
+        lm.setPiggyback(Boolean.valueOf(b));
+        getActivityCallback().onSuccess(lm);
     }
 
     @Override
