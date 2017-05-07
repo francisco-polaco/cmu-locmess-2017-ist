@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 
 /**
@@ -44,6 +45,13 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
         holder.v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                God.getInstance().addToCache(position + 1);
+                new Thread() {
+                    @Override
+                    public void run() {
+                        God.getInstance().saveState();
+                    }
+                }.start();
                 MessageDto messageDto = dataset.get(position);
 
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(holder.v.getContext());

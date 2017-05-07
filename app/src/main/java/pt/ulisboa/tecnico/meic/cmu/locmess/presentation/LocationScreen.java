@@ -217,10 +217,4 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
         Toast.makeText(this, toastText, Toast.LENGTH_LONG).show();
     }
 
-    @Override
-    protected void onDestroy() {
-        God.getInstance().saveState();
-        //GoogleAPI.getInstance().disconnect();
-        super.onDestroy();
-    }
 }

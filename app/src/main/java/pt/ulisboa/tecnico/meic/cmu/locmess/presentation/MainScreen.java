@@ -233,12 +233,6 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
                 .show();
     }
 
-    @Override
-    protected void onDestroy() {
-        God.getInstance().saveState();
-        //GoogleAPI.getInstance().disconnect();
-        super.onDestroy();
-    }
 
     @Override
     public void onSuccess(Result result) {
@@ -261,7 +255,7 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
                 @Override
                 public void onSuccess(Result result) {
                     messages.clear();
-                    messages.addAll(God.getInstance().getCachedMessages().values());
+                    messages.addAll(God.getInstance().getMessages().values());
                     adapter.notifyDataSetChanged();
                 }
 

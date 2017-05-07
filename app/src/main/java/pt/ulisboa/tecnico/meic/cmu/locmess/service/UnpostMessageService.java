@@ -39,7 +39,7 @@ public class UnpostMessageService extends LocmessWebService implements LocmessCa
 
     @Override
     public void onSuccess(Object object) {
-        God.getInstance().getCachedMessages().remove(message.getId());
+        God.getInstance().getMessages().remove(message.getId());
         getActivityCallback().onSuccess(new Result("Removed message successfully!"));
     }
 

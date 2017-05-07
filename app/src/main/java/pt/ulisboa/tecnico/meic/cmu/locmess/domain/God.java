@@ -38,8 +38,11 @@ public class God {
     // profile represents the key values of the user
     private List<Pair> profile;
     private ArrayList<pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location> locations;
+    private TreeMap<Integer, MessageDto> messages;
+    private TreeMap<Integer, MessageDto> lastMessages;
+
     private TreeMap<Integer, MessageDto> cachedMessages;
-    private TreeMap<Integer, MessageDto> lastCachedMessages;
+    private boolean stateHasChanged = false;
 
     private God(Context context) {
         this.context = context;
@@ -106,12 +109,13 @@ public class God {
     }
 
     public void saveState() {
-        /*try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(
+        if (!stateHasChanged) return;
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(
                 context.openFileOutput(Constants.CACHED_MGS, Context.MODE_PRIVATE)))) {
             objectOutputStream.writeObject(cachedMessages);
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
     public String[] getCredentials() throws IOException {
@@ -125,12 +129,13 @@ public class God {
     }
 
     public void loadState() {
-        /*try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
-                context.openFileInput(Constants.CREDENTIALS_FILENAME)))) {
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
+                context.openFileInput(Constants.CACHED_MGS)))) {
             cachedMessages = (TreeMap<Integer, MessageDto>) objectInputStream.readObject();
         } catch (ClassNotFoundException | IOException e) {
+            e.printStackTrace();
             cachedMessages = new TreeMap<>();
-        }*/
+        }
     }
 
     public void clearCredentials() throws IOException {
@@ -155,29 +160,36 @@ public class God {
 
     public void setLocations(List<pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location> locations) {
         if (this.locations != null && this.locations.equals(locations)) return;
-        Log.d(TAG, "Setting locations and renewing all geofences.");
         this.locations = new ArrayList<>(locations);
         if (this.locations.size() == 0) stopLocationUpdates();
         else startLocationUpdates();
     }
 
-    public TreeMap<Integer, MessageDto> getCachedMessages() {
-        return cachedMessages;
+    public TreeMap<Integer, MessageDto> getMessages() {
+        return messages;
     }
 
     public boolean setCachedMessages(TreeMap<Integer, MessageDto> messages) {
         Log.d(TAG, messages.toString());
-        if (lastCachedMessages == null) {
-            this.lastCachedMessages = (TreeMap<Integer, MessageDto>) messages.clone();
-            this.cachedMessages = messages;
+        if (lastMessages == null) {
+            this.lastMessages = (TreeMap<Integer, MessageDto>) messages.clone();
+            this.messages = messages;
             return false;
         } else {
-            lastCachedMessages = (TreeMap<Integer, MessageDto>) cachedMessages.clone();
-            cachedMessages = messages;
-            return lastCachedMessages.equals(cachedMessages);
+            lastMessages = (TreeMap<Integer, MessageDto>) this.messages.clone();
+            this.messages = messages;
+            return lastMessages.equals(this.messages);
         }
 
     }
 
+    public void addToCache(Integer id) {
+        if (messages.containsKey(id)) {
+            cachedMessages.put(id, messages.get(id));
+            stateHasChanged = true;
+        }
+
+        Log.d("CACHE", "CACHE " + id + cachedMessages.toString());
+    }
 
 }

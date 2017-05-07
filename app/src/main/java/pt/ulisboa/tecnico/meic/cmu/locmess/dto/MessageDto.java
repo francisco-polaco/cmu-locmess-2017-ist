@@ -1,9 +1,13 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 
-public class MessageDto {
+public class MessageDto implements Serializable {
+
+    private static final long serialVersionUID = 1;
+
 
     private Integer id;
     private String title;
