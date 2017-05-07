@@ -24,6 +24,7 @@ import java.util.TreeMap;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.ImpossibleToGetLocationException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.PermissionNotGrantedException;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Token;
@@ -192,4 +193,13 @@ public class God {
         Log.d("CACHE", "CACHE " + id + cachedMessages.toString());
     }
 
+    public List<Message> getMessagesDescentralized() throws IOException {
+        List<Message> messages = new ArrayList<Message>();
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
+                context.openFileInput(Constants.MESSAGEREPOSITORY_FILENAME)))) {
+
+
+            return messages;
+        }
+    }
 }

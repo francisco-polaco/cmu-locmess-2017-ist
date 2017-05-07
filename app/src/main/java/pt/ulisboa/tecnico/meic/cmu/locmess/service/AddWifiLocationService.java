@@ -17,11 +17,11 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
  * Created by jp_s on 5/7/2017.
  */
 
-public class AdWifiLocationService extends LocmessWebService implements LocmessCallback {
+public class AddWifiLocationService extends LocmessWebService implements LocmessCallback {
 
     private APLocation location;
 
-    public AdWifiLocationService(Context context, ActivityCallback activityCallback, APLocation location) {
+    public AddWifiLocationService(Context context, ActivityCallback activityCallback, APLocation location) {
         super(context, activityCallback);
         this.location = location;
     }
