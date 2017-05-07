@@ -40,6 +40,15 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.title.setText(dataset.get(position).getTitle());
+        boolean me = false;
+        if (God.getInstance().amIPublisher(dataset.get(position).getPublisher())) {
+            holder.v.setBackgroundColor(context.getColor(R.color.cyan));
+            me = true;
+        }
+        if (God.getInstance().inCache(dataset.get(position))) {
+            if (me) holder.v.setBackgroundColor(context.getColor(R.color.light_pink));
+            else holder.v.setBackgroundColor(context.getColor(R.color.light_yellow));
+        }
         holder.content.setText(dataset.get(position).getContent());
         holder.bdate.setText(simpleDateFormat.format(dataset.get(position).getPublicationDate()));
         holder.v.setOnClickListener(new View.OnClickListener() {

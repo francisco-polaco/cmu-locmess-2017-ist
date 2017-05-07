@@ -44,6 +44,7 @@ public class God {
 
     private TreeMap<Integer, MessageDto> cachedMessages;
     private boolean stateHasChanged = false;
+    private String username;
 
     private God(Context context) {
         this.context = context;
@@ -124,6 +125,7 @@ public class God {
         try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
                 context.openFileInput(Constants.CREDENTIALS_FILENAME)))) {
             credentials[0] = objectInputStream.readUTF();
+            username = credentials[0];
             credentials[1] = objectInputStream.readUTF();
             return credentials;
         }
@@ -140,10 +142,9 @@ public class God {
     }
 
     public void clearCredentials() throws IOException {
-        File file = new File(context.getFilesDir().getPath() + "/" + Constants.CREDENTIALS_FILENAME);
-        if (file.exists()) {
-            boolean delete = file.delete();
-            Log.d(TAG, "File was " + delete);
+        for (String filename : new String[]{Constants.CREDENTIALS_FILENAME, Constants.CACHED_MGS}) {
+            File file = new File(context.getFilesDir().getPath() + "/" + filename);
+            if (file.exists()) file.delete();
         }
     }
 
@@ -193,6 +194,7 @@ public class God {
         Log.d("CACHE", "CACHE " + id + cachedMessages.toString());
     }
 
+
     public List<Message> getMessagesDescentralized() throws IOException {
         List<Message> messages = new ArrayList<Message>();
         try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
@@ -201,5 +203,13 @@ public class God {
 
             return messages;
         }
+    }
+
+    public boolean amIPublisher(String publisher) {
+        return publisher.equals(username);
+    }
+
+    public boolean inCache(MessageDto messageDto) {
+        return cachedMessages.containsValue(messageDto);
     }
 }
