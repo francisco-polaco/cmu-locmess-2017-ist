@@ -141,10 +141,9 @@ public class God {
     }
 
     public void clearCredentials() throws IOException {
-        File file = new File(context.getFilesDir().getPath() + "/" + Constants.CREDENTIALS_FILENAME);
-        if (file.exists()) {
-            boolean delete = file.delete();
-            Log.d(TAG, "File was " + delete);
+        for (String filename : new String[]{Constants.CREDENTIALS_FILENAME, Constants.CACHED_MGS}) {
+            File file = new File(context.getFilesDir().getPath() + "/" + filename);
+            if (file.exists()) file.delete();
         }
     }
 
