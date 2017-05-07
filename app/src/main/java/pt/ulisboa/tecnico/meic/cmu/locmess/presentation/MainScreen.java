@@ -101,7 +101,6 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
             God.init(getApplicationContext());
         }
         GoogleAPI.init(getApplicationContext(), false);
-        new ListMessageListener();
         initRecyclerView();
     }
 
@@ -131,7 +130,7 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
     protected void onStart() {
         super.onStart();
         checkBasePermission();
-        new ListLocationsService(getApplicationContext(), null).execute();
+        new ListMessageListener();
         GoogleAPI.getInstance().connect();
         //refresh msgs
     }
