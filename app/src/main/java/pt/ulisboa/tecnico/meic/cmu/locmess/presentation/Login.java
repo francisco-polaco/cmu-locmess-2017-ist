@@ -14,6 +14,7 @@ import java.io.IOException;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.Repository.MessageRepository;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.User;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -35,6 +36,7 @@ public class Login extends AppCompatActivity implements ActivityCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
         God.init(getApplicationContext());
+        MessageRepository.init(getApplicationContext());
         God.getInstance().startLocationUpdates();
     }
 

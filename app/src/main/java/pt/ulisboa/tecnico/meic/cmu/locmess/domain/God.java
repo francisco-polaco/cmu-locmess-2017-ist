@@ -42,6 +42,7 @@ public class God {
     private TreeMap<Integer, MessageDto> messages;
     private TreeMap<Integer, MessageDto> lastMessages;
 
+    private List<Message> messageRepository;
     private TreeMap<Integer, MessageDto> cachedMessages;
     private boolean stateHasChanged = false;
     private String username;
@@ -195,15 +196,30 @@ public class God {
     }
 
 
-    public List<Message> getMessagesDescentralized() throws IOException {
-        List<Message> messages = new ArrayList<Message>();
+    public void loadMessagesDescentralized() throws IOException {
         try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
                 context.openFileInput(Constants.MESSAGEREPOSITORY_FILENAME)))) {
 
-
-            return messages;
+            messageRepository = (List<Message>) objectInputStream.readObject();
+        } catch (ClassNotFoundException e) {
+            messageRepository= new ArrayList<Message>();
         }
     }
+
+    public void saveMessagesDescentralized() throws IOException {
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(
+                context.openFileOutput(Constants.MESSAGEREPOSITORY_FILENAME, Context.MODE_PRIVATE)))) {
+            objectOutputStream.writeObject(messageRepository);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addToMessageRepository(Message message) {
+            messageRepository.add(message);
+            //stateHasChanged = true;
+    }
+
 
     public boolean amIPublisher(String publisher) {
         return publisher.equals(username);
