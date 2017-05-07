@@ -63,9 +63,9 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
         holder.title.setText(dataset.get(position).getTitle());
         holder.content.setText(dataset.get(position).getContent());
         holder.bdate.setText(simpleDateFormat.format(dataset.get(position).getPublicationDate()));
-        holder.v.setOnLongClickListener(new View.OnLongClickListener() {
+        holder.v.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View view) {
+            public void onClick(View view) {
                 MessageDto messageDto = dataset.get(position);
 
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(holder.v.getContext());
@@ -88,7 +88,6 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
                 dialogBuilder.setPositiveButton(R.string.ok,null);
                 dialogBuilder.create().show();
 
-                return true;
             }
         });
     }
