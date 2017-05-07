@@ -46,7 +46,8 @@ public class ListLocationsService extends LocmessWebService implements LocmessCa
 
     @Override
     public void onFailure(Object object) {
-        getActivityCallback().onFailure(new Result(getContext().getString(R.string.LM_0)));;
+        getActivityCallback().onFailure(new Result(getContext().getString(R.string.LM_0)));
+        ;
     }
 
 }

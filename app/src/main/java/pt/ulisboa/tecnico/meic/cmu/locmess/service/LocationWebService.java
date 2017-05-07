@@ -11,11 +11,7 @@ import java.io.UnsupportedEncodingException;
 
 import cz.msebera.android.httpclient.entity.StringEntity;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.GPSLocation;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Token;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.User;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -25,7 +21,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
  * Created by jp_s on 4/26/2017.
  */
 
-public class LocationWebService extends LocmessWebService implements LocmessCallback{
+public class LocationWebService extends LocmessWebService implements LocmessCallback {
 
     private static final String TAG = LocationWebService.class.getSimpleName();
     private final Location location;
@@ -49,7 +45,7 @@ public class LocationWebService extends LocmessWebService implements LocmessCall
 
     public void onSuccess(JSONObject object) {
         Result result;
-        if(object != null)
+        if (object != null)
             result = (Result) getJsonService().transformJsonToObj(object.toString(), Result.class);
         else
             result = new Result("NULL");
@@ -60,7 +56,7 @@ public class LocationWebService extends LocmessWebService implements LocmessCall
 
     public void onFailure(JSONObject object) {
         Result result;
-        if(object != null)
+        if (object != null)
             result = (Result) getJsonService().transformJsonToObj(object.toString(), Result.class);
         else
             result = new Result("NULL");

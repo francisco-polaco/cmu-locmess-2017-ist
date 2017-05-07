@@ -1,7 +1,6 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.dto;
 
 import java.util.Date;
-import java.util.List;
 
 
 public class MessageDto {

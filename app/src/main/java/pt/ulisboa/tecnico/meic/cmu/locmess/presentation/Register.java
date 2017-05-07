@@ -28,6 +28,7 @@ public class Register extends AppCompatActivity implements ActivityCallback {
 
     private static final String TAG = Register.class.getSimpleName();
     private ProgressDialog dialog;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +51,7 @@ public class Register extends AppCompatActivity implements ActivityCallback {
         }
         dialog = WidgetConstructors.getLoadingDialog(this, getString(R.string.dialog_create_account));
         new SignupWebService(getApplicationContext(), this, new User(username, password)).execute();
-       // dialog.show();
+        // dialog.show();
     }
 
     @Override
@@ -60,7 +61,7 @@ public class Register extends AppCompatActivity implements ActivityCallback {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(dialog != null) dialog.cancel();
+        if (dialog != null) dialog.cancel();
         Intent intent = new Intent(this, Login.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -70,7 +71,7 @@ public class Register extends AppCompatActivity implements ActivityCallback {
     public void onFailure(Result result) {
         // reset the layout
         // TODO : reset the layout!
-        if(dialog != null) dialog.cancel();
+        if (dialog != null) dialog.cancel();
         Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
     }
 }

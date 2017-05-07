@@ -1,18 +1,13 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.service;
 
 import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.TreeMap;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -39,12 +34,13 @@ public class ListMessagesService extends LocmessWebService implements LocmessCal
     public void onSuccess(Object object) {
         MessageDto[] messageDtos = (MessageDto[])
                 getJsonService().transformJsonToObj(object.toString(), MessageDto[].class);
-        TreeMap<Integer,MessageDto> messageDtoTreeMap = new TreeMap<>();
+        TreeMap<Integer, MessageDto> messageDtoTreeMap = new TreeMap<>();
         for (MessageDto messageDto : Arrays.asList(messageDtos))
             messageDtoTreeMap.put(messageDto.getId(), messageDto);
-        God.getInstance().setCachedMessages(messageDtoTreeMap);
-
-        getActivityCallback().onSuccess(new Result("LM"));
+        boolean b = God.getInstance().setCachedMessages(messageDtoTreeMap);
+        Result lm = new Result("LM");
+        lm.setPiggyback(Boolean.valueOf(b));
+        getActivityCallback().onSuccess(lm);
     }
 
     @Override

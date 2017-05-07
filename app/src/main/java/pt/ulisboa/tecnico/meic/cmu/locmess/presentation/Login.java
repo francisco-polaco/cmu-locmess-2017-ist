@@ -44,8 +44,9 @@ public class Login extends AppCompatActivity implements ActivityCallback {
         String[] credentials = null;
         try {
             credentials = God.getInstance().getCredentials();
-        } catch (IOException ignored) {}
-        if(credentials != null) {
+        } catch (IOException ignored) {
+        }
+        if (credentials != null) {
             Log.d(TAG, "We have found credentials.");
             new LoginWebService(getApplicationContext(), this,
                     new User(credentials[0], credentials[1]), true).execute();
@@ -69,7 +70,7 @@ public class Login extends AppCompatActivity implements ActivityCallback {
 
     @Override
     public void onSuccess(Result result) {
-        if(dialog != null)
+        if (dialog != null)
             dialog.cancel();
         Intent intent = new Intent(this, MainScreen.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -78,7 +79,7 @@ public class Login extends AppCompatActivity implements ActivityCallback {
 
     @Override
     public void onFailure(Result result) {
-        if(dialog!= null) dialog.cancel();
+        if (dialog != null) dialog.cancel();
         Toast.makeText(getApplicationContext(), R.string.toast_login_error, Toast.LENGTH_LONG).show();
     }
 

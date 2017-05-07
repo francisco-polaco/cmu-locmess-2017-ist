@@ -13,7 +13,6 @@ import android.util.Log;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.presentation.MainScreen;
-import pt.ulisboa.tecnico.meic.cmu.locmess.presentation.NewMessage;
 
 public class NotificationAgent {
     private static final NotificationAgent ourInstance = new NotificationAgent();

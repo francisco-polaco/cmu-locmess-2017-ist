@@ -22,7 +22,7 @@ public final class GPSLocation extends Location {
         this.radius = radius;
     }
 
-    public GPSLocation(){
+    public GPSLocation() {
     }
 
     @Override
