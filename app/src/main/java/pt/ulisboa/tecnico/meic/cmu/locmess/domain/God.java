@@ -43,6 +43,7 @@ public class God {
 
     private TreeMap<Integer, MessageDto> cachedMessages;
     private boolean stateHasChanged = false;
+    private String username;
 
     private God(Context context) {
         this.context = context;
@@ -123,6 +124,7 @@ public class God {
         try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
                 context.openFileInput(Constants.CREDENTIALS_FILENAME)))) {
             credentials[0] = objectInputStream.readUTF();
+            username = credentials[0];
             credentials[1] = objectInputStream.readUTF();
             return credentials;
         }
@@ -192,4 +194,11 @@ public class God {
         Log.d("CACHE", "CACHE " + id + cachedMessages.toString());
     }
 
+    public boolean amIPublisher(String publisher) {
+        return publisher.equals(username);
+    }
+
+    public boolean inCache(MessageDto messageDto) {
+        return cachedMessages.containsValue(messageDto);
+    }
 }

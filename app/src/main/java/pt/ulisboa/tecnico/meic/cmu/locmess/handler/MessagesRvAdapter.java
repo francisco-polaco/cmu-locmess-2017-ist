@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.handler;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +41,15 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.title.setText(dataset.get(position).getTitle());
+        boolean me = false;
+        if (God.getInstance().amIPublisher(dataset.get(position).getPublisher())) {
+            holder.v.setBackgroundColor(Color.BLUE);
+            me = true;
+        }
+        if (God.getInstance().inCache(dataset.get(position))) {
+            if (me) holder.v.setBackgroundColor(Color.MAGENTA);
+            else holder.v.setBackgroundColor(Color.RED);
+        }
         holder.content.setText(dataset.get(position).getContent());
         holder.bdate.setText(simpleDateFormat.format(dataset.get(position).getPublicationDate()));
         holder.v.setOnClickListener(new View.OnClickListener() {
