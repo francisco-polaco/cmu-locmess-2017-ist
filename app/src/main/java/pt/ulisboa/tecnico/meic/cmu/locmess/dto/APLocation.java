@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.dto;
 
+import java.util.List;
+
 /**
  * Created by Diogo on 27/04/2017.
  */
@@ -7,6 +9,7 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.dto;
 public class APLocation extends Location {
 
     public final String type = "APLocation";
+    private List<String> aps;
 
     public APLocation(){
     }
@@ -15,8 +18,9 @@ public class APLocation extends Location {
         super(name);
     }
 
-    public APLocation(Integer id, String name){
+    public APLocation(Integer id, String name, List<String> aps){
             super(id, name);
+        this.aps = aps;
     }
 
     @Override
@@ -24,5 +28,13 @@ public class APLocation extends Location {
         return "APLocation{" +
                 "name='" + getName() + '\'' +
                 '}';
+    }
+
+    public List<String> getAps() {
+        return aps;
+    }
+
+    public void setAps(List<String> aps) {
+        this.aps = aps;
     }
 }
