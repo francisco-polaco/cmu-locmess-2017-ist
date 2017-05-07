@@ -50,7 +50,7 @@ public abstract class LocmessWebService {
 
     public ActivityCallback getActivityCallback() {
         // just to avoid null ptrs
-        if(activityCallback == null) return new ActivityCallback() {
+        if (activityCallback == null) return new ActivityCallback() {
             @Override
             public void onSuccess(Result result) {
 

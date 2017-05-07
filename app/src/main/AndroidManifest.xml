@@ -36,10 +36,6 @@
                 android:value="pt.ulisboa.tecnico.meic.cmu.locmess.presentation.Login" />
         </activity>
         <activity
-            android:name=".presentation.ShowMessage"
-            android:label="ShowMessage">
-        </activity>
-        <activity
             android:name=".presentation.NewMessage"
             android:label="NewMessage">
         </activity>
@@ -82,7 +78,6 @@
         </receiver>
 
         <service android:name=".domain.UpdateLocationService" android:exported="false"/>
-        <service android:name=".domain.geofence.GeofenceTransitionsIntentService" />
         <service android:name="pt.inesc.termite.wifidirect.service.SimWifiP2pService" />
 
     </application>

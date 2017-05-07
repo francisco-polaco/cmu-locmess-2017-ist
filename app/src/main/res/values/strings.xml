@@ -17,10 +17,11 @@
     <string name="create_location_gps">GPS</string>
     <string name="toast_login_error">Login Error</string>
 
-
+    
     <string name="webserver_url">https://alkuentrus.ovh:8080/locmess</string>
     <!--string name="webserver_url">https://192.168.56.1:8080/locmess</string-->
     <!--<string name="webserver_url">http://192.168.1.75:8080/locmess</string>-->
+
     <!--<string name="webserver_url">http://192.168.1.64:8080/locmess</string>-->
 
     <string name="content_type_json">application/json</string>
@@ -77,5 +78,7 @@
     <string name="Send_Message">Post</string>
     <string name="select_time">Select Time</string>
     <string name="select_date">Select Date</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

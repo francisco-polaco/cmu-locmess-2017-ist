@@ -29,7 +29,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.RemoveLocationService;
 
-import static android.support.v4.widget.SwipeRefreshLayout.*;
+import static android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 
 /**
  * Created by jp_s on 4/14/2017.
@@ -93,7 +93,7 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
             @Override
             public void onRefresh() {
                 refreshLocations();
-                if(swip.isRefreshing()) {
+                if (swip.isRefreshing()) {
                     swip.setRefreshing(false);
                 }
             }
@@ -167,7 +167,7 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
     @Override
     public void onSuccess(Result result) {
         String toastText = "";
-        if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_0))){
+        if (result.getMessage().equals(getApplicationContext().getString(R.string.LM_0))) {
             ListView lv = (ListView) findViewById(R.id.LocationsList);
 
             locations = new ArrayList<>();
@@ -192,10 +192,9 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
                 }
             });
 
-            if(dialog != null) dialog.cancel();
+            if (dialog != null) dialog.cancel();
             return; // avoid toast
-        }
-        else if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_2))){
+        } else if (result.getMessage().equals(getApplicationContext().getString(R.string.LM_2))) {
             int index = (int) result.getPiggyback();
             locations.remove(index);
             God.getInstance().getLocations().remove(index);
@@ -208,21 +207,14 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
     @Override
     public void onFailure(Result result) {
         String toastText = "";
-        if(dialog != null) dialog.cancel();
-        if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_0))){
+        if (dialog != null) dialog.cancel();
+        if (result.getMessage().equals(getApplicationContext().getString(R.string.LM_0))) {
             toastText += "Failed to retrieve the locations!";
             finish();
-        }
-        else if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_2)))
+        } else if (result.getMessage().equals(getApplicationContext().getString(R.string.LM_2)))
             toastText += "Failed to remove the location!";
 
         Toast.makeText(this, toastText, Toast.LENGTH_LONG).show();
     }
 
-    @Override
-    protected void onDestroy() {
-        God.getInstance().saveState();
-        //GoogleAPI.getInstance().disconnect();
-        super.onDestroy();
-    }
 }

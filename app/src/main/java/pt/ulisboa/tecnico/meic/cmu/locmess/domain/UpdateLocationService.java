@@ -37,12 +37,13 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedExcept
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.APLocation;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
-
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.GoogleApiCallbacks;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
+import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListMessagesService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.LocationWebService;
+
 
 public final class UpdateLocationService extends Service implements LocationListener, GoogleApiCallbacks, ActivityCallback,
         SimWifiP2pManager.PeerListListener{
@@ -71,7 +72,7 @@ public final class UpdateLocationService extends Service implements LocationList
         GoogleAPI.getInstance().connect(this);
         try {
             God.getInstance();
-        }catch (NotInitializedException e){
+        } catch (NotInitializedException e) {
             God.init(getApplicationContext());
         }
 
@@ -107,9 +108,6 @@ public final class UpdateLocationService extends Service implements LocationList
         Log.d(TAG, "Starting Location Updates");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            /*NotificationManager.getInstance(getApplicationContext())
-                    .sendPermissionErrorLocationNotification(getApplicationContext().getString(R.string.app_name));
-            */
             Log.d(TAG, "No Permissions");
             return;
         }
@@ -117,9 +115,6 @@ public final class UpdateLocationService extends Service implements LocationList
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mLocationRequest.setInterval(Constants.UPDATE_INTERVAL);
         mLocationRequest.setFastestInterval(Constants.FASTEST_UPDATE_INTERVAL);
-        /*mLocationRequest.setNumUpdates(5);
-        mLocationRequest.setExpirationDuration(5000);*/
-        // TODO: BLOWING UP
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 GoogleAPI.getInstance().getGoogleApiClient(), mLocationRequest, this);
     }
@@ -146,10 +141,30 @@ public final class UpdateLocationService extends Service implements LocationList
 
                 }
             }, location).execute();
-            new ListLocationsService(getApplicationContext(), this).execute();
-            //update server
-            //LocationRepository.getInstance().addActualLocation(location);
-       // }
+            new ListLocationsService(getApplicationContext(), new ActivityCallback() {
+                @Override
+                public void onSuccess(Result result) {
+
+                }
+
+                @Override
+                public void onFailure(Result result) {
+
+                }
+            }).execute();
+            new ListMessagesService(getApplicationContext(), new ActivityCallback() {
+                @Override
+                public void onSuccess(Result result) {
+                    if (God.getInstance().getMessages().size() != 0 && !((Boolean) result.getPiggyback()))
+                        NotificationAgent.getInstance().sendNotification(getApplicationContext());
+                }
+
+                @Override
+                public void onFailure(Result result) {
+
+                }
+            }).execute();
+        //}
     }
 
     protected boolean isBetterLocation(Location location, Location currentBestLocation) {
@@ -161,8 +176,8 @@ public final class UpdateLocationService extends Service implements LocationList
         }
 
         long timeDelta = location.getTime() - currentBestLocation.getTime();
-        boolean isSignificantlyNewer = timeDelta > Constants.TWO_MINUTES;
-        boolean isSignificantlyOlder = timeDelta < -Constants.TWO_MINUTES;
+        boolean isSignificantlyNewer = timeDelta > Constants.INTERVAL;
+        boolean isSignificantlyOlder = timeDelta < -Constants.INTERVAL;
         boolean isNewer = timeDelta > 0;
 
         if (isSignificantlyNewer) {

@@ -1,16 +1,10 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.presentation;
 
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.net.wifi.ScanResult;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Messenger;
@@ -22,12 +16,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
@@ -35,10 +26,7 @@ import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.SimWifiP2pBroadcastReceiver;
-import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
-import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 
 /**
  * Created by jp_s on 4/27/2017.
@@ -47,16 +35,30 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 public class WifiLocationPicker extends AppCompatActivity implements
         SimWifiP2pManager.PeerListListener {
 
+    private static final String TAG = pt.ulisboa.tecnico.meic.cmu.locmess.presentation.WifiLocationPicker.class.getSimpleName();
+    private Toolbar toolbar;
 
+    private SimWifiP2pManager mManager = null;
+    private SimWifiP2pManager.Channel mChannel = null;
+    private ServiceConnection mConnection = new ServiceConnection() {
+        // callbacks for service binding, passed to bindService()
 
-        private static final String TAG = pt.ulisboa.tecnico.meic.cmu.locmess.presentation.WifiLocationPicker.class.getSimpleName();
-        private Toolbar toolbar;
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            Log.d(TAG, "mConnection: Entrei!");
+            mManager = new SimWifiP2pManager(new Messenger(service));
+            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
+        }
 
-        private SimWifiP2pManager mManager = null;
-        private SimWifiP2pManager.Channel mChannel = null;
-
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mManager = null;
+            mChannel = null;
+        }
+    };
 
     @Override
+
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.location_wifi_list);
@@ -67,21 +69,19 @@ public class WifiLocationPicker extends AppCompatActivity implements
 
     }
 
-    //@Override
-    public void onStart()
-    {
+    @Override
+    public void onStart() {
         super.onStart();
         Intent intent = new Intent(getApplicationContext(), SimWifiP2pService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
-    public void getDevices(View view){
+    public void getDevices(View view) {
         mManager.requestPeers(mChannel, this);
     }
 
     @Override
-    public void onStop()
-    {
+    public void onStop() {
         super.onStop();
         unbindService(mConnection);
     }
@@ -108,7 +108,7 @@ public class WifiLocationPicker extends AppCompatActivity implements
     @Override
     public void onPeersAvailable(SimWifiP2pDeviceList peers) {
         Log.d(TAG, "onPeersAvailable: Entrei111111");
-        if(peers != null) {
+        if (peers != null) {
             ArrayList<String> peersStr = new ArrayList<>();
 
             // compile list of devices in range
@@ -128,22 +128,5 @@ public class WifiLocationPicker extends AppCompatActivity implements
             listview.setAdapter(adapter);
         }
     }
-
-    private ServiceConnection mConnection = new ServiceConnection() {
-        // callbacks for service binding, passed to bindService()
-
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.d(TAG, "mConnection: Entrei!");
-            mManager = new SimWifiP2pManager(new Messenger(service));
-            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mManager = null;
-            mChannel = null;
-        }
-    };
 }
 

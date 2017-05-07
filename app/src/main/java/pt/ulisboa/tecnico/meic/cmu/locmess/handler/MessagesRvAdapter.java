@@ -1,10 +1,9 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.handler;
 
+import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -13,9 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
-import pt.ulisboa.tecnico.meic.cmu.locmess.presentation.Login;
-import pt.ulisboa.tecnico.meic.cmu.locmess.presentation.ShowMessage;
 
 /**
  * Created by Diogo on 06/05/2017.
@@ -23,25 +21,9 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.presentation.ShowMessage;
 
 public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.ViewHolder> {
 
+    public Context context;
     private List<MessageDto> dataset;
     private SimpleDateFormat simpleDateFormat;
-    public Context context;
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-
-        public View v;
-        public TextView title;
-        public TextView content;
-        public TextView bdate;
-
-        public ViewHolder(View v) {
-            super(v);
-            this.title = (TextView) v.findViewById(R.id.title);
-            this.content = (TextView) v.findViewById(R.id.content);
-            this.bdate = (TextView) v.findViewById(R.id.bdate);
-            this.v = v;
-        }
-    }
 
     public MessagesRvAdapter(List<MessageDto> dataset, Context context) {
         this.dataset = dataset;
@@ -56,17 +38,42 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.title.setText(dataset.get(position).getTitle());
         holder.content.setText(dataset.get(position).getContent());
         holder.bdate.setText(simpleDateFormat.format(dataset.get(position).getPublicationDate()));
-        holder.v.setOnLongClickListener(new View.OnLongClickListener() {
+        holder.v.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View view) {
-                Intent intent = new Intent(context, ShowMessage.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
-                return true;
+            public void onClick(View view) {
+                God.getInstance().addToCache(position + 1);
+                new Thread() {
+                    @Override
+                    public void run() {
+                        God.getInstance().saveState();
+                    }
+                }.start();
+                MessageDto messageDto = dataset.get(position);
+
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(holder.v.getContext());
+                LayoutInflater inflater = (LayoutInflater)
+                        context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View dialogView = inflater.inflate(R.layout.dialog, null);
+
+                TextView publisher = (TextView) dialogView.findViewById(R.id.publisher);
+                publisher.setText(messageDto.getPublisher());
+
+                TextView date = (TextView) dialogView.findViewById(R.id.date);
+                date.setText(simpleDateFormat.format(messageDto.getPublicationDate()));
+
+                TextView content = (TextView) dialogView.findViewById(R.id.content);
+                content.setText(messageDto.getContent());
+
+                dialogBuilder.setView(dialogView);
+
+                dialogBuilder.setTitle(messageDto.getTitle());
+                dialogBuilder.setPositiveButton(R.string.ok, null);
+                dialogBuilder.create().show();
+
             }
         });
     }
@@ -83,6 +90,22 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
 
     public MessageDto getMessageById(int adapterPosition) {
         return dataset.get(adapterPosition);
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        public View v;
+        public TextView title;
+        public TextView content;
+        public TextView bdate;
+
+        public ViewHolder(View v) {
+            super(v);
+            this.title = (TextView) v.findViewById(R.id.title);
+            this.content = (TextView) v.findViewById(R.id.content);
+            this.bdate = (TextView) v.findViewById(R.id.bdate);
+            this.v = v;
+        }
     }
 
 

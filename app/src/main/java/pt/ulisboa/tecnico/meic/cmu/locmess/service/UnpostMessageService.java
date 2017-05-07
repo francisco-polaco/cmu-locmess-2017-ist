@@ -7,7 +7,6 @@ import java.io.UnsupportedEncodingException;
 import cz.msebera.android.httpclient.entity.StringEntity;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
@@ -40,7 +39,7 @@ public class UnpostMessageService extends LocmessWebService implements LocmessCa
 
     @Override
     public void onSuccess(Object object) {
-        God.getInstance().getCachedMessages().remove(message.getId());
+        God.getInstance().getMessages().remove(message.getId());
         getActivityCallback().onSuccess(new Result("Removed message successfully!"));
     }
 

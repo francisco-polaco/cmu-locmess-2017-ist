@@ -9,6 +9,7 @@ import java.util.List;
 public class APLocation extends Location {
 
     public final String type = "APLocation";
+    private List<String> aps;
 
 
     public APLocation(){
@@ -20,6 +21,7 @@ public class APLocation extends Location {
 
     public APLocation(Integer id, String name, List<String> wifiLocations){
             super(id, name);
+        this.aps = aps;
     }
 
     public String getType() {
@@ -31,5 +33,13 @@ public class APLocation extends Location {
         return "APLocation{" +
                 "name='" + getName() + '\'' +
                 '}';
+    }
+
+    public List<String> getAps() {
+        return aps;
+    }
+
+    public void setAps(List<String> aps) {
+        this.aps = aps;
     }
 }

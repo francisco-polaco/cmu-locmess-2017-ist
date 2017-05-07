@@ -23,7 +23,7 @@ public class Message {
         this.content = content;
     }
 
-    public Message(){
+    public Message() {
     }
 
     public Location getLocation() {
@@ -84,9 +84,9 @@ public class Message {
 
     @Override
     public boolean equals(Object o) {
-        if(o != null && o instanceof Message){
+        if (o != null && o instanceof Message) {
             Message toCompare = (Message) o;
-            return  location.equals(toCompare.getLocation()) &&
+            return location.equals(toCompare.getLocation()) &&
                     policy.equals(toCompare.getPolicy()) &&
                     pairs.containsAll(toCompare.getPairs()) &&
                     beginDate.equals(toCompare.getBeginDate()) &&

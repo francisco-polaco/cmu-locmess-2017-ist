@@ -43,7 +43,7 @@ public final class LoginWebService extends LocmessWebService implements LocmessC
     public void onSuccess(Object object) {
         Token token = (Token) getJsonService().transformJsonToObj(object.toString(), Token.class);
         God.getInstance().setToken(token);
-        if(autologin) God.getInstance().saveCredentials(user.getUsername(), user.getPassword());
+        if (autologin) God.getInstance().saveCredentials(user.getUsername(), user.getPassword());
         getActivityCallback().onSuccess(null);
         Log.d(TAG, token.getToken());
     }
@@ -51,7 +51,7 @@ public final class LoginWebService extends LocmessWebService implements LocmessC
     @Override
     public void onFailure(Object object) {
         Result result;
-        if(object != null)
+        if (object != null)
             result = (Result) getJsonService().transformJsonToObj(object.toString(), Result.class);
         else
             result = new Result("NULL");
