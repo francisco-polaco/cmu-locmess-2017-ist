@@ -8,15 +8,15 @@ public class APLocation extends Location {
 
     public final String type = "APLocation";
 
-    public APLocation(){
+    public APLocation() {
     }
 
-    public APLocation(String name){
+    public APLocation(String name) {
         super(name);
     }
 
-    public APLocation(Integer id, String name){
-            super(id, name);
+    public APLocation(Integer id, String name) {
+        super(id, name);
     }
 
     @Override

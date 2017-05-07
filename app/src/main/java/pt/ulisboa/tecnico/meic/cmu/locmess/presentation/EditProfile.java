@@ -17,8 +17,8 @@ import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.AddPairService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListPairsService;
@@ -59,7 +59,7 @@ public class EditProfile extends AppCompatActivity implements ActivityCallback {
     @Override
     public void onSuccess(Result result) {
         String toastText = "";
-        if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_0))){
+        if (result.getMessage().equals(getApplicationContext().getString(R.string.LM_0))) {
             itemlist = parsePairs(God.getInstance().getProfile());
             adapter = new SimpleAdapter(this, itemlist, R.layout.listview,
                     new String[]{"Key", "Value"},
@@ -78,10 +78,9 @@ public class EditProfile extends AppCompatActivity implements ActivityCallback {
                     return true;
                 }
             });
-            if(dialog != null) dialog.cancel();
+            if (dialog != null) dialog.cancel();
             return; // avoid Toast
-        }
-        else if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_1))) {
+        } else if (result.getMessage().equals(getApplicationContext().getString(R.string.LM_1))) {
             HashMap<String, String> toAdd = new HashMap<String, String>();
             toAdd.put("Key", this.toAdd.getKey());
             toAdd.put("Value", this.toAdd.getValue());
@@ -89,8 +88,7 @@ public class EditProfile extends AppCompatActivity implements ActivityCallback {
             ListView listValues = (ListView) findViewById(R.id.keyvalue);
             listValues.setAdapter(adapter);
             toastText += "Pair successfully added!";
-        }
-        else if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_2))){
+        } else if (result.getMessage().equals(getApplicationContext().getString(R.string.LM_2))) {
             int index = (int) result.getPiggyback();
             HashMap<String, String> keyValue = (HashMap<String, String>) adapter.getItem(index);
             Pair toRemove = new Pair(keyValue.get("Key"), keyValue.get("Value"));
@@ -102,9 +100,9 @@ public class EditProfile extends AppCompatActivity implements ActivityCallback {
         Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();
     }
 
-    private List<HashMap<String,String>> parsePairs(List<Pair> profile) {
+    private List<HashMap<String, String>> parsePairs(List<Pair> profile) {
         List<HashMap<String, String>> newProfile = new ArrayList<>();
-        for (Pair pair : profile){
+        for (Pair pair : profile) {
             HashMap<String, String> toAdd = new HashMap<>();
             toAdd.put("Key", pair.getKey());
             toAdd.put("Value", pair.getValue());
@@ -116,14 +114,13 @@ public class EditProfile extends AppCompatActivity implements ActivityCallback {
     @Override
     public void onFailure(Result result) {
         String toastText = "";
-        if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_0))) {
-            if(dialog != null) dialog.cancel();
+        if (result.getMessage().equals(getApplicationContext().getString(R.string.LM_0))) {
+            if (dialog != null) dialog.cancel();
             toastText += "Failed to retrieve the profile!";
             finish();
-        }
-        else if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_1)))
+        } else if (result.getMessage().equals(getApplicationContext().getString(R.string.LM_1)))
             toastText += "Failed to add pair!";
-        else if(result.getMessage().equals(getApplicationContext().getString(R.string.LM_2)))
+        else if (result.getMessage().equals(getApplicationContext().getString(R.string.LM_2)))
             toastText += "Failed to remove pair!";
 
         Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();

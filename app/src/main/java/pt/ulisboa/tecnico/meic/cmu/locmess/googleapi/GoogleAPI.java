@@ -66,7 +66,7 @@ public final class GoogleAPI implements ConnectionCallbacks, OnConnectionFailedL
         Toast.makeText(getGoogleApiClient().getContext(), "API Connected", Toast.LENGTH_SHORT).show();
         // Do what needs to be done when the system is connected.
         //callOnConnectedToRegisteredCallbacks(bundle);
-        if(mObjectToCallback != null) mObjectToCallback.onConnected(bundle);
+        if (mObjectToCallback != null) mObjectToCallback.onConnected(bundle);
         mObjectToCallback = null;
     }
 
@@ -77,7 +77,7 @@ public final class GoogleAPI implements ConnectionCallbacks, OnConnectionFailedL
 
         // Do what needs to be done when the connection is suspended.
         //callOnConnectionSuspendedToRegisteredCallbacks(i);
-        if(mObjectToCallback != null) mObjectToCallback.onConnectionSuspended(i);
+        if (mObjectToCallback != null) mObjectToCallback.onConnectionSuspended(i);
         mObjectToCallback = null;
     }
 
@@ -88,7 +88,8 @@ public final class GoogleAPI implements ConnectionCallbacks, OnConnectionFailedL
 
         // Do what needs to be done when the connection fails.
         //callOnConnectionFailedToRegisteredCallbacks(connectionResult);
-        if(mObjectToCallbackFail != null) mObjectToCallbackFail.onConnectionFailed(connectionResult);
+        if (mObjectToCallbackFail != null)
+            mObjectToCallbackFail.onConnectionFailed(connectionResult);
         mObjectToCallbackFail = null;
     }
 

@@ -2,23 +2,17 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.handler;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
-import pt.ulisboa.tecnico.meic.cmu.locmess.presentation.MainScreen;
 
 /**
  * Created by Diogo on 06/05/2017.
@@ -26,25 +20,9 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.presentation.MainScreen;
 
 public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.ViewHolder> {
 
+    public Context context;
     private List<MessageDto> dataset;
     private SimpleDateFormat simpleDateFormat;
-    public Context context;
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-
-        public View v;
-        public TextView title;
-        public TextView content;
-        public TextView bdate;
-
-        public ViewHolder(View v) {
-            super(v);
-            this.title = (TextView) v.findViewById(R.id.title);
-            this.content = (TextView) v.findViewById(R.id.content);
-            this.bdate = (TextView) v.findViewById(R.id.bdate);
-            this.v = v;
-        }
-    }
 
     public MessagesRvAdapter(List<MessageDto> dataset, Context context) {
         this.dataset = dataset;
@@ -70,7 +48,7 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
 
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(holder.v.getContext());
                 LayoutInflater inflater = (LayoutInflater)
-                        context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+                        context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 final View dialogView = inflater.inflate(R.layout.dialog, null);
 
                 TextView publisher = (TextView) dialogView.findViewById(R.id.publisher);
@@ -85,7 +63,7 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
                 dialogBuilder.setView(dialogView);
 
                 dialogBuilder.setTitle(messageDto.getTitle());
-                dialogBuilder.setPositiveButton(R.string.ok,null);
+                dialogBuilder.setPositiveButton(R.string.ok, null);
                 dialogBuilder.create().show();
 
                 return true;
@@ -105,6 +83,22 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
 
     public MessageDto getMessageById(int adapterPosition) {
         return dataset.get(adapterPosition);
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        public View v;
+        public TextView title;
+        public TextView content;
+        public TextView bdate;
+
+        public ViewHolder(View v) {
+            super(v);
+            this.title = (TextView) v.findViewById(R.id.title);
+            this.content = (TextView) v.findViewById(R.id.content);
+            this.bdate = (TextView) v.findViewById(R.id.bdate);
+            this.v = v;
+        }
     }
 
 

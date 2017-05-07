@@ -4,12 +4,12 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.dto;
  * Created by Diogo on 27/04/2017.
  */
 
-public abstract class Location  {
+public abstract class Location {
 
     private Integer id;
     private String name;
 
-    public Location(){
+    public Location() {
     }
 
     public Location(String name) {

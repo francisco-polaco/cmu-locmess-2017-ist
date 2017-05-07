@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
@@ -15,10 +14,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -26,7 +23,6 @@ import android.widget.Toast;
 
 import com.thomashaertel.widget.MultiSpinner;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,8 +33,8 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListAllProfilePairsService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
@@ -117,6 +113,86 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
         newFragment.show(getSupportFragmentManager(), "timePicker");
     }
 
+    public void sendMessage(View view) {
+        String title = ((EditText) this.findViewById(R.id.msgtitle)).getText().toString();
+        if (title.equals("")) {
+            Toast.makeText(this, "You need a title!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String content = ((EditText) this.findViewById(R.id.content)).getText().toString();
+        if (content.equals("")) {
+            Toast.makeText(this, "A message has to have content!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Location location = God.getInstance().getLocations().get(spinner.getSelectedItemPosition());
+        if (location == null) {
+            Toast.makeText(this, "You must add locations first!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String beginTime = ((TextView) this.findViewById(R.id.BeginTime)).getText().toString();
+        String beginDate = ((TextView) this.findViewById(R.id.BeginDate)).getText().toString();
+        if (beginDate.equals("") || beginTime.equals("")) {
+            Toast.makeText(this, "You must fill the begin date!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String endTime = ((TextView) this.findViewById(R.id.EndTime)).getText().toString();
+        String endDate = ((TextView) this.findViewById(R.id.EndDate)).getText().toString();
+        if (endDate.equals("") || endTime.equals("")) {
+            Toast.makeText(this, "You must fill the expiration date!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (keysInPairs == null)
+            keysInPairs = new ArrayList<>();
+
+        RadioGroup group = ((RadioGroup) this.findViewById(R.id.radio));
+        int id = group.getCheckedRadioButtonId();
+        View radioButton = this.findViewById(id);
+        int radioId = group.indexOfChild(radioButton);
+        RadioButton btn = (RadioButton) group.getChildAt(radioId);
+        String policy = (String) btn.getText();
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        String bDate = simpleDateFormat.format(new Date(beginTime + " " + beginDate));
+        String eDate = simpleDateFormat.format(new Date(endTime + " " + endDate));
+
+
+        Message message = new Message(title, location, policy, keysInPairs, bDate, eDate, content);
+        new PostMessageService(getApplicationContext(), this, message).execute();
+    }
+
+    @Override
+    public void onSuccess(Result result) {
+        if (dialog != null) dialog.cancel();
+        String message = result.getMessage();
+        if (message != null) {
+            if (message.equals(getString(R.string.LM_2))) {
+                message = "Message was posted with success!";
+                //TODO : maybe there is a better way
+                reset();
+            }
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void reset() {
+        ((EditText) this.findViewById(R.id.msgtitle)).setText("");
+        ((EditText) this.findViewById(R.id.content)).setText("");
+        ((TextView) this.findViewById(R.id.BeginTime)).setText(getString(R.string.select_time));
+        ((TextView) this.findViewById(R.id.BeginDate)).setText(getString(R.string.select_date));
+        ((TextView) this.findViewById(R.id.EndTime)).setText(getString(R.string.select_time));
+        ((TextView) this.findViewById(R.id.EndDate)).setText(getString(R.string.select_date));
+        multispinner.setText(getText(R.string.multispinner_placeholder));
+    }
+
+    @Override
+    public void onFailure(Result result) {
+        if (dialog != null) dialog.cancel();
+        Toast.makeText(this, result.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
     public static class TimePickerFragment extends DialogFragment
             implements TimePickerDialog.OnTimeSetListener {
 
@@ -173,91 +249,11 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
         }
     }
 
-    public void sendMessage(View view) {
-        String title = ((EditText) this.findViewById(R.id.msgtitle)).getText().toString();
-        if(title.equals("")){
-            Toast.makeText(this, "You need a title!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        String content = ((EditText) this.findViewById(R.id.content)).getText().toString();
-        if(content.equals("")){
-            Toast.makeText(this, "A message has to have content!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        Location location = God.getInstance().getLocations().get(spinner.getSelectedItemPosition());
-        if(location == null){
-            Toast.makeText(this, "You must add locations first!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String beginTime = ((TextView) this.findViewById(R.id.BeginTime)).getText().toString();
-        String beginDate = ((TextView) this.findViewById(R.id.BeginDate)).getText().toString();
-        if(beginDate.equals("") || beginTime.equals("")){
-            Toast.makeText(this, "You must fill the begin date!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String endTime = ((TextView) this.findViewById(R.id.EndTime)).getText().toString();
-        String endDate = ((TextView) this.findViewById(R.id.EndDate)).getText().toString();
-        if(endDate.equals("") || endTime.equals("")){
-            Toast.makeText(this, "You must fill the expiration date!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if(keysInPairs == null)
-            keysInPairs = new ArrayList<>();
-
-        RadioGroup group = ((RadioGroup) this.findViewById(R.id.radio));
-        int id = group.getCheckedRadioButtonId();
-        View radioButton = this.findViewById(id);
-        int radioId = group.indexOfChild(radioButton);
-        RadioButton btn = (RadioButton) group.getChildAt(radioId);
-        String policy = (String) btn.getText();
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        String bDate = simpleDateFormat.format(new Date(beginTime + " " + beginDate));
-        String eDate = simpleDateFormat.format(new Date(endTime + " " + endDate));
-
-
-        Message message = new Message(title,location,policy,keysInPairs,bDate,eDate,content);
-        new PostMessageService(getApplicationContext(), this, message).execute();
-    }
-
-    @Override
-    public void onSuccess(Result result) {
-        if(dialog != null) dialog.cancel();
-        String message = result.getMessage();
-        if(message != null) {
-            if (message.equals(getString(R.string.LM_2))) {
-                message = "Message was posted with success!";
-                //TODO : maybe there is a better way
-                reset();
-            }
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void reset() {
-        ((EditText) this.findViewById(R.id.msgtitle)).setText("");
-        ((EditText) this.findViewById(R.id.content)).setText("");
-        ((TextView) this.findViewById(R.id.BeginTime)).setText(getString(R.string.select_time));
-        ((TextView) this.findViewById(R.id.BeginDate)).setText(getString(R.string.select_date));
-        ((TextView) this.findViewById(R.id.EndTime)).setText(getString(R.string.select_time));
-        ((TextView) this.findViewById(R.id.EndDate)).setText(getString(R.string.select_date));
-        multispinner.setText(getText(R.string.multispinner_placeholder));
-    }
-
-    @Override
-    public void onFailure(Result result) {
-        if(dialog != null) dialog.cancel();
-        Toast.makeText(this, result.getMessage(), Toast.LENGTH_LONG).show();
-    }
-
     public class Listener {
 
         private Context context;
 
-        public Listener(Context context){
+        public Listener(Context context) {
             this.context = context;
         }
 
@@ -268,7 +264,7 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
 
     public class LocationsListener extends Listener implements ActivityCallback {
 
-        public LocationsListener(Context context){
+        public LocationsListener(Context context) {
             super(context);
         }
 
@@ -287,19 +283,18 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
         }
 
         private void setLocations(List<Location> locs) {
-            if(locs == null)
+            if (locs == null)
                 return;
 
             locations.clear();
-            for(Location l : locs)
+            for (Location l : locs)
                 locations.add(l.toString());
 
-            if(spinnerLocations == null){
+            if (spinnerLocations == null) {
                 spinnerLocations = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, locations);
                 spinnerLocations.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinner.setAdapter(spinnerLocations);
-            }
-            else
+            } else
                 spinnerLocations.notifyDataSetChanged();
         }
     }
@@ -307,7 +302,7 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
 
     public class PairsListener extends Listener implements ActivityCallback {
 
-        public PairsListener(Context context){
+        public PairsListener(Context context) {
             super(context);
         }
 
@@ -327,26 +322,24 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
         }
 
         private void setPairs(List<Pair> pairs) {
-            if(pairs == null)
+            if (pairs == null)
                 return;
 
             keysInPairs = pairs;
 
             keys.clear();
-            for(Pair p : pairs)
+            for (Pair p : pairs)
                 keys.add(p.toString() + "");
 
-            if(spinnerKeys == null){
+            if (spinnerKeys == null) {
                 spinnerKeys = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, keys);
                 spinnerKeys.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 multispinner.setAdapter(spinnerKeys, false, onSelectedListener);
                 multispinner.setText(getContext().getText(R.string.multispinner_placeholder));
-            }
-            else
+            } else
                 spinnerKeys.notifyDataSetChanged();
         }
     }
-
 
 
 }

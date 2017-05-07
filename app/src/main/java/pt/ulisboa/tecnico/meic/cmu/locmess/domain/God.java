@@ -24,8 +24,6 @@ import java.util.TreeMap;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.ImpossibleToGetLocationException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.PermissionNotGrantedException;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.geofence.GeofenceManager;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Token;
@@ -55,7 +53,6 @@ public class God {
 
     public static void init(Context context) {
         ourInstance = new God(context);
-        GeofenceManager.init(context);
     }
 
     public boolean isLogged() {
@@ -81,7 +78,7 @@ public class God {
 
     public void startLocationUpdates() {
         Log.d(TAG, "Starting up the update location service.");
-        if(!Utils.isMyServiceRunning(context, UpdateLocationService.class))
+        if (!Utils.isMyServiceRunning(context, UpdateLocationService.class))
             context.startService(new Intent(context, UpdateLocationService.class));
     }
 
@@ -107,6 +104,7 @@ public class God {
             e.printStackTrace();
         }
     }
+
     public void saveState() {
         try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(
                 context.openFileOutput(Constants.CACHED_MGS, Context.MODE_PRIVATE)))) {
@@ -143,47 +141,24 @@ public class God {
         }
     }
 
-    public void setProfile(List<Pair> profile) {
-        this.profile = profile;
-    }
-
     public List<Pair> getProfile() {
         return profile;
     }
 
-    public void setLocations(List<pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location> locations) {
-        if(this.locations != null && this.locations.equals(locations))return;
-        Log.d(TAG, "Setting locations and renewing all geofences.");
-        this.locations = new ArrayList<>(locations);
-        /*GeofenceManager.getInstance().removeAllGeofences();
-        ArrayList<MyGeofence> myGeofenceArrayList = new ArrayList<>();
-        for(pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location l : locations){
-            myGeofenceArrayList.add(new MyGeofence(l.getName(), l.getLatitude(), l.getLongitude(), l.getRadius() +1.0f));
-        }
-        Log.d(TAG, ""+myGeofenceArrayList);
-        if(myGeofenceArrayList.size() == 0){
-            // No locations, it's useless to keep trying to get our location
-            // Lets wait a bit and then check again
-            stopLocationUpdates();
-            new Thread(){
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(Constants.UPDATE_INTERVAL);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    startLocationUpdates();
-                }
-            }.start();
-            return;
-        }
-        startLocationUpdates();
-        GeofenceManager.getInstance().addGeofences(myGeofenceArrayList);*/
+    public void setProfile(List<Pair> profile) {
+        this.profile = profile;
     }
 
     public List<pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location> getLocations() {
         return locations;
+    }
+
+    public void setLocations(List<pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location> locations) {
+        if (this.locations != null && this.locations.equals(locations)) return;
+        Log.d(TAG, "Setting locations and renewing all geofences.");
+        this.locations = new ArrayList<>(locations);
+        if (this.locations.size() == 0) stopLocationUpdates();
+        else startLocationUpdates();
     }
 
     public void setTitleMessages(List<String> titleMessages) {

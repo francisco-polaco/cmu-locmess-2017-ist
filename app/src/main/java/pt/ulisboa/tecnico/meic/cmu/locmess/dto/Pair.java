@@ -34,7 +34,7 @@ public class Pair {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return key + "=" + value;
     }
 }

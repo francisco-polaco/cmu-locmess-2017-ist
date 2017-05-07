@@ -228,14 +228,14 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_accept:
-                String name = ((EditText)findViewById(R.id.gps_location_name)).getText().toString();
-                if(name.equals("")){
+                String name = ((EditText) findViewById(R.id.gps_location_name)).getText().toString();
+                if (name.equals("")) {
                     Toast.makeText(getApplicationContext(), "Name is empty.", Toast.LENGTH_LONG).show();
                     return true;
                 }
                 new AddLocationService(getApplicationContext(),
                         this,
-                        new GPSLocation(((EditText)findViewById(R.id.gps_location_name)).getText().toString(),
+                        new GPSLocation(((EditText) findViewById(R.id.gps_location_name)).getText().toString(),
                                 latLong, mRadius)).execute();
                 dialog = WidgetConstructors.getLoadingDialog(this, getString(R.string.dialog_message_add_gps_location));
                 dialog.show();
@@ -301,7 +301,7 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
 
     @Override
     public void onSuccess(Result result) {
-        if(dialog != null) dialog.cancel();
+        if (dialog != null) dialog.cancel();
         Log.d(TAG, result.getMessage());
         Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_LONG).show();
         finish();
@@ -309,7 +309,7 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
 
     @Override
     public void onFailure(Result result) {
-        if(dialog != null) dialog.cancel();
+        if (dialog != null) dialog.cancel();
         Log.d(TAG, result.getMessage());
         Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_LONG).show();
     }
