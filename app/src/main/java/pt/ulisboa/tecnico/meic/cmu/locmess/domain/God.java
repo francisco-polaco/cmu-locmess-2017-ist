@@ -141,7 +141,7 @@ public class God {
         }
     }
 
-    public void clearCredentials() throws IOException {
+    public void clearState() throws IOException {
         for (String filename : new String[]{Constants.CREDENTIALS_FILENAME, Constants.CACHED_MGS}) {
             File file = new File(context.getFilesDir().getPath() + "/" + filename);
             if (file.exists()) file.delete();
@@ -171,17 +171,21 @@ public class God {
         return messages;
     }
 
-    public boolean setMessages(TreeMap<Integer, MessageDto> messages) {
-        Log.d("CACHE", messages.toString());
-        boolean toRet = false;
+    public void setMessages(TreeMap<Integer, MessageDto> messages) {
+        Log.d("Msgs", messages.toString());
+        if (messages.size() == 0) {
+            this.messages = messages;
+            return;
+        }
+
         if (this.messages != null) {
-            toRet = this.messages.equals(messages);
+            if (!this.messages.equals(messages))
+                NotificationAgent.getInstance().sendNotification(context);
         }
         else {
-            toRet = false;
+            NotificationAgent.getInstance().sendNotification(context);
         }
         this.messages = messages;
-        return toRet;
     }
 
     public void addToCache(Integer id) {

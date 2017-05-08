@@ -163,8 +163,7 @@ public final class UpdateLocationService extends Service implements LocationList
         new ListMessagesService(getApplicationContext(), new ActivityCallback() {
             @Override
             public void onSuccess(Result result) {
-                if (God.getInstance().getMessages().size() != 0 && !((Boolean) result.getPiggyback()))
-                    NotificationAgent.getInstance().sendNotification(getApplicationContext());
+
             }
 
             @Override
