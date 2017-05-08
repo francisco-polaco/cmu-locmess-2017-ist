@@ -44,6 +44,7 @@ public class God {
     private List<Message> messageRepository;
     private TreeMap<Integer, MessageDto> cachedMessages;
     private boolean stateHasChanged = false;
+
     private String username;
 
     private God(Context context) {
@@ -62,6 +63,10 @@ public class God {
 
     public boolean isLogged() {
         return token != null;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public LatLng getLastLocation() {
