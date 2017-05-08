@@ -40,7 +40,6 @@ public class God {
     private List<Pair> profile;
     private ArrayList<pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location> locations;
     private TreeMap<Integer, MessageDto> messages;
-    private TreeMap<Integer, MessageDto> lastMessages;
 
     private List<Message> messageRepository;
     private TreeMap<Integer, MessageDto> cachedMessages;
@@ -174,16 +173,11 @@ public class God {
 
     public boolean setCachedMessages(TreeMap<Integer, MessageDto> messages) {
         Log.d(TAG, messages.toString());
-        if (lastMessages == null) {
-            this.lastMessages = (TreeMap<Integer, MessageDto>) messages.clone();
+        if (this.messages != null) return this.messages.equals(messages);
+        else {
             this.messages = messages;
             return false;
-        } else {
-            lastMessages = (TreeMap<Integer, MessageDto>) this.messages.clone();
-            this.messages = messages;
-            return lastMessages.equals(this.messages);
         }
-
     }
 
     public void addToCache(Integer id) {
@@ -202,7 +196,7 @@ public class God {
 
             messageRepository = (List<Message>) objectInputStream.readObject();
         } catch (ClassNotFoundException e) {
-            messageRepository= new ArrayList<Message>();
+            messageRepository = new ArrayList<>();
         }
     }
 
@@ -216,8 +210,8 @@ public class God {
     }
 
     public void addToMessageRepository(Message message) {
-            messageRepository.add(message);
-            //stateHasChanged = true;
+        messageRepository.add(message);
+        //stateHasChanged = true;
     }
 
 

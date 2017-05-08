@@ -16,14 +16,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-
 
 import java.util.ArrayList;
 
@@ -32,10 +29,8 @@ import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
 import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
-import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.APLocation;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -46,18 +41,31 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.service.LocationWebService;
 
 
 public final class UpdateLocationService extends Service implements LocationListener, GoogleApiCallbacks, ActivityCallback,
-        SimWifiP2pManager.PeerListListener{
+        SimWifiP2pManager.PeerListListener {
 
     private static final String TAG = UpdateLocationService.class.getSimpleName();
-
+    public static boolean wifion = false;
     private Location oldLocation;
     private APLocation oldAPLocation;
-
-
     private SimWifiP2pManager mManager = null;
     private SimWifiP2pManager.Channel mChannel = null;
     private SimWifiP2pBroadcastReceiver mReceiver;
-    public static boolean wifion = false;
+    private ServiceConnection mConnection = new ServiceConnection() {
+        // callbacks for service binding, passed to bindService()
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            Log.d(TAG, "mConnection: Entrei!");
+            mManager = new SimWifiP2pManager(new Messenger(service));
+            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mManager = null;
+            mChannel = null;
+        }
+    };
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -121,49 +129,49 @@ public final class UpdateLocationService extends Service implements LocationList
 
     @Override
     public void onLocationChanged(Location location) {
-       // if (isBetterLocation(oldLocation, location)) {
+        // if (isBetterLocation(oldLocation, location)) {
 
-        if(wifion) {
+        if (wifion) {
             mManager.requestPeers(mChannel, this);
         }
-        
+
         Log.d(TAG, location.toString());
-            oldLocation = location;
-            new LocationWebService(getApplicationContext(), new ActivityCallback() {
-                @Override
-                public void onSuccess(Result result) {
-                    Log.d(TAG, "Location updated");
-                }
+        oldLocation = location;
+        new LocationWebService(getApplicationContext(), new ActivityCallback() {
+            @Override
+            public void onSuccess(Result result) {
+                Log.d(TAG, "Location updated");
+            }
 
-                @Override
-                public void onFailure(Result result) {
-                    Log.d(TAG, "Location update failed.");
+            @Override
+            public void onFailure(Result result) {
+                Log.d(TAG, "Location update failed.");
 
-                }
-            }, location).execute();
-            new ListLocationsService(getApplicationContext(), new ActivityCallback() {
-                @Override
-                public void onSuccess(Result result) {
+            }
+        }, location).execute();
+        new ListLocationsService(getApplicationContext(), new ActivityCallback() {
+            @Override
+            public void onSuccess(Result result) {
 
-                }
+            }
 
-                @Override
-                public void onFailure(Result result) {
+            @Override
+            public void onFailure(Result result) {
 
-                }
-            }).execute();
-            new ListMessagesService(getApplicationContext(), new ActivityCallback() {
-                @Override
-                public void onSuccess(Result result) {
-                    if (God.getInstance().getMessages().size() != 0 && !((Boolean) result.getPiggyback()))
-                        NotificationAgent.getInstance().sendNotification(getApplicationContext());
-                }
+            }
+        }).execute();
+        new ListMessagesService(getApplicationContext(), new ActivityCallback() {
+            @Override
+            public void onSuccess(Result result) {
+                if (God.getInstance().getMessages().size() != 0 && !((Boolean) result.getPiggyback()))
+                    NotificationAgent.getInstance().sendNotification(getApplicationContext());
+            }
 
-                @Override
-                public void onFailure(Result result) {
+            @Override
+            public void onFailure(Result result) {
 
-                }
-            }).execute();
+            }
+        }).execute();
         //}
     }
 
@@ -247,23 +255,6 @@ public final class UpdateLocationService extends Service implements LocationList
             Log.d(TAG, "onPeersAvailable: " + devstr);
         }
 
-     //TODO
+        //TODO
     }
-    
-    private ServiceConnection mConnection = new ServiceConnection() {
-        // callbacks for service binding, passed to bindService()
-
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.d(TAG, "mConnection: Entrei!");
-            mManager = new SimWifiP2pManager(new Messenger(service));
-            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mManager = null;
-            mChannel = null;
-        }
-    };
 }
