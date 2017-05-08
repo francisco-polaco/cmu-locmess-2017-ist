@@ -171,13 +171,17 @@ public class God {
         return messages;
     }
 
-    public boolean setCachedMessages(TreeMap<Integer, MessageDto> messages) {
-        Log.d(TAG, messages.toString());
-        if (this.messages != null) return this.messages.equals(messages);
-        else {
-            this.messages = messages;
-            return false;
+    public boolean setMessages(TreeMap<Integer, MessageDto> messages) {
+        Log.d("CACHE", messages.toString());
+        boolean toRet = false;
+        if (this.messages != null) {
+            toRet = this.messages.equals(messages);
         }
+        else {
+            toRet = false;
+        }
+        this.messages = messages;
+        return toRet;
     }
 
     public void addToCache(Integer id) {
