@@ -93,6 +93,7 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
             God.init(getApplicationContext());
         }
         GoogleAPI.init(getApplicationContext(), false);
+        God.getInstance().startLocationUpdates();
         initRecyclerView();
     }
 
