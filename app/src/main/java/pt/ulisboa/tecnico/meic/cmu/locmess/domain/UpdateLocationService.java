@@ -18,15 +18,15 @@ import android.os.Messenger;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.view.LayoutInflater;
+import android.view.View;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -52,6 +52,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
+import pt.ulisboa.tecnico.meic.cmu.locmess.handler.MessagesRvAdapter;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.GoogleApiCallbacks;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
@@ -62,8 +63,8 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.service.LocationWebService;
 public final class UpdateLocationService extends Service implements LocationListener, GoogleApiCallbacks, ActivityCallback,
         SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
 
-    private static final String TAG = UpdateLocationService.class.getSimpleName();
 
+    private static final String TAG = UpdateLocationService.class.getSimpleName();
     private Location oldLocation;
     private APLocation oldAPLocation;
     private List<String> IpDeviceList = new ArrayList<>();;
@@ -92,7 +93,6 @@ public final class UpdateLocationService extends Service implements LocationList
         } catch (NotInitializedException e) {
             God.init(getApplicationContext());
         }
-
         // register broadcast receiver
         IntentFilter filter = new IntentFilter();
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
@@ -140,7 +140,7 @@ public final class UpdateLocationService extends Service implements LocationList
 
     @Override
     public void onLocationChanged(Location location) {
-       // if (isBetterLocation(oldLocation, location)) {
+        // if (isBetterLocation(oldLocation, location)) {
 
         if(wifion) {
                 mManager.requestPeers(mChannel, this);
@@ -182,7 +182,6 @@ public final class UpdateLocationService extends Service implements LocationList
 
                 }
             }).execute();
-        //}
     }
 
     protected boolean isBetterLocation(Location location, Location currentBestLocation) {

@@ -36,17 +36,22 @@ public class God {
 
     private static final String TAG = God.class.getSimpleName();
     private static God ourInstance;
+
+    public Context getContext() {
+        return context;
+    }
+
     private Context context;
     private Token token;
     // profile represents the key values of the user
     private List<Pair> profile;
     private ArrayList<pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location> locations;
     private TreeMap<Integer, MessageDto> messages;
-    private TreeMap<Integer, MessageDto> lastMessages;
 
     private List<Message> messageRepository;
     private TreeMap<Integer, MessageDto> cachedMessages;
     private boolean stateHasChanged = false;
+
     private String username;
 
     public String getUsername() {
@@ -71,6 +76,10 @@ public class God {
 
     public boolean isLogged() {
         return token != null;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public LatLng getLastLocation() {
@@ -189,18 +198,21 @@ public class God {
         return messages;
     }
 
-    public boolean setCachedMessages(TreeMap<Integer, MessageDto> messages) {
-        Log.d(TAG, messages.toString());
-        if (lastMessages == null) {
-            this.lastMessages = (TreeMap<Integer, MessageDto>) messages.clone();
+    public void setMessages(TreeMap<Integer, MessageDto> messages) {
+        Log.d("Msgs", messages.toString());
+        if (messages.size() == 0) {
             this.messages = messages;
-            return false;
-        } else {
-            lastMessages = (TreeMap<Integer, MessageDto>) this.messages.clone();
-            this.messages = messages;
-            return lastMessages.equals(this.messages);
+            return;
         }
 
+        if (this.messages != null) {
+            if (!this.messages.equals(messages))
+                NotificationAgent.getInstance().sendNotification(context);
+        }
+        else {
+            NotificationAgent.getInstance().sendNotification(context);
+        }
+        this.messages = messages;
     }
 
     public void addToCache(Integer id) {
@@ -216,7 +228,6 @@ public class God {
     public void loadMessagesDescentralized()  {
         try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
                 context.openFileInput(Constants.MESSAGEREPOSITORY_FILENAME)))) {
-
             messageRepository = (ArrayList<Message>) objectInputStream.readObject();
             printMessages();
         } catch (ClassNotFoundException| IOException e) {

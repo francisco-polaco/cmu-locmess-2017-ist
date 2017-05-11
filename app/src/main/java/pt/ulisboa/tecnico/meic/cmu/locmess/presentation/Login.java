@@ -21,6 +21,8 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.service.LoginWebService;
 
 import static pt.ulisboa.tecnico.meic.cmu.locmess.presentation.WidgetConstructors.getLoadingDialog;
 
+//import pt.ulisboa.tecnico.meic.cmu.locmess.domain.Repository.MessageRepository;
+
 /**
  * Created by jp_s on 4/12/2017.
  */
@@ -35,7 +37,11 @@ public class Login extends AppCompatActivity implements ActivityCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
         God.init(getApplicationContext());
+<<<<<<< HEAD
         God.getInstance().startLocationUpdates();
+=======
+        //MessageRepository.init(getApplicationContext());
+>>>>>>> 6e36b997cc8d25b6d3a1031d598418fad862b59d
 
     }
 

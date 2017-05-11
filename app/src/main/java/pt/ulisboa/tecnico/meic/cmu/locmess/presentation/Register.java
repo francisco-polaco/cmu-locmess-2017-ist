@@ -57,7 +57,7 @@ public class Register extends AppCompatActivity implements ActivityCallback {
     @Override
     public void onSuccess(Result result) {
         try {
-            God.getInstance().clearCredentials();
+            God.getInstance().clearState();
         } catch (IOException e) {
             e.printStackTrace();
         }

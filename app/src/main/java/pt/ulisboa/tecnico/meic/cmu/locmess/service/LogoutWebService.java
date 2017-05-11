@@ -31,7 +31,7 @@ public final class LogoutWebService extends LocmessWebService implements Locmess
     public void onSuccess(Object object) {
         Log.d(TAG, object.toString());
         try {
-            God.getInstance().clearCredentials();
+            God.getInstance().clearState();
         } catch (IOException e) {
             e.printStackTrace();
         }
