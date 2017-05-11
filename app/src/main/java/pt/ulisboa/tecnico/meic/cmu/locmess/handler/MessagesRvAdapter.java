@@ -13,6 +13,7 @@ import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 
 /**
@@ -94,6 +95,11 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
 
     public void removeMsg(MessageDto messageDto) {
         dataset.remove(messageDto);
+        notifyDataSetChanged();
+    }
+
+    public void addMsg(MessageDto messageDto){
+        dataset.add(messageDto);
         notifyDataSetChanged();
     }
 

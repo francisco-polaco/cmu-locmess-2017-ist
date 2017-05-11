@@ -34,6 +34,11 @@ public class God {
 
     private static final String TAG = God.class.getSimpleName();
     private static God ourInstance;
+
+    public Context getContext() {
+        return context;
+    }
+
     private Context context;
     private Token token;
     // profile represents the key values of the user

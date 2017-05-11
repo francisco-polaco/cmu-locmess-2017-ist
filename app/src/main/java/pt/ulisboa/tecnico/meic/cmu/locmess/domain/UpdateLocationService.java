@@ -15,7 +15,10 @@ import android.os.Messenger;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.location.LocationListener;
@@ -23,16 +26,21 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
 import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
+import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.APLocation;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
+import pt.ulisboa.tecnico.meic.cmu.locmess.handler.MessagesRvAdapter;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.GoogleApiCallbacks;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
@@ -83,7 +91,6 @@ public final class UpdateLocationService extends Service implements LocationList
         } catch (NotInitializedException e) {
             God.init(getApplicationContext());
         }
-
         // register broadcast receiver
         IntentFilter filter = new IntentFilter();
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
@@ -138,9 +145,11 @@ public final class UpdateLocationService extends Service implements LocationList
         Log.d(TAG, location.toString());
         oldLocation = location;
         new LocationWebService(getApplicationContext(), new ActivityCallback() {
+
             @Override
             public void onSuccess(Result result) {
-                Log.d(TAG, "Location updated");
+                God.getInstance().getContext().getResources().getLayout(R.layout.mainscreen);
+
             }
 
             @Override
