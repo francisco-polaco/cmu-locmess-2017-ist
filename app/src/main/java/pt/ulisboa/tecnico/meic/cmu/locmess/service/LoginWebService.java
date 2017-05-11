@@ -16,6 +16,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
 
+// TODO: CHECKED!
 public final class LoginWebService extends LocmessWebService implements LocmessCallback {
 
     private static final String TAG = LoginWebService.class.getSimpleName();

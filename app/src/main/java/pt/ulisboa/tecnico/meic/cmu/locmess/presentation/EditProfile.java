@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.presentation;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,6 +21,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
+import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessListener;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.AddPairService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListPairsService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.RemovePairService;
@@ -125,4 +127,47 @@ public class EditProfile extends AppCompatActivity implements ActivityCallback {
 
         Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();
     }
+
+
+    private class ListPairsListener extends LocmessListener implements ActivityCallback {
+
+        protected ListPairsListener(Context context) {
+            super(context);
+            new ListPairsService(context,this).execute();
+        }
+
+        @Override
+        public void onSuccess(Result result) {
+            itemlist = parsePairs(God.getInstance().getProfile());
+            adapter = new SimpleAdapter(getContext(), itemlist, R.layout.listview,
+                      new String[]{"Key", "Value"},
+                      new int[]{R.id.textView, R.id.textView2});
+            final ListView listValues = (ListView) findViewById(R.id.keyvalue);
+            listValues.setAdapter(adapter);
+
+            // in order to remove an item from the listview
+            listValues.setClickable(true);
+            listValues.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int arg2, long arg3) {
+                    HashMap<String, String> keyValue = (HashMap<String, String>) parent.getItemAtPosition(arg2);
+                    Pair toRemove = new Pair(keyValue.get("Key"), keyValue.get("Value"));
+                    new RemovePairService(getApplicationContext(), EditProfile.this, toRemove, arg2).execute();
+                    return true;
+                }
+            });
+            if (dialog != null) dialog.cancel();
+        }
+
+        @Override
+        public void onFailure(Result result) {
+
+        }
+    }
+
+
+
+
+
+
 }

@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.service;
 
+import android.app.Service;
 import android.content.Context;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;

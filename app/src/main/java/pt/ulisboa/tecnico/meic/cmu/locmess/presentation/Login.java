@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.presentation;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -17,17 +18,14 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.User;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
+import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessListener;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.LoginWebService;
 
 import static pt.ulisboa.tecnico.meic.cmu.locmess.presentation.WidgetConstructors.getLoadingDialog;
 
-//import pt.ulisboa.tecnico.meic.cmu.locmess.domain.Repository.MessageRepository;
+public class Login extends AppCompatActivity {
 
-/**
- * Created by jp_s on 4/12/2017.
- */
-
-public class Login extends AppCompatActivity implements ActivityCallback {
+    // TODO: Refactorized!
 
     private static final String TAG = Login.class.getSimpleName();
     private ProgressDialog dialog;
@@ -37,9 +35,6 @@ public class Login extends AppCompatActivity implements ActivityCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
         God.init(getApplicationContext());
-        God.getInstance().startLocationUpdates();
-        //MessageRepository.init(getApplicationContext());
-
     }
 
     @Override
@@ -52,8 +47,7 @@ public class Login extends AppCompatActivity implements ActivityCallback {
         }
         if (credentials != null) {
             Log.d(TAG, "We have found credentials.");
-            new LoginWebService(getApplicationContext(), this,
-                    new User(credentials[0], credentials[1]), true).execute();
+            new LoginListener(getApplicationContext(),new User(credentials[0],credentials[1]),true);
         }
     }
 
@@ -67,24 +61,33 @@ public class Login extends AppCompatActivity implements ActivityCallback {
         String password = ((EditText) this.findViewById(R.id.Pass)).getText().toString();
         boolean autoLogin = ((CheckBox) findViewById(R.id.autologin)).isChecked();
         dialog = getLoadingDialog(Login.this, getString(R.string.dialog_login));
-        new LoginWebService(getApplicationContext(), Login.this,
-                new User(username, password), autoLogin).execute();
+        new LoginListener(getApplicationContext(),new User(username,password),autoLogin);
         dialog.show();
     }
 
-    @Override
-    public void onSuccess(Result result) {
-        if (dialog != null)
-            dialog.cancel();
-        Intent intent = new Intent(this, MainScreen.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-    }
+    private class LoginListener extends LocmessListener implements ActivityCallback {
 
-    @Override
-    public void onFailure(Result result) {
-        if (dialog != null) dialog.cancel();
-        Toast.makeText(getApplicationContext(), R.string.toast_login_error, Toast.LENGTH_LONG).show();
+        public LoginListener(Context context, User user, boolean autoLogin) {
+            super(context);
+            new LoginWebService(context,this,user,autoLogin).execute();
+        }
+
+        @Override
+        public void onSuccess(Result result) {
+            if (dialog != null)
+                dialog.cancel();
+            Intent intent = new Intent(getContext(), MainScreen.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            Log.d(TAG,"Logged in!");
+        }
+
+        @Override
+        public void onFailure(Result result) {
+            if (dialog != null) dialog.cancel();
+            Toast.makeText(getApplicationContext(), R.string.toast_login_error, Toast.LENGTH_LONG).show();
+            Log.d(TAG,"Failed to login!");
+        }
     }
 
 }
