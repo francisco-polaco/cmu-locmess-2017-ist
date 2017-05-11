@@ -25,8 +25,6 @@ import static pt.ulisboa.tecnico.meic.cmu.locmess.presentation.WidgetConstructor
 
 public class Login extends AppCompatActivity {
 
-    // TODO: Refactorized!
-
     private static final String TAG = Login.class.getSimpleName();
     private ProgressDialog dialog;
 
@@ -34,7 +32,7 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-        God.init(getApplicationContext());
+        //God.init(getApplicationContext());
     }
 
     @Override
@@ -56,7 +54,7 @@ public class Login extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void mainScreen(View view) {
+    public void login(View view) {
         String username = ((EditText) this.findViewById(R.id.Username)).getText().toString();
         String password = ((EditText) this.findViewById(R.id.Pass)).getText().toString();
         boolean autoLogin = ((CheckBox) findViewById(R.id.autologin)).isChecked();

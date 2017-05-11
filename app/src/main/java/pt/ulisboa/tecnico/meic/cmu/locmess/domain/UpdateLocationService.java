@@ -1,11 +1,9 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.domain;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -18,20 +16,14 @@ import android.os.Messenger;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -52,7 +44,6 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
-import pt.ulisboa.tecnico.meic.cmu.locmess.handler.MessagesRvAdapter;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.GoogleApiCallbacks;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
@@ -60,22 +51,39 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListMessagesService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.LocationWebService;
 
 
-public final class UpdateLocationService extends Service implements LocationListener, GoogleApiCallbacks, ActivityCallback,
+public final class UpdateLocationService extends Service implements
+        LocationListener, GoogleApiCallbacks,
         SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
 
 
     private static final String TAG = UpdateLocationService.class.getSimpleName();
+    public static boolean wifion = false;
+    public boolean connected = false;
     private Location oldLocation;
+    ;
     private APLocation oldAPLocation;
-    private List<String> IpDeviceList = new ArrayList<>();;
+    private List<String> IpDeviceList = new ArrayList<>();
     private List<String> peersStr = new ArrayList<>();
     private SimWifiP2pSocketServer mSrvSocket = null;
     private SimWifiP2pSocket mCliSocket = null;
     private SimWifiP2pManager mManager = null;
     private SimWifiP2pManager.Channel mChannel = null;
     private SimWifiP2pBroadcastReceiver mReceiver;
-    public static boolean wifion = false;
-    public boolean connected = false;
+    private ServiceConnection mConnection = new ServiceConnection() {
+        // callbacks for service binding, passed to bindService()
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            mManager = new SimWifiP2pManager(new Messenger(service));
+            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mManager = null;
+            mChannel = null;
+        }
+    };
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -112,7 +120,6 @@ public final class UpdateLocationService extends Service implements LocationList
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "onDestroy service");
         stopLocationUpdates();
         super.onDestroy();
     }
@@ -127,7 +134,6 @@ public final class UpdateLocationService extends Service implements LocationList
         Log.d(TAG, "Starting Location Updates");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "No Permissions");
             return;
         }
         LocationRequest mLocationRequest = LocationRequest.create();
@@ -147,29 +153,8 @@ public final class UpdateLocationService extends Service implements LocationList
                 mManager.requestGroupInfo(mChannel, this);
         }
 
-            new LocationWebService(getApplicationContext(), new ActivityCallback() {
-                @Override
-                public void onSuccess(Result result) {
-                    Log.d(TAG, "Location updated");
-                }
-
-                @Override
-                public void onFailure(Result result) {
-                    Log.d(TAG, "Location update failed.");
-
-                }
-            }, location).execute();
-            new ListLocationsService(getApplicationContext(), new ActivityCallback() {
-                @Override
-                public void onSuccess(Result result) {
-
-                }
-
-                @Override
-                public void onFailure(Result result) {
-
-                }
-            }).execute();
+        new LocationWebService(getApplicationContext(), null, location).execute();
+        new ListLocationsService(getApplicationContext(), null).execute();
             new ListMessagesService(getApplicationContext(), new ActivityCallback() {
                 @Override
                 public void onSuccess(Result result) {
@@ -243,15 +228,9 @@ public final class UpdateLocationService extends Service implements LocationList
         stopLocationUpdates();
     }
 
-    @Override
-    public void onSuccess(Result result) {
-        Log.d(TAG, "Heartbeat Sucess");
-    }
-
-    @Override
-    public void onFailure(Result result) {
-        Log.d(TAG, "Heartbeat Failed");
-    }
+    /*
+     * Asynctasks implementing message exchange
+	 */
 
     public void DescentralizedMessageSend(){
             for (Message m : God.getInstance().getMessageRepository()) {
@@ -292,9 +271,32 @@ public final class UpdateLocationService extends Service implements LocationList
             }
     }
 
-    /*
-	 * Asynctasks implementing message exchange
-	 */
+    @Override
+    public void onPeersAvailable(SimWifiP2pDeviceList peers) {
+        ArrayList<String> peersStr = new ArrayList<>();
+
+        // compile list of devices in range
+        for (SimWifiP2pDevice device : peers.getDeviceList()) {
+            String devstr = device.deviceName + " (" + device.getVirtIp() + ")";
+            peersStr.add(devstr);
+        }
+        oldAPLocation = new APLocation(peersStr.toString(), peersStr);
+
+        //TODO
+    }
+
+    @Override
+    public void onGroupInfoAvailable(SimWifiP2pDeviceList devices,
+                                     SimWifiP2pInfo groupInfo) {
+        IpDeviceList.clear();
+        // compile list of network members
+        for (String deviceName : groupInfo.getDevicesInNetwork()) {
+            SimWifiP2pDevice device = devices.getByName(deviceName);
+            String[] s = device.getVirtIp().split(":");
+            IpDeviceList.add(s[0]);
+        }
+        DescentralizedMessageSend();
+    }
 
     public class IncommingCommTask extends AsyncTask<Void, String, Void> {
 
@@ -375,7 +377,6 @@ public final class UpdateLocationService extends Service implements LocationList
             }*/
     }
 
-
     public class SendCommTask extends AsyncTask<String, String, Void> {
 
         @Override
@@ -411,47 +412,4 @@ public final class UpdateLocationService extends Service implements LocationList
             guiUpdateDisconnectedState();
         }*/
     }
-
-    @Override
-    public  void onPeersAvailable(SimWifiP2pDeviceList peers) {
-            ArrayList<String> peersStr = new ArrayList<>();
-
-            // compile list of devices in range
-            for (SimWifiP2pDevice device : peers.getDeviceList()) {
-                String devstr = device.deviceName + " (" + device.getVirtIp() + ")";
-                peersStr.add(devstr);
-            }
-            oldAPLocation = new APLocation(peersStr.toString(), peersStr);
-
-     //TODO
-    }
-        @Override
-        public void onGroupInfoAvailable(SimWifiP2pDeviceList devices,
-                                         SimWifiP2pInfo groupInfo) {
-                IpDeviceList.clear();
-                // compile list of network members
-                for (String deviceName : groupInfo.getDevicesInNetwork()) {
-                    SimWifiP2pDevice device = devices.getByName(deviceName);
-                    String[] s = device.getVirtIp().split(":");
-                    IpDeviceList.add(s[0]);
-                }
-                DescentralizedMessageSend();
-        }
-
-    
-    private ServiceConnection mConnection = new ServiceConnection() {
-        // callbacks for service binding, passed to bindService()
-
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            mManager = new SimWifiP2pManager(new Messenger(service));
-            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mManager = null;
-            mChannel = null;
-        }
-    };
 }

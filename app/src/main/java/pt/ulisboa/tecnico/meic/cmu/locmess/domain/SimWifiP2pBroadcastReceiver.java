@@ -10,11 +10,10 @@ import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
 
 public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
 
-    private static final String TAG = pt.ulisboa.tecnico.meic.cmu.locmess.domain.SimWifiP2pBroadcastReceiver.class.getSimpleName();
+    private static final String TAG = SimWifiP2pBroadcastReceiver.class.getSimpleName();
     private UpdateLocationService mActivity;
 
     public SimWifiP2pBroadcastReceiver(UpdateLocationService activity) {
-        super();
         this.mActivity = activity;
     }
 
