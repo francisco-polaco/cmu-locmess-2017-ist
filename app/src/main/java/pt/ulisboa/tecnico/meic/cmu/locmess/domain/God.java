@@ -14,7 +14,6 @@ import com.google.android.gms.maps.model.LatLng;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -25,7 +24,6 @@ import java.util.TreeMap;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.ImpossibleToGetLocationException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.PermissionNotGrantedException;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.APLocation;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
@@ -36,27 +34,16 @@ public class God {
 
     private static final String TAG = God.class.getSimpleName();
     private static God ourInstance;
-
-    public Context getContext() {
-        return context;
-    }
-
     private Context context;
     private Token token;
     // profile represents the key values of the user
     private List<Pair> profile;
     private ArrayList<pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location> locations;
     private TreeMap<Integer, MessageDto> messages;
-
     private List<Message> messageRepository;
     private TreeMap<Integer, MessageDto> cachedMessages;
     private boolean stateHasChanged = false;
-
     private String username;
-
-    public String getUsername() {
-        return username;
-    }
 
     private God(Context context) {
         this.context = context;
@@ -74,12 +61,20 @@ public class God {
         ourInstance = new God(context);
     }
 
-    public boolean isLogged() {
-        return token != null;
+    public Context getContext() {
+        return context;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public boolean isLogged() {
+        return token != null;
     }
 
     public LatLng getLastLocation() {
@@ -159,7 +154,7 @@ public class God {
         }
     }
 
-    public void clearCredentials() throws IOException {
+    public void clearState() throws IOException {
         for (String filename : new String[]{Constants.CREDENTIALS_FILENAME, Constants.CACHED_MGS, Constants.MESSAGEREPOSITORY_FILENAME}) {
             File file = new File(context.getFilesDir().getPath() + "/" + filename);
             if (file.exists()) file.delete();

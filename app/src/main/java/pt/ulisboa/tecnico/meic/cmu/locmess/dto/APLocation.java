@@ -1,7 +1,5 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.dto;
 
-import android.util.Log;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -23,15 +21,9 @@ public class APLocation extends Location implements Serializable{
         this.aps = wifiLocations;
     }
 
-<<<<<<< HEAD
     public APLocation(Integer id, String name, List<String> wifiLocations){
             super(id, name);
             this.aps = wifiLocations;
-=======
-    public APLocation(Integer id, String name, List<String> wifiLocations) {
-        super(id, name);
-        this.aps = aps;
->>>>>>> 6e36b997cc8d25b6d3a1031d598418fad862b59d
     }
 
     public String getType() {
@@ -49,15 +41,15 @@ public class APLocation extends Location implements Serializable{
         return aps;
     }
 
+    public void setAps(List<String> aps) {
+        this.aps = aps;
+    }
+
     public String getApVal() {
         String res = "";
         for (String s : aps)
             res = res + s;
         return res;
-    }
-
-    public void setAps(List<String> aps) {
-        this.aps = aps;
     }
 
     public boolean equalAPLocation (APLocation apLocation){

@@ -37,11 +37,8 @@ public class Login extends AppCompatActivity implements ActivityCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
         God.init(getApplicationContext());
-<<<<<<< HEAD
         God.getInstance().startLocationUpdates();
-=======
         //MessageRepository.init(getApplicationContext());
->>>>>>> 6e36b997cc8d25b6d3a1031d598418fad862b59d
 
     }
 
