@@ -10,6 +10,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -154,14 +155,36 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
         RadioButton btn = (RadioButton) group.getChildAt(radioId);
         String policy = (String) btn.getText();
 
+        RadioGroup g = ((RadioGroup) this.findViewById(R.id.SendMode));
+        int i = g.getCheckedRadioButtonId();
+        View rB = this.findViewById(i);
+        int rId = g.indexOfChild(rB);
+        RadioButton btNext = (RadioButton) g.getChildAt(rId);
+        String sendModePolicy = (String) btNext.getText();
+
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         String bDate = simpleDateFormat.format(new Date(beginTime + " " + beginDate));
         String eDate = simpleDateFormat.format(new Date(endTime + " " + endDate));
 
 
+
         Message message = new Message(title, location, policy, keysInPairs, bDate, eDate, content);
-        new PostMessageService(getApplicationContext(), this, message).execute();
+        Log.d("NewMessage", "sendMessage: "+ location);
+
+        if (sendModePolicy.equals("Centralized"))
+            new PostMessageService(getApplicationContext(), this, message).execute();
+        else{
+            Log.d("NewMessage:", "sendMessage: " + God.getInstance().getUsername());
+            message.setOwner(God.getInstance().getUsername());
+            God.getInstance().addToMessageRepository(message);
+            new Thread() {
+                @Override
+                public void run() {
+                    God.getInstance().saveMessagesDescentralized();
+                }
+            }.start();}
     }
+
 
     @Override
     public void onSuccess(Result result) {

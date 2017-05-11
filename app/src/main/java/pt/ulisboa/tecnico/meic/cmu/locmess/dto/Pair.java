@@ -1,10 +1,12 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.dto;
 
+import java.io.Serializable;
+
 /**
  * Created by Diogo on 20/04/2017.
  */
 
-public class Pair {
+public class Pair implements Serializable {
 
     private String key;
     private String value;

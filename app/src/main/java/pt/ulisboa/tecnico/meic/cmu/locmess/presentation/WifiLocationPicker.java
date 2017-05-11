@@ -108,7 +108,7 @@ public class WifiLocationPicker extends AppCompatActivity implements
             case R.id.action_accept:
                 new AddWifiLocationService(getApplicationContext(),
                         this,
-                        new APLocation("", peersStr)).execute();
+                        new APLocation(peersStr.toString(), peersStr)).execute();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

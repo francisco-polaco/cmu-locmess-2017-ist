@@ -1,14 +1,17 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.domain;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Messenger;
@@ -25,17 +28,28 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
 import pt.inesc.termite.wifidirect.SimWifiP2pDeviceList;
+import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.APLocation;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -46,18 +60,21 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.service.LocationWebService;
 
 
 public final class UpdateLocationService extends Service implements LocationListener, GoogleApiCallbacks, ActivityCallback,
-        SimWifiP2pManager.PeerListListener{
+        SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
 
     private static final String TAG = UpdateLocationService.class.getSimpleName();
 
     private Location oldLocation;
     private APLocation oldAPLocation;
-
-
+    private List<String> IpDeviceList = new ArrayList<>();;
+    private List<String> peersStr = new ArrayList<>();
+    private SimWifiP2pSocketServer mSrvSocket = null;
+    private SimWifiP2pSocket mCliSocket = null;
     private SimWifiP2pManager mManager = null;
     private SimWifiP2pManager.Channel mChannel = null;
     private SimWifiP2pBroadcastReceiver mReceiver;
     public static boolean wifion = false;
+    public boolean connected = false;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -87,6 +104,8 @@ public final class UpdateLocationService extends Service implements LocationList
 
         Intent wifiDintent = new Intent(getApplicationContext(), SimWifiP2pService.class);
         bindService(wifiDintent, mConnection, Context.BIND_AUTO_CREATE);
+        new IncommingCommTask().executeOnExecutor(
+                AsyncTask.THREAD_POOL_EXECUTOR);
 
         return START_STICKY;
     }
@@ -124,11 +143,10 @@ public final class UpdateLocationService extends Service implements LocationList
        // if (isBetterLocation(oldLocation, location)) {
 
         if(wifion) {
-            mManager.requestPeers(mChannel, this);
+                mManager.requestPeers(mChannel, this);
+                mManager.requestGroupInfo(mChannel, this);
         }
-        
-        Log.d(TAG, location.toString());
-            oldLocation = location;
+
             new LocationWebService(getApplicationContext(), new ActivityCallback() {
                 @Override
                 public void onSuccess(Result result) {
@@ -236,26 +254,197 @@ public final class UpdateLocationService extends Service implements LocationList
         Log.d(TAG, "Heartbeat Failed");
     }
 
-    @Override
-    public void onPeersAvailable(SimWifiP2pDeviceList peers) {
-        ArrayList<String> peersStr = new ArrayList<>();
+    public void DescentralizedMessageSend(){
+            for (Message m : God.getInstance().getMessageRepository()) {
+                if (oldAPLocation != null && m.getLocation() instanceof APLocation) {
+                    if (oldAPLocation.equalAPLocation((APLocation) m.getLocation())) {
+                        Log.d(TAG, "DescentralizedMessageSend: Localizações Iguais ");
+                        Log.d(TAG, "DescentralizedMessageSend: IPPosiçao0:" + IpDeviceList.size());
+                        for (String s : IpDeviceList) {
+                            Log.d(TAG, "DescentralizedMessageSend: " + s);
+                            Log.d(TAG, "DescentralizedMessageSend: Creating Comunication");
 
-        // compile list of devices in range
-        for (SimWifiP2pDevice device : peers.getDeviceList()) {
-            String devstr = device.deviceName + " (" + device.getVirtIp() + ")";
-            peersStr.add(devstr);
-            Log.d(TAG, "onPeersAvailable: " + devstr);
+                            new OutgoingCommTask().executeOnExecutor(
+                                    AsyncTask.THREAD_POOL_EXECUTOR, s
+                            );
+                            String message = m.getTitle() + "," + m.getLocation() + "," + m.getPolicy() + "," +
+                                    m.getBeginDate() + "," + m.getEndDate() + "," + m.getOwner() + "," + m.getContent();
+                            for (Pair p : m.getPairs())
+                                message = message + "," + p.getKey() + "-" + p.getValue();
+
+                            Log.d(TAG, "DescentralizedMessageSend: Message format:" + message);
+                            final String finalMessage = Integer.toString(God.getInstance().getMessageRepository().indexOf(m));
+                            Log.d(TAG, "DescentralizedMessageSend: Message format: finalmessage:" + finalMessage);
+                            new Thread() {
+                                @Override
+                                public void run() {
+                                    Log.d(TAG, "DescentralizedMessageSend: Message format: Entrei Na Thread");
+                                    while (connected == false) {}
+                                    Log.d(TAG, "DescentralizedMessageSend: Connection State: FOra do ciclo" );
+                                        new SendCommTask().executeOnExecutor(
+                                                AsyncTask.THREAD_POOL_EXECUTOR, finalMessage);
+
+                                    Log.d(TAG, "DescentralizedMessageSend: Message format: Sai Na Thread");
+                                }
+                            }.start();
+                        }
+                    }
+                }
+            }
+    }
+
+    /*
+	 * Asynctasks implementing message exchange
+	 */
+
+    public class IncommingCommTask extends AsyncTask<Void, String, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            Log.d(TAG, "IncommingCommTask started (" + this.hashCode() + ").");
+
+            try {
+                mSrvSocket = new SimWifiP2pSocketServer(
+                        Integer.parseInt(getString(R.string.port)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    SimWifiP2pSocket sock = mSrvSocket.accept();
+                    try {
+                        Log.d(TAG, "doInBackground: RecebiAlgumaMensagem");
+                   /*     BufferedReader sockIn = new BufferedReader(
+                                new InputStreamReader(sock.getInputStream()));
+                        String st = sockIn.readLine();
+                        publishProgress(st);
+                        sock.getOutputStream().write(("\n").getBytes());
+                    } catch (IOException e) {
+                        Log.d("Error reading socket:", e.getMessage());*/
+                    } finally {
+                        sock.close();
+                    }
+                } catch (IOException e) {
+                    Log.d("Error socket:", e.getMessage());
+                    break;
+                    //e.printStackTrace();
+                }
+            }
+            return null;
         }
+
+       /* @Override
+        protected void onProgressUpdate(String... values) {
+            mTextOutput.append(values[0] + "\n");
+        }*/
+    }
+
+    public class OutgoingCommTask extends AsyncTask<String, Void, String> {
+
+     /*   @Override
+        protected void onPreExecute() {
+            mTextOutput.setText("Connecting...");
+        }*/
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                mCliSocket = new SimWifiP2pSocket(params[0],
+                        Integer.parseInt(getString(R.string.port)));
+                connected = true;
+            } catch (UnknownHostException e) {
+                return "Unknown Host:" + e.getMessage();
+            } catch (IOException e) {
+                return "IO error:" + e.getMessage();
+            }
+            return null;
+        }
+
+    /*    @Override
+        protected void onPostExecute(String result) {
+            if (result != null) {
+                guiUpdateDisconnectedState();
+                mTextOutput.setText(result);
+            } else {
+                findViewById(R.id.idDisconnectButton).setEnabled(true);
+                findViewById(R.id.idConnectButton).setEnabled(false);
+                findViewById(R.id.idSendButton).setEnabled(true);
+                mTextInput.setHint("");
+                mTextInput.setText("");
+                mTextOutput.setText("");
+            }*/
+    }
+
+
+    public class SendCommTask extends AsyncTask<String, String, Void> {
+
+        @Override
+        protected Void doInBackground(String... msg) {
+            try {
+                Log.d(TAG, "doInBackground SendCommTASKE: " + (msg[0] + "\n"));
+                Log.d(TAG, "doInBackground: A thread funcionou no SendCommTask");
+
+                OutputStream os = mCliSocket.getOutputStream();
+                Log.d(TAG, "doInBackground: OutputStream deu bem");
+              //  ObjectOutputStream oos = new ObjectOutputStream(os);
+                Log.d(TAG, "doInBackground: A ObjectOutputStream deu bem");
+             ///   oos.writeObject(God.getInstance().getMessageRepository().get(Integer.parseInt(msg[0])));
+                /*mCliSocket.getOutputStream().write((msg[0] + "\n").getBytes());
+                Log.d(TAG, "Escrevi na socket");
+                BufferedReader sockIn = new BufferedReader(
+                        new InputStreamReader(mCliSocket.getInputStream()));
+                Log.d(TAG, "Fiz Algo no Buffer");
+                sockIn.readLine();*/
+                Log.d(TAG, "doInBackground: Magic Finished Fuck yea");
+                connected = false;
+                mCliSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            mCliSocket = null;
+            return null;
+        }
+
+       /* @Override
+        protected void onPostExecute(Void result) {
+            mTextInput.setText("");
+            guiUpdateDisconnectedState();
+        }*/
+    }
+
+    @Override
+    public  void onPeersAvailable(SimWifiP2pDeviceList peers) {
+            ArrayList<String> peersStr = new ArrayList<>();
+
+            // compile list of devices in range
+            for (SimWifiP2pDevice device : peers.getDeviceList()) {
+                String devstr = device.deviceName + " (" + device.getVirtIp() + ")";
+                peersStr.add(devstr);
+            }
+            oldAPLocation = new APLocation(peersStr.toString(), peersStr);
 
      //TODO
     }
+        @Override
+        public void onGroupInfoAvailable(SimWifiP2pDeviceList devices,
+                                         SimWifiP2pInfo groupInfo) {
+                IpDeviceList.clear();
+                // compile list of network members
+                for (String deviceName : groupInfo.getDevicesInNetwork()) {
+                    SimWifiP2pDevice device = devices.getByName(deviceName);
+                    String[] s = device.getVirtIp().split(":");
+                    IpDeviceList.add(s[0]);
+                }
+                DescentralizedMessageSend();
+        }
+
     
     private ServiceConnection mConnection = new ServiceConnection() {
         // callbacks for service binding, passed to bindService()
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.d(TAG, "mConnection: Entrei!");
             mManager = new SimWifiP2pManager(new Messenger(service));
             mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
         }

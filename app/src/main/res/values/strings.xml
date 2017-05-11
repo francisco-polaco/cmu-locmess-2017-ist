@@ -1,4 +1,7 @@
 <resources>
+
+    <string name="port">10001</string>
+
     <string name="app_name">ALocMess</string>
     <string name="drawer_open">Drawer Open</string>
     <string name="drawer_close">Drawer Close</string>
@@ -18,7 +21,7 @@
     <string name="toast_login_error">Login Error</string>
 
 
-    <string name="webserver_url">https://alkuentrus.ovh:8080/locmess</string>
+    <string name="webserver_url">https://alkuentrus.ovh:8090/locmess</string>
     <!--string name="webserver_url">https://192.168.56.1:8080/locmess</string-->
     <!--<string name="webserver_url">http://192.168.1.75:8080/locmess</string>-->
 

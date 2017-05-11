@@ -25,12 +25,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
@@ -256,6 +260,20 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
                 public void onSuccess(Result result) {
                     messages.clear();
                     messages.addAll(God.getInstance().getMessages().values());
+
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                    Date convertedDate = new Date();
+
+
+                    for(Message m : God.getInstance().getMessageRepository()) {
+                        try {
+                            convertedDate = simpleDateFormat.parse(m.getBeginDate());
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        MessageDto mdto = new MessageDto(0, m.getTitle(), m.getContent(), m.getOwner(), convertedDate);
+                        messages.add(mdto);}
+
                     adapter.notifyDataSetChanged();
                 }
 

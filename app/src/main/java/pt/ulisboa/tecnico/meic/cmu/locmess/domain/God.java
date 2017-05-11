@@ -14,6 +14,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -24,6 +25,7 @@ import java.util.TreeMap;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.ImpossibleToGetLocationException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.PermissionNotGrantedException;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.APLocation;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
@@ -47,14 +49,20 @@ public class God {
     private boolean stateHasChanged = false;
     private String username;
 
+    public String getUsername() {
+        return username;
+    }
+
     private God(Context context) {
         this.context = context;
         loadState();
+        loadMessagesDescentralized();
     }
 
     public static God getInstance() {
         if (ourInstance == null) throw new NotInitializedException(God.class.getSimpleName());
         return ourInstance;
+
     }
 
     public static void init(Context context) {
@@ -143,10 +151,19 @@ public class God {
     }
 
     public void clearCredentials() throws IOException {
-        for (String filename : new String[]{Constants.CREDENTIALS_FILENAME, Constants.CACHED_MGS}) {
+        for (String filename : new String[]{Constants.CREDENTIALS_FILENAME, Constants.CACHED_MGS, Constants.MESSAGEREPOSITORY_FILENAME}) {
             File file = new File(context.getFilesDir().getPath() + "/" + filename);
             if (file.exists()) file.delete();
         }
+    }
+
+    public List<Message> getMessageRepository() {
+        return messageRepository;
+    }
+
+    public void printMessages(){
+        for(Message m : messageRepository)
+            Log.d(TAG, "getMessages: " + m.getContent());
     }
 
     public List<Pair> getProfile() {
@@ -196,17 +213,18 @@ public class God {
     }
 
 
-    public void loadMessagesDescentralized() throws IOException {
+    public void loadMessagesDescentralized()  {
         try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
                 context.openFileInput(Constants.MESSAGEREPOSITORY_FILENAME)))) {
 
-            messageRepository = (List<Message>) objectInputStream.readObject();
-        } catch (ClassNotFoundException e) {
-            messageRepository= new ArrayList<Message>();
+            messageRepository = (ArrayList<Message>) objectInputStream.readObject();
+            printMessages();
+        } catch (ClassNotFoundException| IOException e) {
+            messageRepository= new ArrayList<>();
         }
     }
 
-    public void saveMessagesDescentralized() throws IOException {
+    public void saveMessagesDescentralized() {
         try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(
                 context.openFileOutput(Constants.MESSAGEREPOSITORY_FILENAME, Context.MODE_PRIVATE)))) {
             objectOutputStream.writeObject(messageRepository);
@@ -216,16 +234,19 @@ public class God {
     }
 
     public void addToMessageRepository(Message message) {
+        Log.d(TAG, "addToMessageRepository: Entrei2");
             messageRepository.add(message);
+        Log.d(TAG, "addToMessageRepository: EntreEConquistei");
             //stateHasChanged = true;
     }
 
 
     public boolean amIPublisher(String publisher) {
-        return publisher.equals(username);
+        return false; //publisher.equals(username);
     }
 
     public boolean inCache(MessageDto messageDto) {
         return cachedMessages.containsValue(messageDto);
     }
+
 }
