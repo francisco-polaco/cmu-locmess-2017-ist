@@ -58,7 +58,7 @@ public class MessageScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.mainscreen);
+        setContentView(R.layout.messagescreen);
         noMessageDisplay();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
