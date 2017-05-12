@@ -54,12 +54,12 @@ public final class UpdateLocationService extends Service implements
         LocationListener, GoogleApiCallbacks,
         SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
 
-
-    static final int UPDATE_INTERVAL = 1000 /** 60*/
-            ;
-    static final int INTERVAL = UPDATE_INTERVAL;
-    static final int FASTEST_UPDATE_INTERVAL = 1000;
     private static final String TAG = UpdateLocationService.class.getSimpleName();
+
+    private static final int UPDATE_INTERVAL = 1000 /** 60*/
+            ;
+    private static final int INTERVAL = UPDATE_INTERVAL;
+    private static final int FASTEST_UPDATE_INTERVAL = 1000;
     public static boolean wifion = false;
     public boolean connected = false;
     private Location oldLocation;
