@@ -94,7 +94,7 @@ public final class UpdateLocationService extends Service implements LocationList
             God.init(getApplicationContext());
         }
         // register broadcast receiver
-        IntentFilter filter = new IntentFilter();
+       /* IntentFilter filter = new IntentFilter();
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
@@ -105,7 +105,7 @@ public final class UpdateLocationService extends Service implements LocationList
         Intent wifiDintent = new Intent(getApplicationContext(), SimWifiP2pService.class);
         bindService(wifiDintent, mConnection, Context.BIND_AUTO_CREATE);
         new IncommingCommTask().executeOnExecutor(
-                AsyncTask.THREAD_POOL_EXECUTOR);
+                AsyncTask.THREAD_POOL_EXECUTOR);*/
 
         return START_STICKY;
     }
@@ -311,15 +311,16 @@ public final class UpdateLocationService extends Service implements LocationList
             }
             while (!Thread.currentThread().isInterrupted()) {
                 try {
+                    Log.d(TAG, "doInBackground:A espera de ser aceite a socketa");
                     SimWifiP2pSocket sock = mSrvSocket.accept();
+                    Log.d(TAG, "doInBackground: Aceitei a socketa");
                     try {
-                        Log.d(TAG, "doInBackground: RecebiAlgumaMensagem");
-                   /*     BufferedReader sockIn = new BufferedReader(
+                     /*   BufferedReader sockIn = new BufferedReader(
                                 new InputStreamReader(sock.getInputStream()));
                         String st = sockIn.readLine();
                         publishProgress(st);
-                        sock.getOutputStream().write(("\n").getBytes());
-                    } catch (IOException e) {
+                        sock.getOutputStream().write(("\n").getBytes());*/
+                   /* } catch (IOException e) {
                         Log.d("Error reading socket:", e.getMessage());*/
                     } finally {
                         sock.close();
@@ -332,12 +333,10 @@ public final class UpdateLocationService extends Service implements LocationList
             }
             return null;
         }
-
-       /* @Override
-        protected void onProgressUpdate(String... values) {
-            mTextOutput.append(values[0] + "\n");
-        }*/
     }
+
+
+
 
     public class OutgoingCommTask extends AsyncTask<String, Void, String> {
 

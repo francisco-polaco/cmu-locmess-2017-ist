@@ -137,7 +137,7 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
     }
 
     public void NewMessage(View view) {
-        Intent intent = new Intent(this, NewMessage.class);
+        Intent intent = new Intent(this, MsgSenderActivity.class);
         startActivity(intent);
     }
 
