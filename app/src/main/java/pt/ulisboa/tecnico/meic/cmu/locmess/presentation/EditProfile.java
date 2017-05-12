@@ -55,7 +55,7 @@ public class EditProfile extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         drawerToggle = setupDrawerToggle();
         drawerLayout.addDrawerListener(drawerToggle);
@@ -228,6 +228,14 @@ public class EditProfile extends AppCompatActivity {
             Toast.makeText(getContext(), result.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        drawerToggle.syncState();
+    }
+
 
 
 }
