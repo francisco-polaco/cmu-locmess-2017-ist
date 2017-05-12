@@ -265,7 +265,8 @@ public class MessageScreen extends AppCompatActivity implements ActivityCallback
                             e.printStackTrace();
                         }
                         MessageDto mdto = new MessageDto(0, m.getTitle(), m.getContent(), m.getOwner(), convertedDate);
-                        messages.add(mdto);}
+                        messages.add(mdto);
+                    }
 
                     adapter.notifyDataSetChanged();
                 }

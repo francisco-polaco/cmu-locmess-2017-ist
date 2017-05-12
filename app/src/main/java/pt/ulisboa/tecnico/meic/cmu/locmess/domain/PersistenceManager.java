@@ -108,7 +108,7 @@ public class PersistenceManager {
                 context.openFileInput(MESSAGEREPOSITORY_FILENAME)))) {
             messageRepository = (ArrayList<Message>) objectInputStream.readObject();
             printMessages();
-        } catch (ClassNotFoundException| IOException e) {
+        } catch (ClassNotFoundException | IOException e) {
             messageRepository = new ArrayList<>();
         }
     }
@@ -130,7 +130,7 @@ public class PersistenceManager {
         Log.d(TAG, "addToMessageRepository: Entrei2");
         messageRepository.add(message);
         Log.d(TAG, "addToMessageRepository: EntreEConquistei");
-            //stateHasChanged = true;
+        //stateHasChanged = true;
     }
 
 }

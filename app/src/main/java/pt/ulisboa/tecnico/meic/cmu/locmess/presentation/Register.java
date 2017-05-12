@@ -51,7 +51,7 @@ public class Register extends AppCompatActivity {
         }
 
         dialog = WidgetConstructors.getLoadingDialog(this, getString(R.string.dialog_create_account));
-        new RegisterListener(getApplicationContext(),username,password);
+        new RegisterListener(getApplicationContext(), username, password);
     }
 
     private class RegisterListener extends LocmessListener implements ActivityCallback {
@@ -68,7 +68,7 @@ public class Register extends AppCompatActivity {
             } catch (IOException ignored) {
             }
             if (dialog != null) dialog.cancel();
-            Log.d(TAG,"Successfully registered!");
+            Log.d(TAG, "Successfully registered!");
             Intent intent = new Intent(getContext(), Login.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -78,7 +78,7 @@ public class Register extends AppCompatActivity {
         public void onFailure(Result result) {
             if (dialog != null) dialog.cancel();
             Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
-            Log.d(TAG,"Failed to register!");
+            Log.d(TAG, "Failed to register!");
         }
     }
 }

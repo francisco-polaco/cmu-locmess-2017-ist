@@ -44,7 +44,6 @@ public class LocationWebService extends LocmessWebService implements LocmessCall
     }
 
 
-
     @Override
     public void onSuccess(Object object) {
         MessageDto[] messageDtos;

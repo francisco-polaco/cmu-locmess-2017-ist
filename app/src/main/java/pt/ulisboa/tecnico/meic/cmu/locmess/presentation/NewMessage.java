@@ -166,13 +166,12 @@ public class NewMessage extends AppCompatActivity {
         String eDate = simpleDateFormat.format(new Date(endTime + " " + endDate));
 
 
-
         Message message = new Message(title, location, policy, keysInPairs, bDate, eDate, content);
-        Log.d("NewMessage", "sendMessage: "+ location);
+        Log.d("NewMessage", "sendMessage: " + location);
 
         if (sendModePolicy.equals("Centralized"))
             new PostMessageListener(getApplicationContext(), message);
-        else{
+        else {
             Log.d("NewMessage:", "sendMessage: " + StaticFields.username);
             message.setOwner(StaticFields.username);
             PersistenceManager.getInstance().addToMessageRepository(message);
@@ -181,7 +180,8 @@ public class NewMessage extends AppCompatActivity {
                 public void run() {
                     PersistenceManager.getInstance().saveMessagesDescentralized(getApplicationContext());
                 }
-            }.start();}
+            }.start();
+        }
     }
 
     private void reset() {

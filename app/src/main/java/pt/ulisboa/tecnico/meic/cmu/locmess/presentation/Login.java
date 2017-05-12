@@ -47,7 +47,7 @@ public class Login extends AppCompatActivity {
         }
         if (credentials != null) {
             Log.d(TAG, "We have found credentials.");
-            new LoginListener(getApplicationContext(),new User(credentials[0],credentials[1]),true);
+            new LoginListener(getApplicationContext(), new User(credentials[0], credentials[1]), true);
         }
     }
 
@@ -61,7 +61,7 @@ public class Login extends AppCompatActivity {
         String password = ((EditText) this.findViewById(R.id.Pass)).getText().toString();
         boolean autoLogin = ((CheckBox) findViewById(R.id.autologin)).isChecked();
         dialog = getLoadingDialog(Login.this, getString(R.string.dialog_login));
-        new LoginListener(getApplicationContext(),new User(username,password),autoLogin);
+        new LoginListener(getApplicationContext(), new User(username, password), autoLogin);
         dialog.show();
     }
 
@@ -82,7 +82,7 @@ public class Login extends AppCompatActivity {
 
         public LoginListener(Context context, User user, boolean autoLogin) {
             super(context);
-            new LoginWebService(context,this,user,autoLogin).execute();
+            new LoginWebService(context, this, user, autoLogin).execute();
         }
 
         @Override
@@ -92,14 +92,14 @@ public class Login extends AppCompatActivity {
             Intent intent = new Intent(getContext(), MessageScreen.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-            Log.d(TAG,"Logged in!");
+            Log.d(TAG, "Logged in!");
         }
 
         @Override
         public void onFailure(Result result) {
             if (dialog != null) dialog.cancel();
             Toast.makeText(getApplicationContext(), R.string.toast_login_error, Toast.LENGTH_LONG).show();
-            Log.d(TAG,"Failed to login!");
+            Log.d(TAG, "Failed to login!");
         }
     }
 }

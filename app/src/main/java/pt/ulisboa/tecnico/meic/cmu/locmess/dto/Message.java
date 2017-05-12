@@ -3,7 +3,7 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.dto;
 import java.io.Serializable;
 import java.util.List;
 
-public class Message implements Serializable{
+public class Message implements Serializable {
 
     private String title;
     private Location location;

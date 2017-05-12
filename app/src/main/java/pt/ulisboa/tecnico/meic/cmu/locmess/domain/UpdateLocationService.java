@@ -148,9 +148,9 @@ public final class UpdateLocationService extends Service implements
     public void onLocationChanged(Location location) {
         // if (isBetterLocation(oldLocation, location)) {
 
-        if(wifion) {
-                mManager.requestPeers(mChannel, this);
-                mManager.requestGroupInfo(mChannel, this);
+        if (wifion) {
+            mManager.requestPeers(mChannel, this);
+            mManager.requestGroupInfo(mChannel, this);
         }
 
         new LocationWebService(getApplicationContext(), null, location).execute();
@@ -230,7 +230,7 @@ public final class UpdateLocationService extends Service implements
      * Asynctasks implementing message exchange
 	 */
 
-    public void DescentralizedMessageSend(){
+    public void DescentralizedMessageSend() {
         PersistenceManager.getInstance().loadMessagesDescentralized(getApplicationContext());
         for (Message m : PersistenceManager.getInstance().getMessageRepository()) {
             if (oldAPLocation != null && m.getLocation() instanceof APLocation) {
@@ -387,7 +387,7 @@ public final class UpdateLocationService extends Service implements
 
                 OutputStream os = mCliSocket.getOutputStream();
                 Log.d(TAG, "doInBackground: OutputStream deu bem");
-              //  ObjectOutputStream oos = new ObjectOutputStream(os);
+                //  ObjectOutputStream oos = new ObjectOutputStream(os);
                 Log.d(TAG, "doInBackground: A ObjectOutputStream deu bem");
                 ///   oos.writeObject(PersistenceManager.getInstance().getMessageRepository().get(Integer.parseInt(msg[0])));
                 /*mCliSocket.getOutputStream().write((msg[0] + "\n").getBytes());

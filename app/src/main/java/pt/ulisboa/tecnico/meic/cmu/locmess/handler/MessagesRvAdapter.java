@@ -102,7 +102,7 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
         notifyDataSetChanged();
     }
 
-    public void addMsg(MessageDto messageDto){
+    public void addMsg(MessageDto messageDto) {
         dataset.add(messageDto);
         notifyDataSetChanged();
     }
