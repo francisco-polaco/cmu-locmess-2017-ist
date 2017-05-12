@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TreeMap;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
@@ -260,7 +261,7 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
                 @Override
                 public void onSuccess(Result result) {
                     messages.clear();
-                    messages.addAll(God.getInstance().getMessages().values());
+                    messages.addAll(((TreeMap<Integer, MessageDto>) result.getPiggyback()).values());
 
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
                     Date convertedDate = new Date();

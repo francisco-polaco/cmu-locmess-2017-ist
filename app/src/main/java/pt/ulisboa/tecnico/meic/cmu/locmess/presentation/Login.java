@@ -11,10 +11,13 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.StaticFields;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.User;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -27,12 +30,13 @@ public class Login extends AppCompatActivity {
 
     private static final String TAG = Login.class.getSimpleName();
     private ProgressDialog dialog;
+    private String[] credentials;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-        //God.init(getApplicationContext());
+        God.init(getApplicationContext());
     }
 
     @Override
@@ -40,7 +44,7 @@ public class Login extends AppCompatActivity {
         super.onStart();
         String[] credentials = null;
         try {
-            credentials = God.getInstance().getCredentials();
+            credentials = getCredentials();
         } catch (IOException ignored) {
         }
         if (credentials != null) {
@@ -61,6 +65,19 @@ public class Login extends AppCompatActivity {
         dialog = getLoadingDialog(Login.this, getString(R.string.dialog_login));
         new LoginListener(getApplicationContext(),new User(username,password),autoLogin);
         dialog.show();
+    }
+
+    public String[] getCredentials() throws IOException {
+        if (this.credentials == null) {
+            String[] credentials = new String[2];
+            try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
+                    getApplicationContext().openFileInput(getString(R.string.credentials_filename))))) {
+                credentials[0] = objectInputStream.readUTF();
+                StaticFields.username = credentials[0];
+                credentials[1] = objectInputStream.readUTF();
+                return credentials;
+            }
+        } else return credentials;
     }
 
     private class LoginListener extends LocmessListener implements ActivityCallback {
@@ -87,6 +104,5 @@ public class Login extends AppCompatActivity {
             Log.d(TAG,"Failed to login!");
         }
     }
-
 }
 

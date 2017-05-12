@@ -32,6 +32,7 @@ import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.StaticFields;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
@@ -58,6 +59,7 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
     private List<Pair> keysInPairs;
     private List<String> keys = new ArrayList<>();
     private List<String> locations = new ArrayList<>();
+    private List<Location> locationList = new ArrayList<>();
 
     private MultiSpinner.MultiSpinnerListener onSelectedListener = new MultiSpinner.MultiSpinnerListener() {
         public void onItemsSelected(boolean[] selected) {
@@ -125,7 +127,7 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
             Toast.makeText(this, "A message has to have content!", Toast.LENGTH_SHORT).show();
             return;
         }
-        Location location = God.getInstance().getLocations().get(spinner.getSelectedItemPosition());
+        Location location = locationList.get(spinner.getSelectedItemPosition());
         if (location == null) {
             Toast.makeText(this, "You must add locations first!", Toast.LENGTH_SHORT).show();
             return;
@@ -174,8 +176,8 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
         if (sendModePolicy.equals("Centralized"))
             new PostMessageService(getApplicationContext(), this, message).execute();
         else{
-            Log.d("NewMessage:", "sendMessage: " + God.getInstance().getUsername());
-            message.setOwner(God.getInstance().getUsername());
+            Log.d("NewMessage:", "sendMessage: " + StaticFields.username);
+            message.setOwner(StaticFields.username);
             God.getInstance().addToMessageRepository(message);
             new Thread() {
                 @Override
@@ -297,7 +299,7 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
 
         @Override
         public void onSuccess(Result result) {
-            setLocations(God.getInstance().getLocations());
+            setLocations((List<Location>) result.getPiggyback());
         }
 
         @Override
@@ -309,6 +311,7 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
             if (locs == null)
                 return;
 
+            locationList = locs;
             locations.clear();
             for (Location l : locs)
                 locations.add(l.toString());

@@ -13,7 +13,7 @@ import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.StaticFields;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 
 /**
@@ -42,7 +42,7 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.title.setText(dataset.get(position).getTitle());
         boolean me = false;
-        if (God.getInstance().amIPublisher(dataset.get(position).getPublisher())) {
+        if (amIPublisher(dataset.get(position).getPublisher())) {
             holder.v.setBackgroundColor(context.getColor(R.color.cyan));
             me = true;
         }
@@ -86,6 +86,10 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
 
             }
         });
+    }
+
+    private boolean amIPublisher(String publisher) {
+        return publisher.equals(StaticFields.username);
     }
 
     @Override

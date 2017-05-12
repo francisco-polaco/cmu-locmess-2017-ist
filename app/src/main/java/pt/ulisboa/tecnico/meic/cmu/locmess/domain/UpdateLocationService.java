@@ -56,11 +56,14 @@ public final class UpdateLocationService extends Service implements
         SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
 
 
+    static final int UPDATE_INTERVAL = 1000 /** 60*/
+            ;
+    static final int INTERVAL = UPDATE_INTERVAL;
+    static final int FASTEST_UPDATE_INTERVAL = 1000;
     private static final String TAG = UpdateLocationService.class.getSimpleName();
     public static boolean wifion = false;
     public boolean connected = false;
     private Location oldLocation;
-    ;
     private APLocation oldAPLocation;
     private List<String> IpDeviceList = new ArrayList<>();
     private List<String> peersStr = new ArrayList<>();
@@ -138,8 +141,8 @@ public final class UpdateLocationService extends Service implements
         }
         LocationRequest mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(Constants.UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(Constants.FASTEST_UPDATE_INTERVAL);
+        mLocationRequest.setInterval(UPDATE_INTERVAL);
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 GoogleAPI.getInstance().getGoogleApiClient(), mLocationRequest, this);
     }
@@ -155,18 +158,16 @@ public final class UpdateLocationService extends Service implements
 
         new LocationWebService(getApplicationContext(), null, location).execute();
         new ListLocationsService(getApplicationContext(), null).execute();
-            new ListMessagesService(getApplicationContext(), new ActivityCallback() {
-                @Override
-                public void onSuccess(Result result) {
-                    if (God.getInstance().getMessages().size() != 0 && !((Boolean) result.getPiggyback()))
-                        NotificationAgent.getInstance().sendNotification(getApplicationContext());
-                }
+        new ListMessagesService(getApplicationContext(), new ActivityCallback() {
+            @Override
+            public void onSuccess(Result result) {
+            }
 
-                @Override
-                public void onFailure(Result result) {
+            @Override
+            public void onFailure(Result result) {
 
-                }
-            }).execute();
+            }
+        }).execute();
     }
 
     protected boolean isBetterLocation(Location location, Location currentBestLocation) {
@@ -178,8 +179,8 @@ public final class UpdateLocationService extends Service implements
         }
 
         long timeDelta = location.getTime() - currentBestLocation.getTime();
-        boolean isSignificantlyNewer = timeDelta > Constants.INTERVAL;
-        boolean isSignificantlyOlder = timeDelta < -Constants.INTERVAL;
+        boolean isSignificantlyNewer = timeDelta > INTERVAL;
+        boolean isSignificantlyOlder = timeDelta < -INTERVAL;
         boolean isNewer = timeDelta > 0;
 
         if (isSignificantlyNewer) {

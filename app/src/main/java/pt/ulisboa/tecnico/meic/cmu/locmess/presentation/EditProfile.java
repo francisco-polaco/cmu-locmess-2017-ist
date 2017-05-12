@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -62,7 +61,7 @@ public class EditProfile extends AppCompatActivity implements ActivityCallback {
     public void onSuccess(Result result) {
         String toastText = "";
         if (result.getMessage().equals(getApplicationContext().getString(R.string.LM_0))) {
-            itemlist = parsePairs(God.getInstance().getProfile());
+            itemlist = parsePairs((List<Pair>) result.getPiggyback());
             adapter = new SimpleAdapter(this, itemlist, R.layout.listview,
                     new String[]{"Key", "Value"},
                     new int[]{R.id.textView, R.id.textView2});
@@ -94,7 +93,6 @@ public class EditProfile extends AppCompatActivity implements ActivityCallback {
             int index = (int) result.getPiggyback();
             HashMap<String, String> keyValue = (HashMap<String, String>) adapter.getItem(index);
             Pair toRemove = new Pair(keyValue.get("Key"), keyValue.get("Value"));
-            God.getInstance().getProfile().remove(toRemove);
             itemlist.remove(keyValue);
             adapter.notifyDataSetChanged();
             toastText += "Pair successfully removed!";
@@ -138,7 +136,7 @@ public class EditProfile extends AppCompatActivity implements ActivityCallback {
 
         @Override
         public void onSuccess(Result result) {
-            itemlist = parsePairs(God.getInstance().getProfile());
+            itemlist = parsePairs((List<Pair>) result.getPiggyback());
             adapter = new SimpleAdapter(getContext(), itemlist, R.layout.listview,
                       new String[]{"Key", "Value"},
                       new int[]{R.id.textView, R.id.textView2});

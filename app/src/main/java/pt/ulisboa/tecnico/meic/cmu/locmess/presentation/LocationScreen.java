@@ -19,9 +19,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
@@ -129,8 +129,7 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
 
     //toolbar reference.
     private ActionBarDrawerToggle setupDrawerToggle() {
-        ActionBarDrawerToggle a = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
-        return a;
+        return new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
     }
 
     @Override
@@ -169,9 +168,9 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
         String toastText = "";
         if (result.getMessage().equals(getApplicationContext().getString(R.string.LM_0))) {
             ListView lv = (ListView) findViewById(R.id.LocationsList);
-
+            final List<Location> listLocations = (List<Location>) result.getPiggyback();
             locations = new ArrayList<>();
-            for (Location location : God.getInstance().getLocations())
+            for (Location location : listLocations)
                 locations.add(location.toString());
 
             adapter = new ArrayAdapter<>(
@@ -187,7 +186,7 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, int arg2, long arg3) {
                     new RemoveLocationService(getApplicationContext(), LocationScreen.this,
-                            God.getInstance().getLocations().get(arg2), arg2).execute();
+                            listLocations.get(arg2), arg2).execute();
                     return true;
                 }
             });
@@ -197,7 +196,6 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
         } else if (result.getMessage().equals(getApplicationContext().getString(R.string.LM_2))) {
             int index = (int) result.getPiggyback();
             locations.remove(index);
-            God.getInstance().getLocations().remove(index);
             adapter.notifyDataSetChanged();
             toastText += "Removed location with success!";
         }

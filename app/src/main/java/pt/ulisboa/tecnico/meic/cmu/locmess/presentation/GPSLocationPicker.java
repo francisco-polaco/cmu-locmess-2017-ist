@@ -1,8 +1,12 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.presentation;
 
+import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -15,6 +19,7 @@ import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
@@ -29,11 +34,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.ImpossibleToGetLocationException;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.PermissionNotGrantedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.GPSLocation;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
+import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.AddLocationService;
-import pt.ulisboa.tecnico.meic.cmu.locmess.service.GetLastLocationService;
 
 public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCallback, ActivityCallback {
 
@@ -104,11 +110,9 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
     }
 
     private void getLastKnownLocation() {
-        GetLastLocationService service = new GetLastLocationService();
         try {
-            service.execute();
-            latLong = service.result();
-            myLocation = service.result();
+            latLong = getLastLocation();
+            myLocation = new LatLng(latLong.latitude, latLong.longitude);
         } catch (ImpossibleToGetLocationException e) {
             latLong = new LatLng(38.7368192, -9.138705); // IST
             myLocation = new LatLng(38.7368192, -9.138705); // IST
@@ -312,5 +316,22 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
         if (dialog != null) dialog.cancel();
         Log.d(TAG, result.getMessage());
         Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    public LatLng getLastLocation() {
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+            throw new PermissionNotGrantedException("Location");
+        }
+        Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                GoogleAPI.getInstance().getGoogleApiClient());
+        if (lastLocation == null) {
+            Log.d(TAG, "getLastLocation: lastlocation is null");
+            throw new ImpossibleToGetLocationException();
+        }
+        return new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+
     }
 }

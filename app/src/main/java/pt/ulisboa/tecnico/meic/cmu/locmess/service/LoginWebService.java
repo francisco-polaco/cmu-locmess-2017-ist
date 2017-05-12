@@ -4,11 +4,15 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.service;
 import android.content.Context;
 import android.util.Log;
 
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 
 import cz.msebera.android.httpclient.entity.StringEntity;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.StaticFields;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Token;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.User;
@@ -44,8 +48,8 @@ public final class LoginWebService extends LocmessWebService implements LocmessC
     public void onSuccess(Object object) {
         Token token = (Token) getJsonService().transformJsonToObj(object.toString(), Token.class);
         God.getInstance().setToken(token);
-        God.getInstance().setUsername(user.getUsername());
-        if (autologin) God.getInstance().saveCredentials(user.getUsername(), user.getPassword());
+        StaticFields.username = user.getUsername();
+        if (autologin) saveCredentials(user.getUsername(), user.getPassword());
         getActivityCallback().onSuccess(null);
         Log.d(TAG, token.getToken());
     }
@@ -58,5 +62,14 @@ public final class LoginWebService extends LocmessWebService implements LocmessC
         else
             result = new Result("NULL");
         getActivityCallback().onFailure(result);
+    }
+
+    private void saveCredentials(String username, String password) {
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(
+                getContext().openFileOutput(getContext().getString(R.string.credentials_filename), Context.MODE_PRIVATE)))) {
+            objectOutputStream.writeUTF(username);
+            objectOutputStream.writeUTF(password);
+        } catch (IOException ignored) {
+        }
     }
 }
