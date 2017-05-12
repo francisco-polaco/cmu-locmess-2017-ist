@@ -15,50 +15,39 @@ import java.util.List;
 import java.util.TreeMap;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Token;
 
-public class God {
+public class PersistenceManager {
 
-    static final String MESSAGEREPOSITORY_FILENAME = "messages.dat";
-    private static final String TAG = God.class.getSimpleName();
-    private static God ourInstance;
-    private Context context;
+    private static final String MESSAGEREPOSITORY_FILENAME = "messages.dat";
+    private static final String TAG = PersistenceManager.class.getSimpleName();
+
+    private static PersistenceManager ourInstance = new PersistenceManager();
+
     private Token token;
+
     // profile represents the key values of the user
     private List<Message> messageRepository;
     private TreeMap<Integer, MessageDto> cachedMessages;
     private boolean stateHasChanged = false;
 
-    private God(Context context) {
-        this.context = context;
-        loadState();
-        loadMessagesDescentralized();
+    private PersistenceManager() {
     }
 
-    public static God getInstance() {
-        if (ourInstance == null) throw new NotInitializedException(God.class.getSimpleName());
+    public static PersistenceManager getInstance() {
         return ourInstance;
-
     }
 
-    public static void init(Context context) {
-        ourInstance = new God(context);
-    }
 
-    public Context getContext() {
-        return context;
-    }
-
-    public void startLocationUpdates() {
+    public void startLocationUpdates(Context context) {
         Log.d(TAG, "Starting up the update location service.");
         if (!Utils.isMyServiceRunning(context, UpdateLocationService.class))
             context.startService(new Intent(context, UpdateLocationService.class));
     }
 
-    public void stopLocationUpdates() {
+    public void stopLocationUpdates(Context context) {
         Log.d(TAG, "Shutting down the update location service.");
         context.stopService(new Intent(context, UpdateLocationService.class));
     }
@@ -71,7 +60,7 @@ public class God {
         this.token = token;
     }
 
-    public void saveState() {
+    public void saveCachedMessages(Context context) {
         if (!stateHasChanged) return;
         try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(
                 context.openFileOutput(context.getString(R.string.cached_message_filename), Context.MODE_PRIVATE)))) {
@@ -81,7 +70,8 @@ public class God {
         }
     }
 
-    public void loadState() {
+    public void loadCachedMessages(Context context) {
+        if (cachedMessages != null) return;
         try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
                 context.openFileInput(context.getString(R.string.cached_message_filename))))) {
             cachedMessages = (TreeMap<Integer, MessageDto>) objectInputStream.readObject();
@@ -90,7 +80,7 @@ public class God {
         }
     }
 
-    public void clearState() throws IOException {
+    public void clearState(Context context) throws IOException {
         for (String filename : new String[]{context.getString(R.string.credentials_filename),
                 context.getString(R.string.cached_message_filename),
                 MESSAGEREPOSITORY_FILENAME}) {
@@ -99,18 +89,8 @@ public class God {
         }
     }
 
-    public List<Message> getMessageRepository() {
-        return messageRepository;
-    }
-
-    private void printMessages() {
-        for(Message m : messageRepository)
-            Log.d(TAG, "getMessages: " + m.getContent());
-    }
-
-
-    public void addToCache(Integer id) {
-        cachedMessages.put(id, null);
+    public void addToCache(MessageDto messageDto) {
+        cachedMessages.put(messageDto.getId(), messageDto);
         stateHasChanged = true;
     }
 
@@ -118,25 +98,33 @@ public class God {
         return cachedMessages.containsValue(messageDto);
     }
 
-    public void loadMessagesDescentralized()  {
+    public List<Message> getMessageRepository() {
+        return messageRepository;
+    }
+
+    public void loadMessagesDescentralized(Context context) {
+        if (messageRepository != null) return;
         try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
                 context.openFileInput(MESSAGEREPOSITORY_FILENAME)))) {
             messageRepository = (ArrayList<Message>) objectInputStream.readObject();
             printMessages();
         } catch (ClassNotFoundException| IOException e) {
-            messageRepository= new ArrayList<>();
+            messageRepository = new ArrayList<>();
         }
     }
 
-    public void saveMessagesDescentralized() {
+    public void saveMessagesDescentralized(Context context) {
         try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(
                 context.openFileOutput(MESSAGEREPOSITORY_FILENAME, Context.MODE_PRIVATE)))) {
             objectOutputStream.writeObject(messageRepository);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         }
     }
 
+    private void printMessages() {
+        for (Message m : messageRepository)
+            Log.d(TAG, "getMessages: " + m.getContent());
+    }
 
     public void addToMessageRepository(Message message) {
         Log.d(TAG, "addToMessageRepository: Entrei2");

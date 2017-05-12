@@ -11,7 +11,7 @@ import java.io.UnsupportedEncodingException;
 
 import cz.msebera.android.httpclient.entity.StringEntity;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.PersistenceManager;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.StaticFields;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Token;
@@ -47,7 +47,7 @@ public final class LoginWebService extends LocmessWebService implements LocmessC
     @Override
     public void onSuccess(Object object) {
         Token token = (Token) getJsonService().transformJsonToObj(object.toString(), Token.class);
-        God.getInstance().setToken(token);
+        PersistenceManager.getInstance().setToken(token);
         StaticFields.username = user.getUsername();
         if (autologin) saveCredentials(user.getUsername(), user.getPassword());
         getActivityCallback().onSuccess(null);

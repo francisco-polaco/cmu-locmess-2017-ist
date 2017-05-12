@@ -14,7 +14,7 @@ import android.widget.Toast;
 import java.io.IOException;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.PersistenceManager;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.User;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -64,7 +64,7 @@ public class Register extends AppCompatActivity {
         @Override
         public void onSuccess(Result result) {
             try {
-                God.getInstance().clearState();
+                PersistenceManager.getInstance().clearState(getContext());
             } catch (IOException ignored) {
             }
             if (dialog != null) dialog.cancel();

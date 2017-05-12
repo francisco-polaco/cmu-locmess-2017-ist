@@ -38,7 +38,6 @@ import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.APLocation;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
@@ -99,11 +98,7 @@ public final class UpdateLocationService extends Service implements
         super.onStartCommand(intent, flags, startId);
         GoogleAPI.init(getApplicationContext(), false);
         GoogleAPI.getInstance().connect(this);
-        try {
-            God.getInstance();
-        } catch (NotInitializedException e) {
-            God.init(getApplicationContext());
-        }
+
         // register broadcast receiver
         IntentFilter filter = new IntentFilter();
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
@@ -236,42 +231,44 @@ public final class UpdateLocationService extends Service implements
 	 */
 
     public void DescentralizedMessageSend(){
-            for (Message m : God.getInstance().getMessageRepository()) {
-                if (oldAPLocation != null && m.getLocation() instanceof APLocation) {
-                    if (oldAPLocation.equalAPLocation((APLocation) m.getLocation())) {
-                        Log.d(TAG, "DescentralizedMessageSend: Localizações Iguais ");
-                        Log.d(TAG, "DescentralizedMessageSend: IPPosiçao0:" + IpDeviceList.size());
-                        for (String s : IpDeviceList) {
-                            Log.d(TAG, "DescentralizedMessageSend: " + s);
-                            Log.d(TAG, "DescentralizedMessageSend: Creating Comunication");
+        PersistenceManager.getInstance().loadMessagesDescentralized(getApplicationContext());
+        for (Message m : PersistenceManager.getInstance().getMessageRepository()) {
+            if (oldAPLocation != null && m.getLocation() instanceof APLocation) {
+                if (oldAPLocation.equalAPLocation((APLocation) m.getLocation())) {
+                    Log.d(TAG, "DescentralizedMessageSend: Localizações Iguais ");
+                    Log.d(TAG, "DescentralizedMessageSend: IPPosiçao0:" + IpDeviceList.size());
+                    for (String s : IpDeviceList) {
+                        Log.d(TAG, "DescentralizedMessageSend: " + s);
+                        Log.d(TAG, "DescentralizedMessageSend: Creating Comunication");
 
-                            new OutgoingCommTask().executeOnExecutor(
-                                    AsyncTask.THREAD_POOL_EXECUTOR, s
-                            );
-                            String message = m.getTitle() + "," + m.getLocation() + "," + m.getPolicy() + "," +
-                                    m.getBeginDate() + "," + m.getEndDate() + "," + m.getOwner() + "," + m.getContent();
-                            for (Pair p : m.getPairs())
-                                message = message + "," + p.getKey() + "-" + p.getValue();
+                        new OutgoingCommTask().executeOnExecutor(
+                                AsyncTask.THREAD_POOL_EXECUTOR, s
+                        );
+                        String message = m.getTitle() + "," + m.getLocation() + "," + m.getPolicy() + "," +
+                                m.getBeginDate() + "," + m.getEndDate() + "," + m.getOwner() + "," + m.getContent();
+                        for (Pair p : m.getPairs())
+                            message = message + "," + p.getKey() + "-" + p.getValue();
 
-                            Log.d(TAG, "DescentralizedMessageSend: Message format:" + message);
-                            final String finalMessage = Integer.toString(God.getInstance().getMessageRepository().indexOf(m));
-                            Log.d(TAG, "DescentralizedMessageSend: Message format: finalmessage:" + finalMessage);
-                            new Thread() {
-                                @Override
-                                public void run() {
-                                    Log.d(TAG, "DescentralizedMessageSend: Message format: Entrei Na Thread");
-                                    while (connected == false) {}
-                                    Log.d(TAG, "DescentralizedMessageSend: Connection State: FOra do ciclo" );
-                                        new SendCommTask().executeOnExecutor(
-                                                AsyncTask.THREAD_POOL_EXECUTOR, finalMessage);
-
-                                    Log.d(TAG, "DescentralizedMessageSend: Message format: Sai Na Thread");
+                        Log.d(TAG, "DescentralizedMessageSend: Message format:" + message);
+                        final String finalMessage = Integer.toString(PersistenceManager.getInstance().getMessageRepository().indexOf(m));
+                        Log.d(TAG, "DescentralizedMessageSend: Message format: finalmessage:" + finalMessage);
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                Log.d(TAG, "DescentralizedMessageSend: Message format: Entrei Na Thread");
+                                while (connected == false) {
                                 }
-                            }.start();
-                        }
+                                Log.d(TAG, "DescentralizedMessageSend: Connection State: FOra do ciclo");
+                                new SendCommTask().executeOnExecutor(
+                                        AsyncTask.THREAD_POOL_EXECUTOR, finalMessage);
+
+                                Log.d(TAG, "DescentralizedMessageSend: Message format: Sai Na Thread");
+                            }
+                        }.start();
                     }
                 }
             }
+        }
     }
 
     @Override
@@ -392,7 +389,7 @@ public final class UpdateLocationService extends Service implements
                 Log.d(TAG, "doInBackground: OutputStream deu bem");
               //  ObjectOutputStream oos = new ObjectOutputStream(os);
                 Log.d(TAG, "doInBackground: A ObjectOutputStream deu bem");
-             ///   oos.writeObject(God.getInstance().getMessageRepository().get(Integer.parseInt(msg[0])));
+                ///   oos.writeObject(PersistenceManager.getInstance().getMessageRepository().get(Integer.parseInt(msg[0])));
                 /*mCliSocket.getOutputStream().write((msg[0] + "\n").getBytes());
                 Log.d(TAG, "Escrevi na socket");
                 BufferedReader sockIn = new BufferedReader(

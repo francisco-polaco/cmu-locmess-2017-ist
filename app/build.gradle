@@ -37,6 +37,8 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile(name:'Termite-WifiP2P-API', ext:'aar')
+    /*compile(name:'ormlite-android-4.6', ext:'jar')
+    compile(name:'ormlite-core-5.0', ext:'jar')*/
     testCompile 'junit:junit:4.12'
 }
 

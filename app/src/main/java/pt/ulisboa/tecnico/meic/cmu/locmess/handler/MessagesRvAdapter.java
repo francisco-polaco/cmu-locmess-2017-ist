@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.PersistenceManager;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.StaticFields;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 
@@ -46,7 +46,7 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
             holder.v.setBackgroundColor(context.getColor(R.color.cyan));
             me = true;
         }
-        if (God.getInstance().inCache(dataset.get(position))) {
+        if (PersistenceManager.getInstance().inCache(dataset.get(position))) {
             if (me) holder.v.setBackgroundColor(context.getColor(R.color.light_pink));
             else holder.v.setBackgroundColor(context.getColor(R.color.light_yellow));
         }
@@ -55,11 +55,11 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
         holder.v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                God.getInstance().addToCache(position + 1);
+                PersistenceManager.getInstance().addToCache(dataset.get(position));
                 new Thread() {
                     @Override
                     public void run() {
-                        God.getInstance().saveState();
+                        PersistenceManager.getInstance().saveCachedMessages(context);
                     }
                 }.start();
                 MessageDto messageDto = dataset.get(position);

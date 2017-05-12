@@ -33,8 +33,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.PersistenceManager;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
@@ -89,17 +88,13 @@ public class MessageScreen extends AppCompatActivity implements ActivityCallback
         });
         swip.setColorSchemeResources(R.color.accent_material_light, R.color.colorPrimary);
 
-        try {
-            God.getInstance();
-        } catch (NotInitializedException e) {
-            God.init(getApplicationContext());
-        }
         GoogleAPI.init(getApplicationContext(), false);
-        God.getInstance().startLocationUpdates();
+        PersistenceManager.getInstance().startLocationUpdates(getApplicationContext());
         initRecyclerView();
     }
 
     private void initRecyclerView() {
+        PersistenceManager.getInstance().loadCachedMessages(getApplicationContext());
         msgListView = (RecyclerView) findViewById(R.id.MessageList);
         adapter = new MessagesRvAdapter(messages, getApplicationContext());
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -262,8 +257,8 @@ public class MessageScreen extends AppCompatActivity implements ActivityCallback
 
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
                     Date convertedDate = new Date();
-
-                    for(Message m : God.getInstance().getMessageRepository()) {
+                    PersistenceManager.getInstance().loadMessagesDescentralized(getApplicationContext());
+                    for (Message m : PersistenceManager.getInstance().getMessageRepository()) {
                         try {
                             convertedDate = simpleDateFormat.parse(m.getBeginDate());
                         } catch (ParseException e) {

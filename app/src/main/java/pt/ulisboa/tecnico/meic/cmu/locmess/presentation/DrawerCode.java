@@ -7,7 +7,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.PersistenceManager;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.LogoutWebService;
 
@@ -28,7 +28,7 @@ public class DrawerCode {
                 activity.startActivity(editprofile);
                 break;
             case R.id.Logout:
-                God.getInstance().stopLocationUpdates();
+                PersistenceManager.getInstance().stopLocationUpdates(activity.getApplicationContext());
                 new LogoutWebService(context, (ActivityCallback) activity).execute();
                 break;
         }

@@ -31,7 +31,7 @@ import java.util.Date;
 import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.PersistenceManager;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.StaticFields;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
@@ -119,7 +119,7 @@ public class NewMessage extends AppCompatActivity {
             Toast.makeText(this, "You need a title!", Toast.LENGTH_SHORT).show();
             return;
         }
-        String content = ((EditText) this.findViewById(R.id.content)).getText().toString();
+        final String content = ((EditText) this.findViewById(R.id.content)).getText().toString();
         if (content.equals("")) {
             Toast.makeText(this, "A message has to have content!", Toast.LENGTH_SHORT).show();
             return;
@@ -175,11 +175,11 @@ public class NewMessage extends AppCompatActivity {
         else{
             Log.d("NewMessage:", "sendMessage: " + StaticFields.username);
             message.setOwner(StaticFields.username);
-            God.getInstance().addToMessageRepository(message);
+            PersistenceManager.getInstance().addToMessageRepository(message);
             new Thread() {
                 @Override
                 public void run() {
-                    God.getInstance().saveMessagesDescentralized();
+                    PersistenceManager.getInstance().saveMessagesDescentralized(getApplicationContext());
                 }
             }.start();}
     }
