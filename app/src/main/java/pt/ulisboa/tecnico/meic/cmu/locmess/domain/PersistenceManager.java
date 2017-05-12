@@ -40,7 +40,6 @@ public class PersistenceManager {
         return ourInstance;
     }
 
-
     public void startLocationUpdates(Context context) {
         Log.d(TAG, "Starting up the update location service.");
         if (!Utils.isMyServiceRunning(context, UpdateLocationService.class))
@@ -70,13 +69,22 @@ public class PersistenceManager {
         }
     }
 
+    public void flushAndLoadCachedMessages(Context context) {
+        loadCachedMessages(context, true);
+    }
+
     public void loadCachedMessages(Context context) {
-        if (cachedMessages != null) return;
-        try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
-                context.openFileInput(context.getString(R.string.cached_message_filename))))) {
-            cachedMessages = (TreeMap<Integer, MessageDto>) objectInputStream.readObject();
-        } catch (ClassNotFoundException | IOException e) {
-            cachedMessages = new TreeMap<>();
+        loadCachedMessages(context, false);
+    }
+
+    private void loadCachedMessages(Context context, boolean flush) {
+        if (flush || cachedMessages == null) {
+            try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
+                    context.openFileInput(context.getString(R.string.cached_message_filename))))) {
+                cachedMessages = (TreeMap<Integer, MessageDto>) objectInputStream.readObject();
+            } catch (ClassNotFoundException | IOException e) {
+                cachedMessages = new TreeMap<>();
+            }
         }
     }
 
@@ -103,13 +111,22 @@ public class PersistenceManager {
     }
 
     public void loadMessagesDescentralized(Context context) {
-        if (messageRepository != null) return;
-        try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
-                context.openFileInput(MESSAGEREPOSITORY_FILENAME)))) {
-            messageRepository = (ArrayList<Message>) objectInputStream.readObject();
-            printMessages();
-        } catch (ClassNotFoundException | IOException e) {
-            messageRepository = new ArrayList<>();
+        loadMessagesDescentralized(context, false);
+    }
+
+    public void flushAndLoadMessagesDescentralized(Context context) {
+        loadMessagesDescentralized(context, true);
+    }
+
+    private void loadMessagesDescentralized(Context context, boolean flush) {
+        if (flush || messageRepository == null) {
+            try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
+                    context.openFileInput(MESSAGEREPOSITORY_FILENAME)))) {
+                messageRepository = (ArrayList<Message>) objectInputStream.readObject();
+                printMessages();
+            } catch (ClassNotFoundException | IOException e) {
+                messageRepository = new ArrayList<>();
+            }
         }
     }
 
