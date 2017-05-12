@@ -44,7 +44,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListMessagesService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.UnpostMessageService;
 
 
-public class MessageScreen extends AppCompatActivity implements ActivityCallback {
+public class MessageScreen extends AppCompatActivity {
 
     private static final String TAG = MessageScreen.class.getSimpleName();
     private static final int PERMISSION_REQUEST_CODE = 666;
@@ -172,27 +172,22 @@ public class MessageScreen extends AppCompatActivity implements ActivityCallback
     }
 
     public void selectDrawerItem(MenuItem menuItem) {
-        DrawerCode.selectDrawerItem(menuItem, this, drawerLayout, getApplicationContext());
+        DrawerCode.selectDrawerItem(menuItem, this, new LogoutListener(this), drawerLayout, getApplicationContext());
     }
 
     private void checkBasePermission() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "Permission is not granted, requesting");
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     android.Manifest.permission.ACCESS_FINE_LOCATION)) {
 
                 // Provide an additional rationale to the user if the permission was not granted
                 // and the user would benefit from additional context for the use of the permission.
                 // For example, if the request has been denied previously.
-                Log.i(TAG,
-                        "Displaying location permission rationale to provide additional context.");
                 showPermissionDialog();
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_CODE);
             }
-        } else {
-            Log.d(TAG, "Permission is granted");
         }
     }
 
@@ -229,20 +224,6 @@ public class MessageScreen extends AppCompatActivity implements ActivityCallback
                     }
                 })
                 .show();
-    }
-
-
-    @Override
-    public void onSuccess(Result result) {
-        Log.d(TAG, "success");
-        Intent intent = new Intent(this, Login.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-    }
-
-    @Override
-    public void onFailure(Result result) {
-        Toast.makeText(getApplicationContext(), "Can't logout", Toast.LENGTH_LONG).show();
     }
 
 

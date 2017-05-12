@@ -112,7 +112,7 @@ public class LocationScreen extends AppCompatActivity {
 
     private void refreshLocations() {
         new ListLocationsListener(getApplicationContext());
-        dialog = WidgetConstructors.getLoadingDialog(this, "Getting locations...");
+        dialog = WidgetConstructors.getLoadingDialog(this, getString(R.string.dialog_locations));
         dialog.show();
     }
 
@@ -167,7 +167,7 @@ public class LocationScreen extends AppCompatActivity {
     }
 
     public void selectDrawerItem(MenuItem menuItem) {
-        DrawerCode.selectDrawerItem(menuItem, this, drawerLayout, getApplicationContext());
+        DrawerCode.selectDrawerItem(menuItem, this, new LogoutListener(this), drawerLayout, getApplicationContext());
     }
 
     private class ListLocationsListener extends LocmessListener implements ActivityCallback {

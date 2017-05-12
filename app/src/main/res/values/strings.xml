@@ -88,5 +88,7 @@
     <string name="no_locations_to_show">No Locations To Show!</string>
     <string name="edit_profile_title">Edit Profile</string>
     <string name="gps_location_empty">Name is empty.</string>
+    <string name="error_logout">Can\'t logout</string>
+    <string name="dialog_locations">Getting locations...</string>
 
 </resources>
