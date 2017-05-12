@@ -16,7 +16,7 @@ public class DrawerCode {
     public static void selectDrawerItem(MenuItem menuItem, Activity activity, DrawerLayout drawerLayout, Context context) {
         switch (menuItem.getItemId()) {
             case R.id.Message:
-                Intent message = new Intent(context, MainScreen.class);
+                Intent message = new Intent(context, MessageScreen.class);
                 activity.startActivity(message);
                 break;
             case R.id.Locations:

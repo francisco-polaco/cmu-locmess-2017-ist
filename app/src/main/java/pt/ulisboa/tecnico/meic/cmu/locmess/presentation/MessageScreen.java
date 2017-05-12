@@ -48,9 +48,9 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.service.UnpostMessageService;
  * Created by jp_s on 4/14/2017.
  */
 
-public class MainScreen extends AppCompatActivity implements ActivityCallback {
+public class MessageScreen extends AppCompatActivity implements ActivityCallback {
 
-    private static final String TAG = MainScreen.class.getSimpleName();
+    private static final String TAG = MessageScreen.class.getSimpleName();
     private static final int PERMISSION_REQUEST_CODE = 666;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
@@ -225,7 +225,7 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
                 .setPositiveButton(R.string.positive_rationale_dialog, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package", MainScreen.this.getPackageName(), null);
+                        Uri uri = Uri.fromParts("package", MessageScreen.this.getPackageName(), null);
                         intent.setData(uri);
                         startActivity(intent);
                         dialog.dismiss();
@@ -233,7 +233,7 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
                 })
                 .setNegativeButton(R.string.negative_rationale_dialog, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        MainScreen.this.finish();
+                        MessageScreen.this.finish();
                     }
                 })
                 .show();

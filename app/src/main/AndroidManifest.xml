@@ -18,7 +18,7 @@
         android:theme="@style/LocmessTheme"
         tools:replace="android:theme,android:icon">
         <activity
-            android:name=".presentation.MainScreen"
+            android:name=".presentation.MessageScreen"
             android:label="MainScreen"/>
         <activity android:name=".presentation.Login">
             <intent-filter>
@@ -60,11 +60,11 @@
             android:name=".presentation.GPSLocationPicker"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_gps_location_picker"
-            android:parentActivityName=".presentation.MainScreen"
+            android:parentActivityName=".presentation.MessageScreen"
             android:screenOrientation="portrait" />
         <activity
             android:name=".presentation.WifiLocationPicker"
-            android:parentActivityName=".presentation.MainScreen"
+            android:parentActivityName=".presentation.MessageScreen"
             android:screenOrientation="portrait" />
         <receiver android:name=".domain.ConnectivityChangedReceiver" >
             <intent-filter>

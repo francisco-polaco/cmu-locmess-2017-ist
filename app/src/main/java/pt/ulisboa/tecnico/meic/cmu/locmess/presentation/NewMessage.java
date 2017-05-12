@@ -296,12 +296,13 @@ public class NewMessage extends AppCompatActivity {
         @Override
         public void onSuccess(Result result) {
             setPairs((List<Pair>) result.getPiggyback());
-            Toast.makeText(getContext(), result.getMessage(), Toast.LENGTH_LONG).show();
+            if (dialog != null) dialog.cancel();
         }
 
         @Override
         public void onFailure(Result result) {
             Toast.makeText(getContext(), result.getMessage(), Toast.LENGTH_LONG).show();
+            if (dialog != null) dialog.cancel();
         }
 
         private void setPairs(List<Pair> pairs) {

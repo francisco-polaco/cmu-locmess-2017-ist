@@ -124,6 +124,8 @@ public final class UpdateLocationService extends Service implements
     @Override
     public void onDestroy() {
         stopLocationUpdates();
+        unbindService(mConnection);
+        unregisterReceiver(mReceiver);
         super.onDestroy();
     }
 
@@ -306,7 +308,7 @@ public final class UpdateLocationService extends Service implements
 
             Log.d(TAG, "IncommingCommTask started (" + this.hashCode() + ").");
 
-            try {
+            /*try {
                 mSrvSocket = new SimWifiP2pSocketServer(
                         Integer.parseInt(getString(R.string.port)));
             } catch (IOException e) {
@@ -317,13 +319,13 @@ public final class UpdateLocationService extends Service implements
                     SimWifiP2pSocket sock = mSrvSocket.accept();
                     try {
                         Log.d(TAG, "doInBackground: RecebiAlgumaMensagem");
-                   /*     BufferedReader sockIn = new BufferedReader(
+                   *//*     BufferedReader sockIn = new BufferedReader(
                                 new InputStreamReader(sock.getInputStream()));
                         String st = sockIn.readLine();
                         publishProgress(st);
                         sock.getOutputStream().write(("\n").getBytes());
                     } catch (IOException e) {
-                        Log.d("Error reading socket:", e.getMessage());*/
+                        Log.d("Error reading socket:", e.getMessage());*//*
                     } finally {
                         sock.close();
                     }
@@ -332,7 +334,7 @@ public final class UpdateLocationService extends Service implements
                     break;
                     //e.printStackTrace();
                 }
-            }
+            }*/
             return null;
         }
 

@@ -91,7 +91,7 @@ public class Login extends AppCompatActivity {
         public void onSuccess(Result result) {
             if (dialog != null)
                 dialog.cancel();
-            Intent intent = new Intent(getContext(), MainScreen.class);
+            Intent intent = new Intent(getContext(), MessageScreen.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             Log.d(TAG,"Logged in!");

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <include
         android:id="@+id/toolbar"
@@ -12,8 +13,8 @@
         android:layout_width="343dp"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName"
         android:hint="Key"
+        android:inputType="textPersonName"
         android:textSize="20dp" />
 
     <LinearLayout
@@ -39,15 +40,16 @@
             android:layout_marginRight="1dp"
             android:background="@android:drawable/ic_input_add"
             android:backgroundTint="@color/colorPrimary"
-            android:onClick="DisplayKeyValues" />
+            android:onClick="addPair" />
 
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/keyvalue"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/PairsList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        layout="@layout/listview"/>
+        android:layout_marginTop="57dp"
+        android:scrollbars="vertical" />
 
 
 </LinearLayout>

@@ -31,14 +31,13 @@ public class ListPairsService extends LocmessWebService implements LocmessCallba
     @Override
     public void onSuccess(Object object) {
         Pair[] pairsList = (Pair[]) getJsonService().transformJsonToObj(object.toString(), Pair[].class);
-        Result r = new Result(getContext().getString(R.string.LM_0));
-        r.setPiggyback(Arrays.asList(pairsList));
+        Result r = new Result("Successfully retrieved profile pairs!", Arrays.asList(pairsList));
         getActivityCallback().onSuccess(r);
     }
 
     @Override
     public void onFailure(Object object) {
-        getActivityCallback().onFailure(new Result(getContext().getString(R.string.LM_0)));
+        getActivityCallback().onFailure(new Result("Failed to retrieve profile pairs!"));
     }
 
 }

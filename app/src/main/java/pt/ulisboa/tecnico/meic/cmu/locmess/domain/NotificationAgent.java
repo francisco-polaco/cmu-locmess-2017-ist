@@ -12,7 +12,7 @@ import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.presentation.MainScreen;
+import pt.ulisboa.tecnico.meic.cmu.locmess.presentation.MessageScreen;
 
 public class NotificationAgent {
 
@@ -36,7 +36,7 @@ public class NotificationAgent {
     private NotificationCompat.Builder getNotificationDefaultBuilder(Context context) {
         Log.d(TAG, "Sending Notification...");
         // Create an explicit content Intent that starts the main Activity.
-        Intent notificationIntent = new Intent(context, MainScreen.class);
+        Intent notificationIntent = new Intent(context, MessageScreen.class);
         // Construct a task stack.
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         // Push the content Intent onto the stack.

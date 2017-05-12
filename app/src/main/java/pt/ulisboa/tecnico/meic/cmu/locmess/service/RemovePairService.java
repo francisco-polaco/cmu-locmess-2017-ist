@@ -21,7 +21,7 @@ public class RemovePairService extends LocmessWebService implements LocmessCallb
     private Pair pair;
     private int index;
 
-    public RemovePairService(Context context, ActivityCallback activityCallback, Pair pair, int index) {
+    public RemovePairService(Context context, ActivityCallback activityCallback, Pair pair) {
         super(context, activityCallback);
         this.pair = pair;
         this.index = index;
@@ -40,12 +40,12 @@ public class RemovePairService extends LocmessWebService implements LocmessCallb
 
     @Override
     public void onSuccess(Object object) {
-        getActivityCallback().onSuccess(new Result(getContext().getString(R.string.LM_2), index));
+        getActivityCallback().onSuccess(new Result("Successfully removed pair!"));
     }
 
     @Override
     public void onFailure(Object object) {
-        getActivityCallback().onFailure(new Result(getContext().getString(R.string.LM_2)));
+        getActivityCallback().onFailure(new Result("Failed to remove pair"));
     }
 
 

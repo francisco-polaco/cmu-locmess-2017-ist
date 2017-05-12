@@ -37,6 +37,6 @@ public class Pair implements Serializable {
 
     @Override
     public String toString() {
-        return key + "=" + value;
+        return "(" + key + "," + value + ")";
     }
 }

@@ -86,7 +86,6 @@ public class God {
                 context.openFileInput(context.getString(R.string.cached_message_filename))))) {
             cachedMessages = (TreeMap<Integer, MessageDto>) objectInputStream.readObject();
         } catch (ClassNotFoundException | IOException e) {
-            e.printStackTrace();
             cachedMessages = new TreeMap<>();
         }
     }
