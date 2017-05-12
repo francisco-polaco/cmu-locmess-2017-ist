@@ -92,7 +92,7 @@ public class EditProfile extends AppCompatActivity {
     }
 
     public void selectDrawerItem(MenuItem menuItem) {
-        DrawerCode.selectDrawerItem(menuItem, this, drawerLayout, getApplicationContext());
+        DrawerCode.selectDrawerItem(menuItem, this, new LogoutListener(this), drawerLayout, getApplicationContext());
     }
 
     //toolbar reference.

@@ -2,7 +2,6 @@ package pt.ulisboa.tecnico.meic.cmu.locmess.domain;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -24,11 +23,6 @@ public class PersistenceManager {
 
     private static final String MESSAGEREPOSITORY_FILENAME = "messages.dat";
     private static final String TAG = PersistenceManager.class.getSimpleName();
-
-    private static final String[] filesToClearState =
-            new String[]{Resources.getSystem().getString(R.string.credentials_filename),
-                    Resources.getSystem().getString(R.string.cached_message_filename),
-                    MESSAGEREPOSITORY_FILENAME};
 
     private static PersistenceManager ourInstance = new PersistenceManager();
 
@@ -95,7 +89,9 @@ public class PersistenceManager {
     }
 
     public void clearState(Context context) throws IOException {
-        for (String filename : filesToClearState) {
+        for (String filename : new String[]{context.getString(R.string.credentials_filename),
+                context.getString(R.string.cached_message_filename),
+                MESSAGEREPOSITORY_FILENAME}) {
             File file = new File(context.getFilesDir().getPath() + "/" + filename);
             if (file.exists()) file.delete();
         }
