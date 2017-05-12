@@ -54,16 +54,6 @@
 
     </android.support.v4.widget.DrawerLayout>
 
-    <!--<RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </RelativeLayout>-->
-
-   <!-- <include
-        android:id="@+id/drawer_layout"
-        layout="@layout/hamburger" />-->
-
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/floatingActionButton"
         android:layout_width="56dp"

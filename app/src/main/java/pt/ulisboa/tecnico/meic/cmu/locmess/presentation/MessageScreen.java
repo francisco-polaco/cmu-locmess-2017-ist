@@ -44,9 +44,6 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListMessagesService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.UnpostMessageService;
 
-/**
- * Created by jp_s on 4/14/2017.
- */
 
 public class MessageScreen extends AppCompatActivity implements ActivityCallback {
 
