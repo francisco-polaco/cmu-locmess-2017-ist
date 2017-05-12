@@ -27,7 +27,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -45,13 +44,12 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
 
     private static final String TAG = GPSLocationPicker.class.getSimpleName();
     private static final int ZOOM_LEVEL = 17;
-    float mRadius = 150;
+    private float mRadius = 150;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private boolean circleValue = true;
     private LatLng latLong;
     private Place mPlace;
-    private LatLng myLocation; //needs to e dynamic update
-    private Circle mMapCircle;
+    private LatLng myLocation;
     private ProgressDialog dialog;
 
     @Override
@@ -62,7 +60,6 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         toolbar.setTitle(getString(R.string.activity_name_gps_location));
         setSupportActionBar(toolbar);
-        //getActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
         FloatingActionButton recenter = (FloatingActionButton) findViewById(R.id.my_location);
@@ -74,17 +71,6 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
                 zoomAtMe();
             }
         });
-        /*mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                latLong = latLng;
-                drawMarker();
-                drawCenter();
-                if (circleValue) {
-                    drawCircle();
-                }
-            }
-        });*/
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -105,8 +91,6 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
             }
         });
         autocomplete();
-        // Zoom do mapa
-        //startInZoomedArea();
     }
 
     private void getLastKnownLocation() {
@@ -150,7 +134,6 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
         setUpMapIfNeeded();
     }
 
-
     /**
      * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
      * installed) and the map has not already been instantiated.. This will ensure that we only ever
@@ -170,8 +153,6 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
-            /*mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
-                    .getMap();*/
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
@@ -187,7 +168,6 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
         getLastKnownLocation();
         mMap = googleMap;
         // Enabling MyLocation Layer of Google Map
-        //googleMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setIndoorLevelPickerEnabled(false);
         mMap.getUiSettings().setCompassEnabled(true);
@@ -234,7 +214,7 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
             case R.id.action_accept:
                 String name = ((EditText) findViewById(R.id.gps_location_name)).getText().toString();
                 if (name.equals("")) {
-                    Toast.makeText(getApplicationContext(), "Name is empty.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), R.string.gps_location_empty, Toast.LENGTH_LONG).show();
                     return true;
                 }
                 new AddLocationService(getApplicationContext(),
@@ -292,14 +272,12 @@ public class GPSLocationPicker extends AppCompatActivity implements OnMapReadyCa
     }
 
     private void drawMyPosition() {
-        if (mMapCircle != null) mMapCircle.remove();
         CircleOptions circleOptions = new CircleOptions();
         circleOptions.center(myLocation);
         circleOptions.strokeWidth(2);
         circleOptions.radius(10);
         circleOptions.strokeColor(Color.argb(255, 50, 200, 255));
         circleOptions.fillColor(Color.argb(100, 50, 200, 255));
-        //mMapCircle = mMap.addCircle(circleOptions);
     }
 
 

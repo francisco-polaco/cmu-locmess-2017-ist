@@ -87,5 +87,6 @@
     <string name="cached_message_filename">cachedmessages.dat</string>
     <string name="no_locations_to_show">No Locations To Show!</string>
     <string name="edit_profile_title">Edit Profile</string>
+    <string name="gps_location_empty">Name is empty.</string>
 
 </resources>
