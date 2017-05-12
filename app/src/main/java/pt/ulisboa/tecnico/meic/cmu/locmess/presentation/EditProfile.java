@@ -42,7 +42,7 @@ public class EditProfile extends AppCompatActivity {
         setContentView(R.layout.editprofile);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("Edit Profile");
+        toolbar.setTitle(R.string.edit_profile_title);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

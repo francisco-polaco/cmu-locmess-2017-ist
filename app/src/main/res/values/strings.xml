@@ -86,5 +86,6 @@
     <string name="credentials_filename">credentials.dat</string>
     <string name="cached_message_filename">cachedmessages.dat</string>
     <string name="no_locations_to_show">No Locations To Show!</string>
+    <string name="edit_profile_title">Edit Profile</string>
 
 </resources>
