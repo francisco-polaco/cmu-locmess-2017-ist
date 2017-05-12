@@ -41,7 +41,7 @@ public class ListLocationsService extends LocmessWebService implements LocmessCa
                 .create();
 
         Location[] locations = gson.fromJson(object.toString(), Location[].class);
-        Result r = new Result(getContext().getString(R.string.LM_0));
+        Result r = new Result("Successfully retrieved all locations!");
         List<Location> locationList = Arrays.asList(locations);
         r.setPiggyback(locationList);
         if (locationList.size() == 0) Utils.stopLocationUpdates(getContext());
@@ -51,7 +51,7 @@ public class ListLocationsService extends LocmessWebService implements LocmessCa
 
     @Override
     public void onFailure(Object object) {
-        getActivityCallback().onFailure(new Result(getContext().getString(R.string.LM_0)));
+        getActivityCallback().onFailure(new Result("Failed to retrieve the list of locations!"));
     }
 
 }

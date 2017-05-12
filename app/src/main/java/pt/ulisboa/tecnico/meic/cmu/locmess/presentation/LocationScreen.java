@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.presentation;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -9,13 +10,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -25,7 +26,9 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
+import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocationRvAdapter;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
+import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessListener;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.RemoveLocationService;
 
@@ -35,15 +38,17 @@ import static android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
  * Created by jp_s on 4/14/2017.
  */
 
-public class LocationScreen extends AppCompatActivity implements ActivityCallback {
+public class LocationScreen extends AppCompatActivity {
 
     private static final String TAG = LocationScreen.class.getSimpleName();
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private ProgressDialog dialog;
-    private ArrayList<String> locations;
-    private ArrayAdapter<String> adapter;
+    private ArrayList<Location> locations = new ArrayList<>();
+    ;
+    private LocationRvAdapter adapter;
+    private RecyclerView locListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +68,6 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
         drawerLayout.addDrawerListener(drawerToggle);
         NavigationView nvDrawer = (NavigationView) findViewById(R.id.nvView);
         setupDrawerContent(nvDrawer);
-        noLocationDisplay();
 
         findViewById(R.id.gps_location).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,16 +79,6 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getApplicationContext(), WifiLocationPicker.class));
-                /* if(!debug) {
-                    God.getInstance().startLocationUpdates();
-                   // GeofenceManager.getInstance().addGeofence(new MyGeofence("teste", 38.7355793, -9.1329183, 20000.0f));
-                }else {
-                    God.getInstance().stopLocationUpdates();
-                    //GeofenceManager.getInstance().removeAllGeofences();
-                }
-                debug = !debug;*/
-                //Toast.makeText(getApplicationContext(), "WIFI", Toast.LENGTH_SHORT).show();
-                //startActivity(new Intent(getApplicationContext(), GPSLocationPicker.class));
             }
         });
 
@@ -99,21 +93,49 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
             }
         });
         swip.setColorSchemeResources(R.color.accent_material_light, R.color.colorPrimary);
-
     }
-
 
     @Override
     protected void onStart() {
         super.onStart();
         GoogleAPI.getInstance().connect();
+        initRecyclerView();
         refreshLocations();
     }
 
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        drawerToggle.syncState();
+    }
+
     private void refreshLocations() {
-        new ListLocationsService(getApplicationContext(), this).execute();
+        new ListLocationsListener(getApplicationContext());
         dialog = WidgetConstructors.getLoadingDialog(this, "Getting locations...");
         dialog.show();
+    }
+
+    private void initRecyclerView() {
+        locListView = (RecyclerView) findViewById(R.id.LocationsList);
+        adapter = new LocationRvAdapter(locations, getApplicationContext());
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        locListView.setLayoutManager(mLayoutManager);
+        locListView.setItemAnimator(new DefaultItemAnimator());
+        locListView.setAdapter(adapter);
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                new RemoveLocationListener(getApplicationContext(), adapter.getMessageById(viewHolder.getAdapterPosition()));
+            }
+        };
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(locListView);
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -144,75 +166,53 @@ public class LocationScreen extends AppCompatActivity implements ActivityCallbac
         return super.onOptionsItemSelected(item);
     }
 
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        // Sync the toggle state after onRestoreInstanceState has occurred.
-        drawerToggle.syncState();
-    }
-
-    public void noLocationDisplay() {
-        ListView listview = (ListView) findViewById(R.id.LocationsList);
-        TextView textView = (TextView) findViewById(R.id.EmptyList);
-        textView.setText("No Locations To Show");
-        listview.setEmptyView(textView);
-    }
-
     public void selectDrawerItem(MenuItem menuItem) {
         DrawerCode.selectDrawerItem(menuItem, this, drawerLayout, getApplicationContext());
     }
 
-    @Override
-    public void onSuccess(Result result) {
-        String toastText = "";
-        if (result.getMessage().equals(getApplicationContext().getString(R.string.LM_0))) {
-            ListView lv = (ListView) findViewById(R.id.LocationsList);
-            final List<Location> listLocations = (List<Location>) result.getPiggyback();
-            locations = new ArrayList<>();
-            for (Location location : listLocations)
-                locations.add(location.toString());
+    private class ListLocationsListener extends LocmessListener implements ActivityCallback {
 
-            adapter = new ArrayAdapter<>(
-                    this,
-                    android.R.layout.simple_list_item_1,
-                    locations
-            );
-            lv.setAdapter(adapter);
-
-            // the remove is done through a long click
-            lv.setClickable(true);
-            lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(AdapterView<?> parent, View view, int arg2, long arg3) {
-                    new RemoveLocationService(getApplicationContext(), LocationScreen.this,
-                            listLocations.get(arg2), arg2).execute();
-                    return true;
-                }
-            });
-
-            if (dialog != null) dialog.cancel();
-            return; // avoid toast
-        } else if (result.getMessage().equals(getApplicationContext().getString(R.string.LM_2))) {
-            int index = (int) result.getPiggyback();
-            locations.remove(index);
-            adapter.notifyDataSetChanged();
-            toastText += "Removed location with success!";
+        protected ListLocationsListener(Context context) {
+            super(context);
+            new ListLocationsService(getApplicationContext(), this).execute();
         }
-        Toast.makeText(this, toastText, Toast.LENGTH_LONG).show();
+
+        @Override
+        public void onSuccess(Result result) {
+            List<Location> allLocations = (List<Location>) result.getPiggyback();
+            locations.clear();
+            for (Location location : allLocations)
+                adapter.addLoc(location);
+            if (dialog != null) dialog.cancel();
+        }
+
+        @Override
+        public void onFailure(Result result) {
+            if (dialog != null) dialog.cancel();
+            Toast.makeText(getContext(), result.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
-    @Override
-    public void onFailure(Result result) {
-        String toastText = "";
-        if (dialog != null) dialog.cancel();
-        if (result.getMessage().equals(getApplicationContext().getString(R.string.LM_0))) {
-            toastText += "Failed to retrieve the locations!";
-            finish();
-        } else if (result.getMessage().equals(getApplicationContext().getString(R.string.LM_2)))
-            toastText += "Failed to remove the location!";
+    private class RemoveLocationListener extends LocmessListener implements ActivityCallback {
 
-        Toast.makeText(this, toastText, Toast.LENGTH_LONG).show();
+        private Location location;
+
+        protected RemoveLocationListener(Context context, Location location) {
+            super(context);
+            this.location = location;
+            new RemoveLocationService(context, this, location).execute();
+        }
+
+        @Override
+        public void onSuccess(Result result) {
+            adapter.removeLoc(location);
+            Toast.makeText(getContext(), result.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        public void onFailure(Result result) {
+            Toast.makeText(getContext(), result.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
 }

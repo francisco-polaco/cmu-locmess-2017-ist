@@ -58,4 +58,20 @@ public class APLocation extends Location implements Serializable{
             else
                 return false;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        APLocation that = (APLocation) o;
+
+        return aps != null ? aps.equals(that.aps) : that.aps == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return aps != null ? aps.hashCode() : 0;
+    }
 }

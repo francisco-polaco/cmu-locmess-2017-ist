@@ -38,15 +38,12 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
+import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessListener;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListAllProfilePairsService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.PostMessageService;
 
-/**
- * Created by jp_s on 4/15/2017.
- */
-
-public class NewMessage extends AppCompatActivity implements ActivityCallback {
+public class NewMessage extends AppCompatActivity {
 
     private ProgressDialog dialog;
     private Toolbar toolbar;
@@ -94,10 +91,10 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
 
         // the order here is important, since I am relying on it to close the dialog!
         spinner = (Spinner) findViewById(R.id.spinner);
-        new LocationsListener(this).execute();
+        new LocationsListener(this);
 
         multispinner = (MultiSpinner) findViewById(R.id.spinnerMulti);
-        new PairsListener(this).execute();
+        new PairsListener(this);
     }
 
     public void showDatePickerDialog(View v) {
@@ -174,7 +171,7 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
         Log.d("NewMessage", "sendMessage: "+ location);
 
         if (sendModePolicy.equals("Centralized"))
-            new PostMessageService(getApplicationContext(), this, message).execute();
+            new PostMessageListener(getApplicationContext(), message);
         else{
             Log.d("NewMessage:", "sendMessage: " + StaticFields.username);
             message.setOwner(StaticFields.username);
@@ -187,21 +184,6 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
             }.start();}
     }
 
-
-    @Override
-    public void onSuccess(Result result) {
-        if (dialog != null) dialog.cancel();
-        String message = result.getMessage();
-        if (message != null) {
-            if (message.equals(getString(R.string.LM_2))) {
-                message = "Message was posted with success!";
-                //TODO : maybe there is a better way
-                reset();
-            }
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-        }
-    }
-
     private void reset() {
         ((EditText) this.findViewById(R.id.msgtitle)).setText("");
         ((EditText) this.findViewById(R.id.content)).setText("");
@@ -210,12 +192,6 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
         ((TextView) this.findViewById(R.id.EndTime)).setText(getString(R.string.select_time));
         ((TextView) this.findViewById(R.id.EndDate)).setText(getString(R.string.select_date));
         multispinner.setText(getText(R.string.multispinner_placeholder));
-    }
-
-    @Override
-    public void onFailure(Result result) {
-        if (dialog != null) dialog.cancel();
-        Toast.makeText(this, result.getMessage(), Toast.LENGTH_LONG).show();
     }
 
     public static class TimePickerFragment extends DialogFragment
@@ -260,7 +236,7 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
             // Use the current date as the default date in the picker
             final Calendar c = Calendar.getInstance();
             int year = c.get(Calendar.YEAR);
-            int month = c.get(Calendar.MONTH);
+            int month = c.get(Calendar.MONTH) + 1;
             int day = c.get(Calendar.DAY_OF_MONTH);
 
             // Create a new instance of DatePickerDialog and return it
@@ -274,26 +250,10 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
         }
     }
 
-    public class Listener {
-
-        private Context context;
-
-        public Listener(Context context) {
-            this.context = context;
-        }
-
-        public Context getContext() {
-            return context;
-        }
-    }
-
-    public class LocationsListener extends Listener implements ActivityCallback {
+    private class LocationsListener extends LocmessListener implements ActivityCallback {
 
         public LocationsListener(Context context) {
             super(context);
-        }
-
-        public void execute() {
             new ListLocationsService(getContext(), this).execute();
         }
 
@@ -304,7 +264,7 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
 
         @Override
         public void onFailure(Result result) {
-            NewMessage.this.onFailure(new Result("Failed to retrieve the list of locations!"));
+            Toast.makeText(getContext(), result.getMessage(), Toast.LENGTH_LONG).show();
         }
 
         private void setLocations(List<Location> locs) {
@@ -326,25 +286,22 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
     }
 
 
-    public class PairsListener extends Listener implements ActivityCallback {
+    private class PairsListener extends LocmessListener implements ActivityCallback {
 
         public PairsListener(Context context) {
             super(context);
-        }
-
-        public void execute() {
             new ListAllProfilePairsService(getContext(), this).execute();
         }
 
         @Override
         public void onSuccess(Result result) {
             setPairs((List<Pair>) result.getPiggyback());
-            NewMessage.this.onSuccess(new Result());
+            Toast.makeText(getContext(), result.getMessage(), Toast.LENGTH_LONG).show();
         }
 
         @Override
         public void onFailure(Result result) {
-            NewMessage.this.onFailure(new Result("Failed to retrieve the list of pairs!"));
+            Toast.makeText(getContext(), result.getMessage(), Toast.LENGTH_LONG).show();
         }
 
         private void setPairs(List<Pair> pairs) {
@@ -367,5 +324,28 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
         }
     }
 
+    private class PostMessageListener extends LocmessListener implements ActivityCallback {
+
+        protected PostMessageListener(Context context, Message message) {
+            super(context);
+            new PostMessageService(getApplicationContext(), this, message).execute();
+        }
+
+        @Override
+        public void onSuccess(Result result) {
+            processResult(result);
+        }
+
+        @Override
+        public void onFailure(Result result) {
+            processResult(result);
+        }
+
+        private void processResult(Result result) {
+            if (dialog != null) dialog.cancel();
+            reset();
+            Toast.makeText(getContext(), result.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
 
 }

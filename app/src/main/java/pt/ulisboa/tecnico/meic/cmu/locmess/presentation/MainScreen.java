@@ -266,7 +266,6 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
                     Date convertedDate = new Date();
 
-
                     for(Message m : God.getInstance().getMessageRepository()) {
                         try {
                             convertedDate = simpleDateFormat.parse(m.getBeginDate());
