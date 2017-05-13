@@ -156,7 +156,7 @@ public final class UpdateLocationService extends Service implements
         new LocationWebService(getApplicationContext(), new ActivityCallback() {
             @Override
             public void onSuccess(Result result) {
-                List<MessageDto> messageDtos = (ArrayList<MessageDto>) result.getPiggyback();
+                List<MessageDto> messageDtos = (List<MessageDto>) result.getPiggyback();
             }
 
             @Override
