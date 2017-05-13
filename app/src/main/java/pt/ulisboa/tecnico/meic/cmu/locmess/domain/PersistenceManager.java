@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -106,6 +107,9 @@ public class PersistenceManager {
         return cachedMessages.containsValue(messageDto);
     }
 
+    public Collection<MessageDto> retrieveCache() {
+        return cachedMessages.values();
+    }
     public List<Message> getMessageRepository() {
         return messageRepository;
     }

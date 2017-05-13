@@ -1,7 +1,6 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.presentation;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -40,7 +39,6 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.MessagesRvAdapter;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
-import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessListener;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListMessagesService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.UnpostMessageService;
 
@@ -81,7 +79,7 @@ public class MessageScreen extends AppCompatActivity {
         swip.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new ListMessageListener(getApplicationContext());
+                new ListMessageListener();
                 if (swip.isRefreshing()) {
                     swip.setRefreshing(false);
                 }
@@ -121,7 +119,7 @@ public class MessageScreen extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         checkBasePermission();
-        new ListMessageListener(getApplicationContext());
+        new ListMessageListener();
         GoogleAPI.getInstance().connect();
     }
 
@@ -228,42 +226,38 @@ public class MessageScreen extends AppCompatActivity {
     }
 
 
-    public class ListMessageListener extends LocmessListener implements ActivityCallback {
+    public class ListMessageListener {
 
+        public ListMessageListener() {
+            new ListMessagesService(getApplicationContext(), new ActivityCallback() {
+                @Override
+                public void onSuccess(Result result) {
+                    messages.clear();
+                    messages.addAll(PersistenceManager.getInstance().retrieveCache());
+                    for (MessageDto m : ((List<MessageDto>) result.getPiggyback()))
+                        if (!messages.contains(m)) messages.add(m);
 
-        protected ListMessageListener(Context context) {
-            super(context);
-            new ListMessagesService(context, this).execute();
-        }
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                    Date convertedDate = new Date();
+                    PersistenceManager.getInstance().loadMessagesDescentralized(getApplicationContext());
+                    for (Message m : PersistenceManager.getInstance().getMessageRepository()) {
+                        try {
+                            convertedDate = simpleDateFormat.parse(m.getBeginDate());
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        MessageDto mdto = new MessageDto(0, m.getTitle(), m.getContent(), m.getOwner(), convertedDate);
+                        messages.add(mdto);
+                    }
 
-        @Override
-        public void onSuccess(Result result) {
-            List<MessageDto> messageDtos = (List<MessageDto>) result.getPiggyback();
-            messages.clear();
-            adapter.addMsgs(messageDtos);
-
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-            Date convertedDate = new Date();
-
-            PersistenceManager.getInstance().loadMessagesDescentralized(getApplicationContext());
-            for (Message m : PersistenceManager.getInstance().getMessageRepository()) {
-                try {
-                    convertedDate = simpleDateFormat.parse(m.getBeginDate());
-                } catch (ParseException e) {
-                    e.printStackTrace();
+                    adapter.notifyDataSetChanged();
                 }
-                MessageDto mdto = new MessageDto(0, m.getTitle(), m.getContent(), m.getOwner(), convertedDate);
-                messages.add(mdto);
-            }
 
-            adapter.notifyDataSetChanged();
-            Toast.makeText(getContext(), result.getMessage(), Toast.LENGTH_LONG).show();
-        }
-
-        @Override
-        public void onFailure(Result result) {
-            Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_LONG).show();
-
+                @Override
+                public void onFailure(Result result) {
+                    Toast.makeText(getApplicationContext(), "Failed to retrieve messages!", Toast.LENGTH_LONG).show();
+                }
+            }).execute();
         }
     }
 
