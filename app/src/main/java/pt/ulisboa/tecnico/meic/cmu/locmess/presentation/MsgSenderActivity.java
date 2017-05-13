@@ -21,7 +21,9 @@ import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
@@ -42,9 +44,10 @@ public class MsgSenderActivity extends Activity implements
         PeerListListener, GroupInfoListener {
 
     public static final String TAG = "msgsender";
+	public static final int PORT = 10001;
 
-    private SimWifiP2pManager mManager = null;
-    private Channel mChannel = null;
+	private SimWifiP2pManager mManager = null;
+	private Channel mChannel = null;
     private Messenger mService = null;
 	private boolean mBound = false;
 	private SimWifiP2pSocketServer mSrvSocket = null;
@@ -52,64 +55,6 @@ public class MsgSenderActivity extends Activity implements
 	private TextView mTextInput;
 	private TextView mTextOutput;
     private SimWifiP2pBroadcastReceiver mReceiver;
-	
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		
-		// initialize the UI
-		setContentView(R.layout.main);
-		guiSetButtonListeners();
-		guiUpdateInitState();
-
-		// initialize the WDSim API
-		SimWifiP2pSocketManager.Init(getApplicationContext());
-		
-		// register broadcast receiver
-		IntentFilter filter = new IntentFilter();
-		filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
-		filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
-		filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
-		filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
-		mReceiver = new SimWifiP2pBroadcastReceiver(this);
-		registerReceiver(mReceiver, filter);
-	}
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        unregisterReceiver(mReceiver);
-    }
-
-	/*
-	 * Listeners associated to buttons
-	 */
-
-	private OnClickListener listenerWifiOnButton = new OnClickListener() {
-        public void onClick(View v){
-
-        	Intent intent = new Intent(v.getContext(), SimWifiP2pService.class);
-            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-			mBound = true;
-
-			// spawn the chat server background task
-            new IncommingCommTask().executeOnExecutor(
-                    AsyncTask.THREAD_POOL_EXECUTOR);
-
-            guiUpdateDisconnectedState();
-        }
-	};
-
-	private OnClickListener listenerWifiOffButton = new OnClickListener() {
-        public void onClick(View v){
-            if (mBound) {
-                unbindService(mConnection);
-                mBound = false;
-                guiUpdateInitState();
-            }
-        }
-	};
-
 	private OnClickListener listenerInRangeButton = new OnClickListener() {
         public void onClick(View v){
         	if (mBound) {
@@ -120,7 +65,6 @@ public class MsgSenderActivity extends Activity implements
             }
         }
 	};
-
 	private OnClickListener listenerInGroupButton = new OnClickListener() {
         public void onClick(View v){
         	if (mBound) {
@@ -132,6 +76,9 @@ public class MsgSenderActivity extends Activity implements
               }
 	};
 
+	/*
+	 * Listeners associated to buttons
+	 */
 	private OnClickListener listenerConnectButton = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
@@ -142,7 +89,6 @@ public class MsgSenderActivity extends Activity implements
                     mTextInput.getText().toString());
 		}
 	};
-
     private OnClickListener listenerSendButton = new OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -153,7 +99,6 @@ public class MsgSenderActivity extends Activity implements
                     mTextInput.getText().toString());
         }
     };
-
     private OnClickListener listenerDisconnectButton = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
@@ -166,10 +111,9 @@ public class MsgSenderActivity extends Activity implements
 				}
 			}
 			mCliSocket = null;
-			//guiUpdateDisconnectedState();
+			guiUpdateDisconnectedState();
 		}
 	};
-
 	private ServiceConnection mConnection = new ServiceConnection() {
 		// callbacks for service binding, passed to bindService()
 
@@ -189,125 +133,108 @@ public class MsgSenderActivity extends Activity implements
 			mBound = false;
 		}
 	};
+	private OnClickListener listenerWifiOnButton = new OnClickListener() {
+		public void onClick(View v) {
+
+			Intent intent = new Intent(v.getContext(), SimWifiP2pService.class);
+			bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+			mBound = true;
+
+			// spawn the chat server background task
+			new IncommingCommTask().executeOnExecutor(
+					AsyncTask.THREAD_POOL_EXECUTOR);
+
+			guiUpdateDisconnectedState();
+		}
+	};
+	private OnClickListener listenerWifiOffButton = new OnClickListener() {
+		public void onClick(View v) {
+			if (mBound) {
+				unbindService(mConnection);
+				mBound = false;
+				guiUpdateInitState();
+			}
+		}
+	};
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		// initialize the UI
+		setContentView(R.layout.main);
+		guiSetButtonListeners();
+		guiUpdateInitState();
+
+		// initialize the WDSim API
+		SimWifiP2pSocketManager.Init(getApplicationContext());
+
+		// register broadcast receiver
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
+		filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
+		filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_NETWORK_MEMBERSHIP_CHANGED_ACTION);
+		filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_GROUP_OWNERSHIP_CHANGED_ACTION);
+		mReceiver = new SimWifiP2pBroadcastReceiver(this);
+		registerReceiver(mReceiver, filter);
+
+		findViewById(R.id.button2).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Field list = null;
+				try {
+					list = SimWifiP2pSocketManager.getSockManager().getClass().getDeclaredField("mDevices");
+				} catch (NoSuchFieldException e) {
+					e.printStackTrace();
+				}
+				list.setAccessible(true);
+				SimWifiP2pDeviceList list2 = null;
+				try {
+					list2 = (SimWifiP2pDeviceList) list.get(SimWifiP2pSocketManager.getSockManager());
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
+				Field hash = null;
+				try {
+					hash = list2.getClass().getDeclaredField("mDevices");
+					hash.setAccessible(true);
+				} catch (NoSuchFieldException e) {
+					e.printStackTrace();
+				}
+				try {
+					HashMap<String, SimWifiP2pDevice> hashMap = (HashMap<String, SimWifiP2pDevice>) hash.get(list2);
+					for (String key : hashMap.keySet()) {
+						System.out.println("Key: " + key + "\n" + hashMap.get(key) + "\n=============");
+					}
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
+				for (SimWifiP2pDevice simWifiP2pDevice : list2.getDeviceList()) {
+					System.out.println(simWifiP2pDevice.toString());
+				}
+
+			}
+		});
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		unregisterReceiver(mReceiver);
+	}
 
 
 	/*
 	 * Asynctasks implementing message exchange
 	 */
 	
-	public class IncommingCommTask extends AsyncTask<Void, String, Void> {
-
-		@Override
-		protected Void doInBackground(Void... params) {
-			
-			Log.d(TAG, "IncommingCommTask started (" + this.hashCode() + ").");
-
-			try {
-				mSrvSocket = new SimWifiP2pSocketServer(
-						Integer.parseInt(getString(R.string.port)));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			while (!Thread.currentThread().isInterrupted()) {
-				try {
-					SimWifiP2pSocket sock = mSrvSocket.accept();
-                    try {
-                     /*   BufferedReader sockIn = new BufferedReader(
-                                new InputStreamReader(sock.getInputStream()));
-                        String st = sockIn.readLine();
-                        publishProgress(st);
-                        sock.getOutputStream().write(("\n").getBytes());*/
-                   /* } catch (IOException e) {
-                        Log.d("Error reading socket:", e.getMessage());*/
-                    } finally {
-                        sock.close();
-                    }
-				} catch (IOException e) {
-					Log.d("Error socket:", e.getMessage());
-					break;
-					//e.printStackTrace();
-				}
-			}
-			return null;
-		}
-
-		@Override
-		protected void onProgressUpdate(String... values) {
-			mTextOutput.append(values[0] + "\n");
-		}
-	}
-
-	public class OutgoingCommTask extends AsyncTask<String, Void, String> {
-
-	//	@Override
-	//	protected void onPreExecute() {mTextOutput.setText("Connecting...");}
-
-		@Override
-		protected String doInBackground(String... params) {
-			try {
-				Log.d(TAG, "doInBackground: " + params[0]);
-				mCliSocket = new SimWifiP2pSocket(params[0],
-						Integer.parseInt(getString(R.string.port)));
-				Log.d(TAG, "doInBackground: Sai da connection");
-			} catch (UnknownHostException e) {
-				return "Unknown Host:" + e.getMessage();
-			} catch (IOException e) {
-				return "IO error:" + e.getMessage();
-			}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(String result) {
-			if (result != null) {
-                guiUpdateDisconnectedState();
-				mTextOutput.setText(result);
-			} else {
-                findViewById(R.id.idDisconnectButton).setEnabled(true);
-                findViewById(R.id.idConnectButton).setEnabled(false);
-                findViewById(R.id.idSendButton).setEnabled(true);
-                mTextInput.setHint("");
-                mTextInput.setText("");
-                mTextOutput.setText("");
-            }
-		}
-	}
-
-	public class SendCommTask extends AsyncTask<String, String, Void> {
-
-		@Override
-		protected Void doInBackground(String... msg) {
-            try {
-                mCliSocket.getOutputStream().write((msg[0] + "\n").getBytes());
-                BufferedReader sockIn = new BufferedReader(
-                        new InputStreamReader(mCliSocket.getInputStream()));
-                sockIn.readLine();
-                mCliSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            mCliSocket = null;
-            return null;
-        }
-
-		@Override
-		protected void onPostExecute(Void result) {
-            mTextInput.setText("");
-            guiUpdateDisconnectedState();
-        }
-	}
-
-	/*
-	 * Listeners associated to Termite
-	 */
-	
 	@Override
 	public void onPeersAvailable(SimWifiP2pDeviceList peers) {
 		StringBuilder peersStr = new StringBuilder();
-		
+
 		// compile list of devices in range
 		for (SimWifiP2pDevice device : peers.getDeviceList()) {
-			String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ")\n";
+			String devstr = "" + device.deviceName + " (" + device.getVirtIp() + ":" + device.getVirtPort() + ")\n";
 			peersStr.append(devstr);
 		}
 
@@ -325,7 +252,7 @@ public class MsgSenderActivity extends Activity implements
 	@Override
 	public void onGroupInfoAvailable(SimWifiP2pDeviceList devices,
 			SimWifiP2pInfo groupInfo) {
-		
+
 		// compile list of network members
 		StringBuilder peersStr = new StringBuilder();
 		for (String deviceName : groupInfo.getDevicesInNetwork()) {
@@ -346,12 +273,8 @@ public class MsgSenderActivity extends Activity implements
 	     .show();
 	}
 
-	/*
-	 * Helper methods for updating the interface
-	 */
-
 	private void guiSetButtonListeners() {
-		
+
 		findViewById(R.id.idConnectButton).setOnClickListener(listenerConnectButton);
 		findViewById(R.id.idDisconnectButton).setOnClickListener(listenerDisconnectButton);
 		findViewById(R.id.idSendButton).setOnClickListener(listenerSendButton);
@@ -361,12 +284,16 @@ public class MsgSenderActivity extends Activity implements
 		findViewById(R.id.idInGroupButton).setOnClickListener(listenerInGroupButton);
 	}
 
+	/*
+	 * Listeners associated to Termite
+	 */
+	
 	private void guiUpdateInitState() {
-		
+
 		mTextInput = (TextView) findViewById(R.id.editText1);
 		mTextInput.setHint("type remote virtual IP (192.168.0.0/16)");
 		mTextInput.setEnabled(false);
-		
+
 		mTextOutput = (TextView) findViewById(R.id.editText2);
 		mTextOutput.setEnabled(false);
 		mTextOutput.setText("");
@@ -381,18 +308,132 @@ public class MsgSenderActivity extends Activity implements
 	}
 
 	private void guiUpdateDisconnectedState() {
-		
+
 		mTextInput.setEnabled(true);
 		mTextInput.setHint("type remote virtual IP (192.168.0.0/16)");
 		mTextOutput.setEnabled(true);
 		mTextOutput.setText("");
-		
+
 		findViewById(R.id.idSendButton).setEnabled(false);
 		findViewById(R.id.idConnectButton).setEnabled(true);
 		findViewById(R.id.idDisconnectButton).setEnabled(false);
 		findViewById(R.id.idWifiOnButton).setEnabled(false);
 		findViewById(R.id.idWifiOffButton).setEnabled(true);
-		findViewById(R.id.idInRangeButton).setEnabled(true);            
+		findViewById(R.id.idInRangeButton).setEnabled(true);
 		findViewById(R.id.idInGroupButton).setEnabled(true);
+	}
+
+	/*
+	 * Helper methods for updating the interface
+	 */
+
+	public class IncommingCommTask extends AsyncTask<Void, String, Void> {
+
+		@Override
+		protected Void doInBackground(Void... params) {
+
+			Log.d(TAG, "IncommingCommTask started (" + this.hashCode() + ").");
+
+			try {
+				mSrvSocket = new SimWifiP2pSocketServer(
+						PORT);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			while (!Thread.currentThread().isInterrupted()) {
+				System.out.println("Conas");
+				try {
+					SimWifiP2pSocket sock = mSrvSocket.accept();
+					System.out.println("preso");
+					try {
+						BufferedReader sockIn = new BufferedReader(
+								new InputStreamReader(sock.getInputStream()));
+						Log.d("YEY", "Waiting");
+						String st = sockIn.readLine();
+						publishProgress(st);
+						sock.getOutputStream().write(("\n").getBytes());
+					} catch (IOException e) {
+						Log.d("Error reading socket: ", e.getMessage());
+					} finally {
+						sock.close();
+					}
+				} catch (IOException e) {
+					Log.d("Error socket: ", e.getMessage());
+					break;
+					//e.printStackTrace();
+				}
+			}
+			System.out.println("AI JAJONI!");
+			return null;
+		}
+
+		@Override
+		protected void onProgressUpdate(String... values) {
+			mTextOutput.append(values[0] + "\n");
+		}
+	}
+
+	public class OutgoingCommTask extends AsyncTask<String, Void, String> {
+
+		@Override
+		protected void onPreExecute() {
+			mTextOutput.setText("Connecting...");
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			try {
+				Log.d(TAG, "doInBackground: " + params[0]);
+				mCliSocket = new SimWifiP2pSocket(params[0],
+						PORT);
+				Log.d(TAG, "doInBackground: Sai da connection");
+			} catch (UnknownHostException e) {
+				return "Unknown Host:" + e.getMessage();
+			} catch (IOException e) {
+				return "IO error:" + e.getMessage();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			if (result != null) {
+				guiUpdateDisconnectedState();
+				mTextOutput.setText(result);
+			} else {
+				findViewById(R.id.idDisconnectButton).setEnabled(true);
+				findViewById(R.id.idConnectButton).setEnabled(false);
+				findViewById(R.id.idSendButton).setEnabled(true);
+				mTextInput.setHint("");
+				mTextInput.setText("");
+				mTextOutput.setText("");
+			}
+		}
+	}
+
+	public class SendCommTask extends AsyncTask<String, String, Void> {
+
+		@Override
+		protected Void doInBackground(String... msg) {
+			try {
+				System.out.println(msg[0]);
+				mCliSocket.getOutputStream().write((msg[0] + "\n").getBytes());
+				BufferedReader sockIn = new BufferedReader(
+						new InputStreamReader(mCliSocket.getInputStream()));
+				System.out.println("fds");
+				System.out.println("fds1111111: " + sockIn.readLine());
+				mCliSocket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			mCliSocket = null;
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			mTextInput.setText("");
+			guiUpdateDisconnectedState();
+		}
 	}
 }

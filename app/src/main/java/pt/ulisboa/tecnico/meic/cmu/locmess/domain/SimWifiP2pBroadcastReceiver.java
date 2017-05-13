@@ -11,7 +11,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.presentation.MsgSenderActivity;
 
 public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
 
-    private static final String TAG = pt.ulisboa.tecnico.meic.cmu.locmess.domain.SimWifiP2pBroadcastReceiver.class.getSimpleName();
+    private static final String TAG = SimWifiP2pBroadcastReceiver.class.getSimpleName();
     private MsgSenderActivity mActivity;
 
     public SimWifiP2pBroadcastReceiver(MsgSenderActivity activity) {

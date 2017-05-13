@@ -46,7 +46,7 @@
         <LinearLayout
             android:id="@+id/linearLayout3"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="77dp">
 
             <Button
                 android:id="@+id/idWifiOnButton"
@@ -66,13 +66,27 @@
                 android:layout_height="wrap_content"
                 android:text="inRangeButton" />
 
-            <Button
-                android:id="@+id/idInGroupButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="inGroupButton" />
-
         </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="61dp">
+
+        <Button
+            android:id="@+id/idInGroupButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="inGroupButton" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:text="Button" />
 
     </LinearLayout>
 
