@@ -41,7 +41,6 @@ import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.APLocation;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
@@ -156,7 +155,6 @@ public final class UpdateLocationService extends Service implements
         new LocationWebService(getApplicationContext(), new ActivityCallback() {
             @Override
             public void onSuccess(Result result) {
-                List<MessageDto> messageDtos = (List<MessageDto>) result.getPiggyback();
             }
 
             @Override
