@@ -46,13 +46,12 @@ public class LocationWebService extends LocmessWebService implements LocmessCall
 
     @Override
     public void onSuccess(Object object) {
-        MessageDto[] messageDtos;
-        messageDtos = (MessageDto[]) getJsonService().transformJsonToObj(object.toString(), MessageDto[].class);
-        getActivityCallback().onSuccess(new Result("result", Arrays.asList(messageDtos)));
+        MessageDto[] messageDtos = (MessageDto[]) getJsonService().transformJsonToObj(object.toString(), MessageDto[].class);
+        getActivityCallback().onSuccess(new Result("Succefully retrieved new messages", Arrays.asList(messageDtos)));
     }
 
     @Override
     public void onFailure(Object object) {
-        System.out.println("FUCK ME!!!");
+        System.out.println("Failed to heartbeat!");
     }
 }

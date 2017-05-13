@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.location.LocationListener;
@@ -40,6 +41,7 @@ import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.APLocation;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
@@ -146,14 +148,23 @@ public final class UpdateLocationService extends Service implements
 
     @Override
     public void onLocationChanged(Location location) {
-        // if (isBetterLocation(oldLocation, location)) {
-
         if (wifion) {
             mManager.requestPeers(mChannel, this);
             mManager.requestGroupInfo(mChannel, this);
         }
 
-        new LocationWebService(getApplicationContext(), null, location).execute();
+        new LocationWebService(getApplicationContext(), new ActivityCallback() {
+            @Override
+            public void onSuccess(Result result) {
+                List<MessageDto> messageDtos = (ArrayList<MessageDto>) result.getPiggyback();
+            }
+
+            @Override
+            public void onFailure(Result result) {
+                Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }, location).execute();
+
         new ListLocationsService(getApplicationContext(), null).execute();
         new ListMessagesService(getApplicationContext(), new ActivityCallback() {
             @Override

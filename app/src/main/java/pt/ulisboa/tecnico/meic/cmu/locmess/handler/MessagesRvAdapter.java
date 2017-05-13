@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
@@ -104,6 +105,11 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
 
     public void addMsg(MessageDto messageDto) {
         dataset.add(messageDto);
+        notifyDataSetChanged();
+    }
+
+    public void addMsgs(Collection<MessageDto> messages) {
+        dataset.addAll(messages);
         notifyDataSetChanged();
     }
 
