@@ -234,8 +234,9 @@ public class MessageScreen extends AppCompatActivity {
                 public void onSuccess(Result result) {
                     messages.clear();
                     messages.addAll(PersistenceManager.getInstance().retrieveCache());
-                    for (MessageDto m : ((List<MessageDto>) result.getPiggyback()))
+                    for (MessageDto m : ((List<MessageDto>) result.getPiggyback())) {
                         if (!messages.contains(m)) messages.add(m);
+                    }
 
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
                     Date convertedDate = new Date();
