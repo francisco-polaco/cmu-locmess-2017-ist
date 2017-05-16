@@ -5,17 +5,11 @@ import android.location.Location;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import org.json.JSONObject;
-
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.TreeMap;
 
 import cz.msebera.android.httpclient.entity.StringEntity;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.GPSLocation;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -48,16 +42,13 @@ public class LocationWebService extends LocmessWebService implements LocmessCall
     }
 
 
-
     @Override
     public void onSuccess(Object object) {
-        MessageDto[] messageDtos;
-        messageDtos = (MessageDto[]) getJsonService().transformJsonToObj(object.toString(), MessageDto[].class);
-        getActivityCallback().onSuccess(new Result("result", Arrays.asList(messageDtos)));
+        getActivityCallback().onSuccess(new Result("Succefully retrieved new messages"));
     }
 
     @Override
     public void onFailure(Object object) {
-        System.out.println("FUCK ME!!!");
+        getActivityCallback().onFailure(new Result("Failed to heartbeat!"));
     }
 }

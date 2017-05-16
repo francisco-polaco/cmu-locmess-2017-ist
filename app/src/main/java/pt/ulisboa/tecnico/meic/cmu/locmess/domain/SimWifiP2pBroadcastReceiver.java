@@ -14,7 +14,6 @@ public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
     private UpdateLocationService mActivity;
 
     public SimWifiP2pBroadcastReceiver(UpdateLocationService activity) {
-        super();
         this.mActivity = activity;
     }
 

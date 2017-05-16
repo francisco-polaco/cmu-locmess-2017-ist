@@ -12,10 +12,6 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
 
-/**
- * Created by Diogo on 20/04/2017.
- */
-
 public class SignupWebService extends LocmessWebService implements LocmessCallback {
 
     private User user;

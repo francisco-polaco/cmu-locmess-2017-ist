@@ -9,11 +9,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
-import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.PersistenceManager;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.StaticFields;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 
 /**
@@ -42,11 +43,11 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.title.setText(dataset.get(position).getTitle());
         boolean me = false;
-        if (God.getInstance().amIPublisher(dataset.get(position).getPublisher())) {
+        if (amIPublisher(dataset.get(position).getPublisher())) {
             holder.v.setBackgroundColor(context.getColor(R.color.cyan));
             me = true;
         }
-        if (God.getInstance().inCache(dataset.get(position))) {
+        if (PersistenceManager.getInstance().inCache(dataset.get(position))) {
             if (me) holder.v.setBackgroundColor(context.getColor(R.color.light_pink));
             else holder.v.setBackgroundColor(context.getColor(R.color.light_yellow));
         }
@@ -55,11 +56,11 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
         holder.v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                God.getInstance().addToCache(position + 1);
+                PersistenceManager.getInstance().addToCache(dataset.get(position));
                 new Thread() {
                     @Override
                     public void run() {
-                        God.getInstance().saveState();
+                        PersistenceManager.getInstance().saveCachedMessages(context);
                     }
                 }.start();
                 MessageDto messageDto = dataset.get(position);
@@ -88,6 +89,10 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
         });
     }
 
+    private boolean amIPublisher(String publisher) {
+        return publisher.equals(StaticFields.username);
+    }
+
     @Override
     public int getItemCount() {
         return dataset.size();
@@ -98,8 +103,13 @@ public class MessagesRvAdapter extends RecyclerView.Adapter<MessagesRvAdapter.Vi
         notifyDataSetChanged();
     }
 
-    public void addMsg(MessageDto messageDto){
+    public void addMsg(MessageDto messageDto) {
         dataset.add(messageDto);
+        notifyDataSetChanged();
+    }
+
+    public void addMsgs(Collection<MessageDto> messages) {
+        dataset.addAll(messages);
         notifyDataSetChanged();
     }
 

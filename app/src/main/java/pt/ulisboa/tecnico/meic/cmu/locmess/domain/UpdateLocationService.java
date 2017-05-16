@@ -1,11 +1,9 @@
 package pt.ulisboa.tecnico.meic.cmu.locmess.domain;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -18,17 +16,14 @@ import android.os.Messenger;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -51,14 +46,12 @@ import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.APLocation;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
-import pt.ulisboa.tecnico.meic.cmu.locmess.handler.MessagesRvAdapter;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.GoogleApiCallbacks;
 import pt.ulisboa.tecnico.meic.cmu.locmess.presentation.NewMessage;
@@ -69,14 +62,19 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.service.LocationWebService;
 import static pt.ulisboa.tecnico.meic.cmu.locmess.R.array.keys;
 
 
-public final class UpdateLocationService extends Service implements LocationListener, GoogleApiCallbacks, ActivityCallback,
+public final class UpdateLocationService extends Service implements
+        LocationListener, GoogleApiCallbacks,
         SimWifiP2pManager.PeerListListener, SimWifiP2pManager.GroupInfoListener {
 
-
     private static final String TAG = UpdateLocationService.class.getSimpleName();
+
+    private static final int UPDATE_INTERVAL = 1000 /** 60*/
+            ;
+    private static final int INTERVAL = UPDATE_INTERVAL;
+    private static final int FASTEST_UPDATE_INTERVAL = 1000;
     private Location oldLocation;
     private APLocation oldAPLocation;
-    private List<String> IpDeviceList = new ArrayList<>();;
+    private List<String> IpDeviceList = new ArrayList<>();
     private List<String> peersStr = new ArrayList<>();
     private SimWifiP2pSocketServer mSrvSocket = null;
     private SimWifiP2pSocket mCliSocket = null;
@@ -85,7 +83,8 @@ public final class UpdateLocationService extends Service implements LocationList
     private SimWifiP2pBroadcastReceiver mReceiver;
     public static boolean wifion = false;
     public boolean connected = false;
-    private HashMap<MessageDto,Message> msgLst = new HashMap<>();;
+    private HashMap<MessageDto, Message> msgLst = new HashMap<>();
+    ;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -98,11 +97,7 @@ public final class UpdateLocationService extends Service implements LocationList
         super.onStartCommand(intent, flags, startId);
         GoogleAPI.init(getApplicationContext(), false);
         GoogleAPI.getInstance().connect(this);
-        try {
-            God.getInstance();
-        } catch (NotInitializedException e) {
-            God.init(getApplicationContext());
-        }
+
         // register broadcast receiver
         SimWifiP2pSocketManager.Init(getApplicationContext());
 
@@ -124,8 +119,9 @@ public final class UpdateLocationService extends Service implements LocationList
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "onDestroy service");
         stopLocationUpdates();
+        unbindService(mConnection);
+        unregisterReceiver(mReceiver);
         super.onDestroy();
     }
 
@@ -139,61 +135,45 @@ public final class UpdateLocationService extends Service implements LocationList
         Log.d(TAG, "Starting Location Updates");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "No Permissions");
             return;
         }
         LocationRequest mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(Constants.UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(Constants.FASTEST_UPDATE_INTERVAL);
+        mLocationRequest.setInterval(UPDATE_INTERVAL);
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 GoogleAPI.getInstance().getGoogleApiClient(), mLocationRequest, this);
     }
 
     @Override
     public void onLocationChanged(Location location) {
-        // if (isBetterLocation(oldLocation, location)) {
-
-        if(wifion) {
-                mManager.requestPeers(mChannel, this);
-                mManager.requestGroupInfo(mChannel, this);
+        if (wifion) {
+            mManager.requestPeers(mChannel, this);
+            mManager.requestGroupInfo(mChannel, this);
         }
 
-            new LocationWebService(getApplicationContext(), new ActivityCallback() {
-                @Override
-                public void onSuccess(Result result) {
-                    Log.d(TAG, "Location updated");
-                }
+        new LocationWebService(getApplicationContext(), new ActivityCallback() {
+            @Override
+            public void onSuccess(Result result) {
+            }
 
-                @Override
-                public void onFailure(Result result) {
-                    Log.d(TAG, "Location update failed.");
+            @Override
+            public void onFailure(Result result) {
+                Toast.makeText(getApplicationContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }, location).execute();
 
-                }
-            }, location).execute();
-            new ListLocationsService(getApplicationContext(), new ActivityCallback() {
-                @Override
-                public void onSuccess(Result result) {
+        new ListLocationsService(getApplicationContext(), null).execute();
+        new ListMessagesService(getApplicationContext(), new ActivityCallback() {
+            @Override
+            public void onSuccess(Result result) {
+            }
 
-                }
+            @Override
+            public void onFailure(Result result) {
 
-                @Override
-                public void onFailure(Result result) {
-
-                }
-            }).execute();
-            new ListMessagesService(getApplicationContext(), new ActivityCallback() {
-                @Override
-                public void onSuccess(Result result) {
-                    if (God.getInstance().getMessages().size() != 0 && !((Boolean) result.getPiggyback()))
-                        NotificationAgent.getInstance().sendNotification(getApplicationContext());
-                }
-
-                @Override
-                public void onFailure(Result result) {
-
-                }
-            }).execute();
+            }
+        }).execute();
     }
 
     protected boolean isBetterLocation(Location location, Location currentBestLocation) {
@@ -205,8 +185,8 @@ public final class UpdateLocationService extends Service implements LocationList
         }
 
         long timeDelta = location.getTime() - currentBestLocation.getTime();
-        boolean isSignificantlyNewer = timeDelta > Constants.INTERVAL;
-        boolean isSignificantlyOlder = timeDelta < -Constants.INTERVAL;
+        boolean isSignificantlyNewer = timeDelta > INTERVAL;
+        boolean isSignificantlyOlder = timeDelta < -INTERVAL;
         boolean isNewer = timeDelta > 0;
 
         if (isSignificantlyNewer) {
@@ -255,98 +235,97 @@ public final class UpdateLocationService extends Service implements LocationList
         stopLocationUpdates();
     }
 
-    @Override
-    public void onSuccess(Result result) {
-        Log.d(TAG, "Heartbeat Sucess");
-    }
+    /*
+     * Asynctasks implementing message exchange
+	 */
 
-    @Override
-    public void onFailure(Result result) {
-        Log.d(TAG, "Heartbeat Failed");
-    }
+    public void DescentralizedMessageSend() {
+        msgLst.clear();
 
-    public void DescentralizedMessageSend(){
-            msgLst.clear();
-
-            for (MessageDto messageDto : God.getInstance().getMessageRepository().keySet()) {
-                pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location location = God.getInstance().getMessage(messageDto).getLocation();
-                if (oldAPLocation != null && location instanceof APLocation) {
-                    if (oldAPLocation.equalAPLocation((APLocation) location)) {
-                        msgLst.put(messageDto ,God.getInstance().getMessage(messageDto));
-                    }
+        for (MessageDto messageDto : PersistenceManager.getInstance().getMessageRepository().keySet()) {
+            pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location location = PersistenceManager.getInstance().getMessage(messageDto).getLocation();
+            if (oldAPLocation != null && location instanceof APLocation) {
+                if (oldAPLocation.equalAPLocation((APLocation) location)) {
+                    msgLst.put(messageDto, PersistenceManager.getInstance().getMessage(messageDto));
                 }
             }
+        }
 
 
-            if (!msgLst.isEmpty()) {
-                for (String s : IpDeviceList) {
-                    new OutgoingCommTask().executeOnExecutor(
-                            AsyncTask.THREAD_POOL_EXECUTOR, s
-                    );
+        if (!msgLst.isEmpty()) {
+            for (String s : IpDeviceList) {
+                new OutgoingCommTask().executeOnExecutor(
+                        AsyncTask.THREAD_POOL_EXECUTOR, s
+                );
 
-                    final String position = msgLst.toString();
+                final String position = msgLst.toString();
 
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            Log.d(TAG, "DescentralizedMessageSend: Message format: Entrei Na Thread");
-                            while (connected == false) {
-                            }
-                            Log.d(TAG, "DescentralizedMessageSend: Connection State: FOra do ciclo");
-                            new SendCommTask().executeOnExecutor(
-                                    AsyncTask.THREAD_POOL_EXECUTOR, position);
-
-                            Log.d(TAG, "DescentralizedMessageSend: Message format: Sai Na Thread");
+                new Thread() {
+                    @Override
+                    public void run() {
+                        while (connected == false) {
                         }
-                    }.start();
-                }
+                        new SendCommTask().executeOnExecutor(
+                                AsyncTask.THREAD_POOL_EXECUTOR, position);
+                    }
+                }.start();
             }
+        }
     }
 
-    public void ConfirmMessage(HashMap<MessageDto,Message> messagesReceived) {
+    public void ConfirmMessage(HashMap<MessageDto, Message> messagesReceived) {
         Message message = null;
-        for (MessageDto messagedto : messagesReceived.keySet()){
+        for (MessageDto messagedto : messagesReceived.keySet()) {
             message = messagesReceived.get(messagedto);
-            if (!God.getInstance().inMessageRepository(messagedto)) {
-                Log.d(TAG, "ConfirmMessage: "+message.getPairs().size());
-                for(Pair p : message.getPairs())
-                    Log.d(TAG, "ConfirmMessage: "+ p.getKey() + p.getValue());
+            if (!PersistenceManager.getInstance().inMessageRepository(messagedto)) {
+                for (Pair p : message.getPairs())
                 if (message.getPairs().size() != 0) {
-                    Log.d(TAG, "ConfirmMessage: Policy:"+ message.getPolicy());
                     if (message.getPolicy().equals("W")) {
-                        Log.d(TAG, "ConfirmMessage: Policy:"+ message.getTitle());
-                        Log.d(TAG, "ConfirmMessage: Policy:"+ God.getInstance().getProfile());
-                        Log.d(TAG, "ConfirmMessage: Policy:"+ message.getPairs());
-                        Log.d(TAG, "ConfirmMessage: Policy:"+ God.getInstance().getProfile().containsAll(message.getPairs()));
-                        if (God.getInstance().getProfile().containsAll(message.getPairs())) {
-                            God.getInstance().getMessageRepository().put(messagedto,message);
-                            God.getInstance().saveMessagesDescentralized();
+                        if (PersistenceManager.getInstance().getProfile().containsAll(message.getPairs())) {
+                            PersistenceManager.getInstance().getMessageRepository().put(messagedto,message);
+                            PersistenceManager.getInstance().saveMessagesDescentralized(getApplicationContext());
                         }
                     } else if (message.getPolicy().equals("B")) {
-                        Log.d(TAG, "ConfirmMessage: Policy:"+ message.getTitle());
-                        Log.d(TAG, "ConfirmMessage: Policy:"+ God.getInstance().getProfile());
-                        Log.d(TAG, "ConfirmMessage: Policy:"+ message.getPairs());
-                        Log.d(TAG, "ConfirmMessage: Policy:"+ God.getInstance().getProfile().containsAll(message.getPairs()));
-                        if (!God.getInstance().getProfile().containsAll(message.getPairs())) {
-                            God.getInstance().getMessageRepository().put(messagedto,message);
-                            God.getInstance().saveMessagesDescentralized();
+                        if (!PersistenceManager.getInstance().getProfile().containsAll(message.getPairs())) {
+                            PersistenceManager.getInstance().getMessageRepository().put(messagedto,message);
+                            PersistenceManager.getInstance().saveMessagesDescentralized(getApplicationContext());
                         }
                     }
                 } else {
-                    Log.d(TAG, "ConfirmMessage: Policy:"+ message.getTitle());
-                    Log.d(TAG, "ConfirmMessage: Policy:"+ God.getInstance().getProfile());
-                    Log.d(TAG, "ConfirmMessage: Policy:"+ message.getPairs());
-                    Log.d(TAG, "ConfirmMessage: Policy:"+ God.getInstance().getProfile().containsAll(message.getPairs()));
-                    God.getInstance().getMessageRepository().put(messagedto,message);
-                    God.getInstance().saveMessagesDescentralized();
+                    PersistenceManager.getInstance().getMessageRepository().put(messagedto, message);
+                    PersistenceManager.getInstance().saveMessagesDescentralized(getApplicationContext());
                 }
             }
         }
     }
 
-    /*
-	 * Asynctasks implementing message exchange
-	 */
+
+    @Override
+    public void onPeersAvailable(SimWifiP2pDeviceList peers) {
+        ArrayList<String> peersStr = new ArrayList<>();
+
+        // compile list of devices in range
+        for (SimWifiP2pDevice device : peers.getDeviceList()) {
+            String devstr = device.deviceName + " (" + device.getVirtIp() + ")";
+            peersStr.add(devstr);
+        }
+        oldAPLocation = new APLocation(peersStr.toString(), peersStr);
+
+        //TODO
+    }
+
+    @Override
+    public void onGroupInfoAvailable(SimWifiP2pDeviceList devices,
+                                     SimWifiP2pInfo groupInfo) {
+        IpDeviceList.clear();
+        // compile list of network members
+        for (String deviceName : groupInfo.getDevicesInNetwork()) {
+            SimWifiP2pDevice device = devices.getByName(deviceName);
+            String[] s = device.getVirtIp().split(":");
+            IpDeviceList.add(s[0]);
+        }
+        DescentralizedMessageSend();
+    }
 
     public class IncommingCommTask extends AsyncTask<Void, String, Void> {
 
@@ -363,9 +342,7 @@ public final class UpdateLocationService extends Service implements LocationList
             }
             while (!Thread.currentThread().isInterrupted()) {
                 try {
-                    Log.d(TAG, "doInBackground:A espera de ser aceite a socketa");
                     SimWifiP2pSocket sock = mSrvSocket.accept();
-                    Log.d(TAG, "doInBackground: Aceitei a socketa");
                     try {
                         InputStream is = sock.getInputStream();
                         ObjectInputStream ois = new ObjectInputStream(is);
@@ -407,7 +384,6 @@ public final class UpdateLocationService extends Service implements LocationList
         }
     }
 
-
     public class SendCommTask extends AsyncTask<String, String, Void> {
 
         @Override
@@ -416,12 +392,7 @@ public final class UpdateLocationService extends Service implements LocationList
                 OutputStream os = mCliSocket.getOutputStream();
                 ObjectOutputStream oos = new ObjectOutputStream(os);
 
-                for(Message m : msgLst.values()) {
-                    Log.d(TAG, "DescentralizedMessageSend: message to send Pairs:" + m.getPairs().isEmpty());
-                }
-
                 oos.writeObject(msgLst);
-                Log.d(TAG, "Escrevi na socket");
                 connected = false;
                 oos.close();
                 os.close();
@@ -433,39 +404,7 @@ public final class UpdateLocationService extends Service implements LocationList
             return null;
         }
 
-       /* @Override
-        protected void onPostExecute(Void result) {
-            mTextInput.setText("");
-            guiUpdateDisconnectedState();
-        }*/
     }
-
-    @Override
-    public  void onPeersAvailable(SimWifiP2pDeviceList peers) {
-            ArrayList<String> peersStr = new ArrayList<>();
-
-            // compile list of devices in range
-            for (SimWifiP2pDevice device : peers.getDeviceList()) {
-                String devstr = device.deviceName + " (" + device.getVirtIp() + ")";
-                peersStr.add(devstr);
-            }
-            oldAPLocation = new APLocation(peersStr.toString(), peersStr);
-
-     //TODO
-    }
-        @Override
-        public void onGroupInfoAvailable(SimWifiP2pDeviceList devices,
-                                         SimWifiP2pInfo groupInfo) {
-                IpDeviceList.clear();
-                // compile list of network members
-                for (String deviceName : groupInfo.getDevicesInNetwork()) {
-                    SimWifiP2pDevice device = devices.getByName(deviceName);
-                    String[] s = device.getVirtIp().split(":");
-                    IpDeviceList.add(s[0]);
-                }
-                DescentralizedMessageSend();
-        }
-
     
     private ServiceConnection mConnection = new ServiceConnection() {
         // callbacks for service binding, passed to bindService()
@@ -482,5 +421,4 @@ public final class UpdateLocationService extends Service implements LocationList
             mChannel = null;
         }
     };
-
 }

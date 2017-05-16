@@ -1,10 +1,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".presentation.MainScreen">
+    tools:context=".presentation.MessageScreen">
 
   <!--  <android.support.v7.widget.Toolbar
         android:id="@+id/my_toolbar"
@@ -17,10 +17,10 @@
         />-->
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:id="@+id/appBarLayout">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/my_toolbar"
@@ -40,12 +40,14 @@
     </android.support.design.widget.AppBarLayout>
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-        android:layout_height="match_parent" android:id="@+id/map"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginBottom="45dp"
         android:layout_marginTop="50dp"
-        tools:context=".presentation.GPSLocationPicker"
-        android:name="com.google.android.gms.maps.SupportMapFragment" />
+        tools:context=".presentation.GPSLocationPicker" />
 
 
     <fragment
@@ -59,45 +61,45 @@
 
     <com.github.clans.fab.FloatingActionButton
         android:id="@+id/my_location"
-        fab:fab_colorNormal="#FF009688"
-        fab:fab_colorPressed="#ff0da395"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_location_searching_white_24dp"
-        fab:fab_size="mini"
-        android:layout_marginTop="13dp"
-        android:layout_marginRight="10dp"
-        android:layout_below="@+id/place_autocomplete_fragment"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="12dp" />
+        android:layout_below="@+id/place_autocomplete_fragment"
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="13dp"
+        android:src="@drawable/ic_location_searching_white_24dp"
+        fab:fab_colorNormal="#FF009688"
+        fab:fab_colorPressed="#ff0da395"
+        fab:fab_size="mini" />
 
 
     <LinearLayout
+        android:id="@+id/barra"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:background="@drawable/background_with_shadow"
         android:color="#ffffffff"
-        android:id="@+id/barra"
-        android:layout_alignParentBottom="true"
         >
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
             android:gravity="center_vertical"
-            android:textAlignment="textStart"
             android:text="@string/map_radius"
-            android:layout_marginLeft="20dp"/>
+            android:textAlignment="textStart" />
         <SeekBar
             android:id="@+id/seekBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
+            android:layout_marginBottom="15dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginBottom="15dp"
             android:layout_marginTop="15dp"
-            android:progress="65"
-            android:max="900"/>
+            android:max="900"
+            android:progress="65" />
     </LinearLayout>
 
 

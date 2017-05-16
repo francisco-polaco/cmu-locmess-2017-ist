@@ -7,7 +7,7 @@ import android.util.Log;
 import java.io.IOException;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.PersistenceManager;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.LocmessRestHandler;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
@@ -31,7 +31,7 @@ public final class LogoutWebService extends LocmessWebService implements Locmess
     public void onSuccess(Object object) {
         Log.d(TAG, object.toString());
         try {
-            God.getInstance().clearState();
+            PersistenceManager.getInstance().clearState(getContext());
         } catch (IOException e) {
             e.printStackTrace();
         }

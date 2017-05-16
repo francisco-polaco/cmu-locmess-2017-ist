@@ -32,8 +32,7 @@ import java.util.Date;
 import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.exception.NotInitializedException;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.PersistenceManager;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
@@ -43,13 +42,10 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListMessagesService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.UnpostMessageService;
 
-/**
- * Created by jp_s on 4/14/2017.
- */
 
-public class MainScreen extends AppCompatActivity implements ActivityCallback {
+public class MessageScreen extends AppCompatActivity {
 
-    private static final String TAG = MainScreen.class.getSimpleName();
+    private static final String TAG = MessageScreen.class.getSimpleName();
     private static final int PERMISSION_REQUEST_CODE = 666;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
@@ -61,7 +57,7 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.mainscreen);
+        setContentView(R.layout.messagescreen);
         noMessageDisplay();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -91,17 +87,13 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
         });
         swip.setColorSchemeResources(R.color.accent_material_light, R.color.colorPrimary);
 
-        try {
-            God.getInstance();
-        } catch (NotInitializedException e) {
-            God.init(getApplicationContext());
-        }
         GoogleAPI.init(getApplicationContext(), false);
-        God.getInstance().startLocationUpdates();
+        PersistenceManager.getInstance().startLocationUpdates(getApplicationContext());
         initRecyclerView();
     }
 
     private void initRecyclerView() {
+        PersistenceManager.getInstance().loadCachedMessages(getApplicationContext());
         msgListView = (RecyclerView) findViewById(R.id.MessageList);
         adapter = new MessagesRvAdapter(messages, getApplicationContext());
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -117,17 +109,13 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 MessageDto messageDto = adapter.getMessageById(viewHolder.getAdapterPosition());
-                if(God.getInstance().inMessageRepository(messageDto)) {
+                if(PersistenceManager.getInstance().inMessageRepository(messageDto)) {
                     adapter.removeMsg(messageDto);
-                    Log.d(TAG, "onSwiped: Entrei no if");
-                    God.getInstance().removeFromMessageRepository(messageDto);
-                    God.getInstance().saveMessagesDescentralized();
-                    Log.d(TAG, "onSwiped: Removi do sitio");
+                    PersistenceManager.getInstance().removeFromMessageRepository(messageDto);
+                    PersistenceManager.getInstance().saveMessagesDescentralized(getApplicationContext());
                     adapter.notifyDataSetChanged();
-                    Log.d(TAG, "onSwiped: Modifiquei o adaptar");
                 }
                 else{
-                    Log.d(TAG, "onSwiped: Entrei no else");
                     new RemoveMessageListener(messageDto);
                 }
             }
@@ -192,27 +180,22 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
     }
 
     public void selectDrawerItem(MenuItem menuItem) {
-        DrawerCode.selectDrawerItem(menuItem, this, drawerLayout, getApplicationContext());
+        DrawerCode.selectDrawerItem(menuItem, this, new LogoutListener(this), drawerLayout, getApplicationContext());
     }
 
     private void checkBasePermission() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "Permission is not granted, requesting");
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     android.Manifest.permission.ACCESS_FINE_LOCATION)) {
 
                 // Provide an additional rationale to the user if the permission was not granted
                 // and the user would benefit from additional context for the use of the permission.
                 // For example, if the request has been denied previously.
-                Log.i(TAG,
-                        "Displaying location permission rationale to provide additional context.");
                 showPermissionDialog();
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_CODE);
             }
-        } else {
-            Log.d(TAG, "Permission is granted");
         }
     }
 
@@ -237,7 +220,7 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
                 .setPositiveButton(R.string.positive_rationale_dialog, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package", MainScreen.this.getPackageName(), null);
+                        Uri uri = Uri.fromParts("package", MessageScreen.this.getPackageName(), null);
                         intent.setData(uri);
                         startActivity(intent);
                         dialog.dismiss();
@@ -245,24 +228,10 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
                 })
                 .setNegativeButton(R.string.negative_rationale_dialog, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        MainScreen.this.finish();
+                        MessageScreen.this.finish();
                     }
                 })
                 .show();
-    }
-
-
-    @Override
-    public void onSuccess(Result result) {
-        Log.d(TAG, "success");
-        Intent intent = new Intent(this, Login.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-    }
-
-    @Override
-    public void onFailure(Result result) {
-        Toast.makeText(getApplicationContext(), "Can't logout", Toast.LENGTH_LONG).show();
     }
 
 
@@ -273,8 +242,14 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
                 @Override
                 public void onSuccess(Result result) {
                     messages.clear();
-                    messages.addAll(God.getInstance().getMessages().values());
-                    messages.addAll(God.getInstance().getMessageRepository().keySet());
+
+                    messages.addAll(PersistenceManager.getInstance().getMessageRepository().keySet());
+
+                    messages.addAll(PersistenceManager.getInstance().retrieveCache());
+                    for (MessageDto m : ((List<MessageDto>) result.getPiggyback())) {
+                        if (!messages.contains(m)) messages.add(m);
+                    }
+
                     adapter.notifyDataSetChanged();
                 }
 

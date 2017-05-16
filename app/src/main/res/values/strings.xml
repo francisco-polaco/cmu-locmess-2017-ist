@@ -25,6 +25,8 @@
     <!--string name="webserver_url">https://192.168.56.1:8080/locmess</string-->
     <!--<string name="webserver_url">http://192.168.1.75:8080/locmess</string>-->
 
+    <!--<string name="webserver_url">https://192.168.1.64:8080/locmess</string>-->
+
     <string name="content_type_json">application/json</string>
     <string name="token_header">X-Token</string>
 
@@ -81,5 +83,12 @@
     <string name="select_date">Select Date</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
+    <string name="credentials_filename">credentials.dat</string>
+    <string name="cached_message_filename">cachedmessages.dat</string>
+    <string name="no_locations_to_show">No Locations To Show!</string>
+    <string name="edit_profile_title">Edit Profile</string>
+    <string name="gps_location_empty">Name is empty.</string>
+    <string name="error_logout">Can\'t logout</string>
+    <string name="dialog_locations">Getting locations...</string>
 
 </resources>

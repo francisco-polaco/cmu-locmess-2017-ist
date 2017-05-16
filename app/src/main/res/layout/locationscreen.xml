@@ -2,45 +2,18 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".presentation.LocationScreen">
-
-
-    <!--<RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-
-    </RelativeLayout>-->
-
 
     <TextView
         android:id="@+id/EmptyList"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:gravity="center" />
-
-    <!--<include
-        android:id="@+id/drawer_layout"
-        layout="@layout/hamburger" >
-
-        <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/swipe_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="57dp"
-            android:visibility="visible">
-            <ListView
-                android:id="@+id/LocationsList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="57dp"
-                android:clickable="true"/>
-        </android.support.v4.widget.SwipeRefreshLayout>
-
-    </include>-->
+        android:gravity="center"
+        android:text="@string/no_locations_to_show"
+        android:visibility="gone" />
 
     <android.support.v4.widget.DrawerLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -64,12 +37,13 @@
             android:layout_height="match_parent"
             android:layout_marginTop="57dp"
             android:visibility="visible">
-            <ListView
+
+            <android.support.v7.widget.RecyclerView
                 android:id="@+id/LocationsList"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginTop="57dp"
-                android:clickable="true"/>
+                android:scrollbars="vertical" />
         </android.support.v4.widget.SwipeRefreshLayout>
 
         <android.support.design.widget.NavigationView
@@ -78,8 +52,8 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:background="@android:color/white"
-            app:menu="@menu/burger"
-            app:itemIconTint="@android:color/black" />
+            app:itemIconTint="@android:color/black"
+            app:menu="@menu/burger" />
 
     </android.support.v4.widget.DrawerLayout>
 
@@ -92,19 +66,19 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_margin="10dp"
-        fab:menu_labels_ellipsize="end"
-        fab:menu_labels_singleLine="true"
         fab:menu_colorNormal="@color/colorPrimary"
-        fab:menu_colorPressed="@color/colorPrimaryDark">
+        fab:menu_colorPressed="@color/colorPrimaryDark"
+        fab:menu_labels_ellipsize="end"
+        fab:menu_labels_singleLine="true">
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/gps_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_add"
-            fab:fab_size="mini"
-            fab:fab_label="@string/create_location_gps"
             fab:fab_colorNormal="@color/colorPrimary"
+            fab:fab_label="@string/create_location_gps"
+            fab:fab_size="mini"
             fab:menu_colorPressed="@color/colorPrimaryDark"/>
 
         <com.github.clans.fab.FloatingActionButton
@@ -112,9 +86,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_add"
-            fab:fab_size="mini"
-            fab:fab_label="@string/create_location_wifi"
             fab:fab_colorNormal="@color/colorPrimary"
+            fab:fab_label="@string/create_location_wifi"
+            fab:fab_size="mini"
             fab:menu_colorPressed="@color/colorPrimaryDark"/>
 
     </com.github.clans.fab.FloatingActionMenu>

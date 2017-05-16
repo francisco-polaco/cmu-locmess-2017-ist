@@ -38,12 +38,12 @@ public class AddPairService extends LocmessWebService implements LocmessCallback
 
     @Override
     public void onSuccess(Object object) {
-        getActivityCallback().onSuccess(new Result(getContext().getString(R.string.LM_1)));
+        getActivityCallback().onSuccess(new Result("Successfully added pair!"));
     }
 
     @Override
     public void onFailure(Object object) {
-        getActivityCallback().onFailure(new Result(getContext().getString(R.string.LM_1)));
+        getActivityCallback().onFailure(new Result("Failed to add pair!"));
     }
 
 

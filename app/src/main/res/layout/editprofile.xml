@@ -1,53 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/toolbar" />
-
-    <EditText
-        android:id="@+id/Key"
-        android:layout_width="343dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="Key"
-        android:textSize="20dp" />
-
-    <LinearLayout
+    <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="1">
+        android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/Value"
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <include
+                android:id="@+id/toolbar"
+                layout="@layout/toolbar" />
+        </RelativeLayout>
+
+        <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/swipe_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="57dp"
+            android:visibility="visible">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/pairs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/Key"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Key"
+                        android:inputType="textPersonName"
+                        android:textSize="20sp" />
+
+                    <EditText
+                        android:id="@+id/Value"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Value"
+                        android:inputType="textPersonName"
+                        android:textSize="20sp" />
+
+                    <Button
+                        android:id="@+id/AddKeyValue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:onClick="addPair"
+                        android:text="Add pair" />
+
+                </LinearLayout>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/PairsList"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/pairs"
+                    android:layout_marginTop="10dp"
+                    android:scrollbars="vertical" />
+            </RelativeLayout>
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <android.support.design.widget.NavigationView
+            android:id="@+id/nvView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.88"
-            android:ems="10"
-            android:hint="Value"
-            android:inputType="textPersonName"
-            android:textSize="20dp" />
-
-        <Button
-            android:id="@+id/AddKeyValue"
-            android:layout_width="52dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="1dp"
-            android:background="@android:drawable/ic_input_add"
-            android:backgroundTint="@color/colorPrimary"
-            android:onClick="DisplayKeyValues" />
-
-    </LinearLayout>
-
-    <ListView
-        android:id="@+id/keyvalue"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        layout="@layout/listview"/>
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="@android:color/white"
+            app:itemIconTint="@android:color/black"
+            app:menu="@menu/burger" />
 
 
-</LinearLayout>
+    </android.support.v4.widget.DrawerLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>
+
+
+
+
+

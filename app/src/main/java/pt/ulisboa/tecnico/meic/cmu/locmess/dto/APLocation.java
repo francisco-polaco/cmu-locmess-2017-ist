@@ -7,7 +7,7 @@ import java.util.List;
  * Created by Diogo on 27/04/2017.
  */
 
-public class APLocation extends Location implements Serializable{
+public class APLocation extends Location implements Serializable {
 
     public final String type = "APLocation";
     private List<String> aps;
@@ -21,9 +21,9 @@ public class APLocation extends Location implements Serializable{
         this.aps = wifiLocations;
     }
 
-    public APLocation(Integer id, String name, List<String> wifiLocations){
-            super(id, name);
-            this.aps = wifiLocations;
+    public APLocation(Integer id, String name, List<String> wifiLocations) {
+        super(id, name);
+        this.aps = wifiLocations;
     }
 
     public String getType() {
@@ -52,10 +52,26 @@ public class APLocation extends Location implements Serializable{
         return res;
     }
 
-    public boolean equalAPLocation (APLocation apLocation){
-            if (aps.equals(apLocation.getAps()))
-                return true;
-            else
-                return false;
+    public boolean equalAPLocation(APLocation apLocation) {
+        if (aps.equals(apLocation.getAps()))
+            return true;
+        else
+            return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        APLocation that = (APLocation) o;
+
+        return aps != null ? aps.equals(that.aps) : that.aps == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return aps != null ? aps.hashCode() : 0;
     }
 }

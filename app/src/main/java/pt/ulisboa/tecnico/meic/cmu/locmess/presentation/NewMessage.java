@@ -32,22 +32,20 @@ import java.util.Date;
 import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
-import pt.ulisboa.tecnico.meic.cmu.locmess.domain.God;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.PersistenceManager;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.StaticFields;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
+import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessListener;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListAllProfilePairsService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.PostMessageService;
 
-/**
- * Created by jp_s on 4/15/2017.
- */
-
-public class NewMessage extends AppCompatActivity implements ActivityCallback {
+public class NewMessage extends AppCompatActivity {
 
     private ProgressDialog dialog;
     private Toolbar toolbar;
@@ -61,6 +59,7 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
     private ArrayList<Pair> MessagePairs = new ArrayList<>();
     private List<String> keys = new ArrayList<>();
     private List<String> locations = new ArrayList<>();
+    private List<Location> locationList = new ArrayList<>();
 
     private MultiSpinner.MultiSpinnerListener onSelectedListener = new MultiSpinner.MultiSpinnerListener() {
         public void onItemsSelected(boolean[] selected) {
@@ -68,12 +67,11 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
             String s = "";
             for (int i = 0; i < selected.length; i++)
                 if (selected[i]) {
-                    if(!MessagePairs.contains(keysInPairs.get(i))) {
+                    if (!MessagePairs.contains(keysInPairs.get(i))) {
                         MessagePairs.add(keysInPairs.get(i));
                         s += "\n" + keysInPairs.get(i).toString();
                     }
-                }
-                else
+                } else
                     MessagePairs.remove(keysInPairs.get(i));
 
             multispinner = (MultiSpinner) findViewById(R.id.spinnerMulti);
@@ -101,10 +99,10 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
 
         // the order here is important, since I am relying on it to close the dialog!
         spinner = (Spinner) findViewById(R.id.spinner);
-        new LocationsListener(this).execute();
+        new LocationsListener(this);
 
         multispinner = (MultiSpinner) findViewById(R.id.spinnerMulti);
-        new PairsListener(this).execute();
+        new PairsListener(this);
     }
 
     public void showDatePickerDialog(View v) {
@@ -129,12 +127,12 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
             Toast.makeText(this, "You need a title!", Toast.LENGTH_SHORT).show();
             return;
         }
-        String content = ((EditText) this.findViewById(R.id.content)).getText().toString();
+        final String content = ((EditText) this.findViewById(R.id.content)).getText().toString();
         if (content.equals("")) {
             Toast.makeText(this, "A message has to have content!", Toast.LENGTH_SHORT).show();
             return;
         }
-        Location location = God.getInstance().getLocations().get(spinner.getSelectedItemPosition());
+        Location location = locationList.get(spinner.getSelectedItemPosition());
         if (location == null) {
             Toast.makeText(this, "You must add locations first!", Toast.LENGTH_SHORT).show();
             return;
@@ -177,42 +175,29 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
         String eDate = simpleDateFormat.format(new Date(endTime + " " + endDate));
 
 
-
         Message message = new Message(title, location, policy, MessagePairs, bDate, eDate, content);
-        Log.d("NewMessage", "sendMessage: "+ location);
+        Log.d("NewMessage", "sendMessage: " + location);
+
 
         for (Pair p : MessagePairs)
             Log.d("NewMessage", "sendMessage: " + p.getValue() + p.getKey());
 
         if (sendModePolicy.equals("Centralized"))
-            new PostMessageService(getApplicationContext(), this, message).execute();
-        else{
-            message.setOwner(God.getInstance().getUsername());
-            God.getInstance().addToMessageRepository(message);
+            new PostMessageListener(getApplicationContext(), message);
+        else {
+            Log.d("NewMessage:", "sendMessage: " + StaticFields.username);
+            message.setOwner(StaticFields.username);
+            PersistenceManager.getInstance().addToMessageRepository(message);
+
             new Thread() {
                 @Override
                 public void run() {
-                    God.getInstance().saveMessagesDescentralized();
+                    PersistenceManager.getInstance().saveMessagesDescentralized(getApplicationContext());
                 }
-            }.start();}
-    }
-
-
-
-
-    @Override
-    public void onSuccess(Result result) {
-        if (dialog != null) dialog.cancel();
-        String message = result.getMessage();
-        if (message != null) {
-            if (message.equals(getString(R.string.LM_2))) {
-                message = "Message was posted with success!";
-                //TODO : maybe there is a better way
-                reset();
-            }
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            }.start();
         }
     }
+
 
     private void reset() {
         ((EditText) this.findViewById(R.id.msgtitle)).setText("");
@@ -222,12 +207,6 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
         ((TextView) this.findViewById(R.id.EndTime)).setText(getString(R.string.select_time));
         ((TextView) this.findViewById(R.id.EndDate)).setText(getString(R.string.select_date));
         multispinner.setText(getText(R.string.multispinner_placeholder));
-    }
-
-    @Override
-    public void onFailure(Result result) {
-        if (dialog != null) dialog.cancel();
-        Toast.makeText(this, result.getMessage(), Toast.LENGTH_LONG).show();
     }
 
     public static class TimePickerFragment extends DialogFragment
@@ -272,7 +251,7 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
             // Use the current date as the default date in the picker
             final Calendar c = Calendar.getInstance();
             int year = c.get(Calendar.YEAR);
-            int month = c.get(Calendar.MONTH);
+            int month = c.get(Calendar.MONTH) + 1;
             int day = c.get(Calendar.DAY_OF_MONTH);
 
             // Create a new instance of DatePickerDialog and return it
@@ -286,43 +265,28 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
         }
     }
 
-    public class Listener {
-
-        private Context context;
-
-        public Listener(Context context) {
-            this.context = context;
-        }
-
-        public Context getContext() {
-            return context;
-        }
-    }
-
-    public class LocationsListener extends Listener implements ActivityCallback {
+    private class LocationsListener extends LocmessListener implements ActivityCallback {
 
         public LocationsListener(Context context) {
             super(context);
-        }
-
-        public void execute() {
             new ListLocationsService(getContext(), this).execute();
         }
 
         @Override
         public void onSuccess(Result result) {
-            setLocations(God.getInstance().getLocations());
+            setLocations((List<Location>) result.getPiggyback());
         }
 
         @Override
         public void onFailure(Result result) {
-            NewMessage.this.onFailure(new Result("Failed to retrieve the list of locations!"));
+            Toast.makeText(getContext(), result.getMessage(), Toast.LENGTH_LONG).show();
         }
 
         private void setLocations(List<Location> locs) {
             if (locs == null)
                 return;
 
+            locationList = locs;
             locations.clear();
             for (Location l : locs)
                 locations.add(l.toString());
@@ -337,25 +301,23 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
     }
 
 
-    public class PairsListener extends Listener implements ActivityCallback {
+    private class PairsListener extends LocmessListener implements ActivityCallback {
 
         public PairsListener(Context context) {
             super(context);
-        }
-
-        public void execute() {
             new ListAllProfilePairsService(getContext(), this).execute();
         }
 
         @Override
         public void onSuccess(Result result) {
             setPairs((List<Pair>) result.getPiggyback());
-            NewMessage.this.onSuccess(new Result());
+            if (dialog != null) dialog.cancel();
         }
 
         @Override
         public void onFailure(Result result) {
-            NewMessage.this.onFailure(new Result("Failed to retrieve the list of pairs!"));
+            Toast.makeText(getContext(), result.getMessage(), Toast.LENGTH_LONG).show();
+            if (dialog != null) dialog.cancel();
         }
 
         private void setPairs(List<Pair> pairs) {
@@ -378,6 +340,30 @@ public class NewMessage extends AppCompatActivity implements ActivityCallback {
         }
     }
 
+    private class PostMessageListener extends LocmessListener implements ActivityCallback {
 
+        protected PostMessageListener(Context context, Message message) {
+            super(context);
+            new PostMessageService(getApplicationContext(), this, message).execute();
+        }
 
+        @Override
+        public void onSuccess(Result result) {
+            processResult(result);
+        }
+
+        @Override
+        public void onFailure(Result result) {
+            processResult(result);
+        }
+
+        private void processResult(Result result) {
+            if (dialog != null) dialog.cancel();
+            reset();
+            Toast.makeText(getContext(), result.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
 }
+
+
+

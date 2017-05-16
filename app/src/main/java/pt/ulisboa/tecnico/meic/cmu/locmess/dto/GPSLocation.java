@@ -66,12 +66,9 @@ public final class GPSLocation extends Location {
 
     @Override
     public String toString() {
-        return "GPSLocation{" +
-                "name=" + getName() +
-                ", latitude=" + latitude +
+        return "[latitude=" + latitude +
                 ", longitude=" + longitude +
-                ", radius=" + radius +
-                '}';
+                ", radius=" + radius + "]";
     }
 
 }

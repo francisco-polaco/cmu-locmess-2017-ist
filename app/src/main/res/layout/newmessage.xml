@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/nm_layout"
+        android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/nm_layout">
+        android:orientation="vertical"
+        android:scrollbars="vertical">
     <include
         android:id="@+id/toolbar"
         layout="@layout/toolbar" />
@@ -10,39 +16,59 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
+        android:layout_marginEnd="15dp"
+        android:layout_marginStart="15dp"
+        android:gravity="center_vertical"
         android:orientation="vertical"
-        android:weightSum="1"
-        android:layout_below="@+id/toolbar">
+        android:weightSum="1">
 
         <EditText
             android:id="@+id/msgtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
             android:gravity="center"
             android:hint="Title"
             android:inputType="textPersonName"
-            android:textSize="30dp" />
+            android:textSize="20sp" />
 
         <EditText
             android:id="@+id/content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
+            android:layout_marginTop="10dp"
             android:gravity="center"
             android:hint="Message Content"
             android:inputType="textMultiLine"
-            android:textSize="30dp" />
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Location:"
+            android:textColor="@color/title"
+            android:textSize="20sp" />
 
         <Spinner
             android:id="@+id/spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:layout_weight="0.05" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Begin Date:"
+            android:textColor="@color/title"
+            android:textSize="20sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal">
 
             <TextView
@@ -53,7 +79,7 @@
                 android:gravity="center"
                 android:onClick="showTimePickerDialog"
                 android:text="@string/select_time"
-                android:textSize="30dp" />
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/BeginDate"
@@ -63,41 +89,22 @@
                 android:gravity="center"
                 android:onClick="showDatePickerDialog"
                 android:text="@string/select_date"
-                android:textSize="30dp" />
+                android:textSize="20sp" />
 
         </LinearLayout>
 
-
-        <com.thomashaertel.widget.MultiSpinner
-            android:id="@+id/spinnerMulti"
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.05" />
-
-        <RadioGroup
-            android:id="@+id/radio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/radioW"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/radio_whitelist"
-                android:checked="true" />
-
-            <RadioButton
-                android:id="@+id/radioB"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/radio_backlist" />
-
-        </RadioGroup>
+            android:layout_marginTop="10dp"
+            android:text="End Date:"
+            android:textColor="@color/title"
+            android:textSize="20sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal">
 
             <TextView
@@ -108,7 +115,7 @@
                 android:gravity="center"
                 android:onClick="showTimePickerDialog"
                 android:text="Select Time"
-                android:textSize="30dp" />
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/EndDate"
@@ -118,10 +125,46 @@
                 android:gravity="center"
                 android:onClick="showDatePickerDialog"
                 android:text="Select Date"
-                android:textSize="30dp" />
+                android:textSize="20sp" />
 
         </LinearLayout>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Pairs:"
+            android:textColor="@color/title"
+            android:textSize="20sp" />
+
+        <com.thomashaertel.widget.MultiSpinner
+            android:id="@+id/spinnerMulti"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_weight="0.05" />
+
+        <RadioGroup
+            android:id="@+id/radio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radioW"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/radio_whitelist" />
+
+            <RadioButton
+                android:id="@+id/radioB"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_backlist" />
+
+        </RadioGroup>
 
         <RadioGroup
             android:id="@+id/SendMode"
@@ -133,31 +176,28 @@
                 android:id="@+id/radioCentralized"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Centralized"
-                android:textSize="20dp"
-                android:checked="true" />
+                android:checked="true"
+                android:text="Centralized" />
 
             <RadioButton
                 android:id="@+id/radioDescentralized"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
                 android:text="Descentralized" />
 
         </RadioGroup>
 
         <Button
             android:id="@+id/Send_Message"
-            android:layout_width="100dp"
+            android:layout_width="match_parent"
             android:layout_height="70dp"
-            android:layout_below="@+id/Pass"
-            android:layout_centerHorizontal="true"
             android:layout_gravity="center"
-            android:layout_marginTop="21dp"
+            android:layout_marginTop="20dp"
             android:layout_weight="0.04"
             android:onClick="sendMessage"
             android:text="@string/Send_Message"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
 
     </LinearLayout>
 </RelativeLayout>
+</ScrollView>

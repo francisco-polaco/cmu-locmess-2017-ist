@@ -19,12 +19,10 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.LocmessCallback;
 public class RemoveLocationService extends LocmessWebService implements LocmessCallback {
 
     private Location location;
-    private int index;
 
-    public RemoveLocationService(Context context, ActivityCallback activityCallback, Location location, int index) {
+    public RemoveLocationService(Context context, ActivityCallback activityCallback, Location location) {
         super(context, activityCallback);
         this.location = location;
-        this.index = index;
     }
 
     @Override
@@ -40,12 +38,12 @@ public class RemoveLocationService extends LocmessWebService implements LocmessC
 
     @Override
     public void onSuccess(Object object) {
-        getActivityCallback().onSuccess(new Result(getContext().getString(R.string.LM_2), index));
+        getActivityCallback().onSuccess(new Result("Successfully removed location!"));
     }
 
     @Override
     public void onFailure(Object object) {
-        getActivityCallback().onSuccess(new Result(getContext().getString(R.string.LM_2)));
+        getActivityCallback().onSuccess(new Result("Failed to remove location"));
     }
 
 
