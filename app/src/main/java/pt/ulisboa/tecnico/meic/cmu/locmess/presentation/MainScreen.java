@@ -116,7 +116,20 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                new RemoveMessageListener(adapter.getMessageById(viewHolder.getAdapterPosition()));
+                MessageDto messageDto = adapter.getMessageById(viewHolder.getAdapterPosition());
+                if(God.getInstance().inMessageRepository(messageDto)) {
+                    adapter.removeMsg(messageDto);
+                    Log.d(TAG, "onSwiped: Entrei no if");
+                    God.getInstance().removeFromMessageRepository(messageDto);
+                    God.getInstance().saveMessagesDescentralized();
+                    Log.d(TAG, "onSwiped: Removi do sitio");
+                    adapter.notifyDataSetChanged();
+                    Log.d(TAG, "onSwiped: Modifiquei o adaptar");
+                }
+                else{
+                    Log.d(TAG, "onSwiped: Entrei no else");
+                    new RemoveMessageListener(messageDto);
+                }
             }
         };
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
@@ -137,7 +150,7 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
     }
 
     public void NewMessage(View view) {
-        Intent intent = new Intent(this, MsgSenderActivity.class);
+        Intent intent = new Intent(this, NewMessage.class);
         startActivity(intent);
     }
 
@@ -261,20 +274,7 @@ public class MainScreen extends AppCompatActivity implements ActivityCallback {
                 public void onSuccess(Result result) {
                     messages.clear();
                     messages.addAll(God.getInstance().getMessages().values());
-
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-                    Date convertedDate = new Date();
-
-
-                    for(Message m : God.getInstance().getMessageRepository()) {
-                        try {
-                            convertedDate = simpleDateFormat.parse(m.getBeginDate());
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                        MessageDto mdto = new MessageDto(0, m.getTitle(), m.getContent(), m.getOwner(), convertedDate);
-                        messages.add(mdto);}
-
+                    messages.addAll(God.getInstance().getMessageRepository().keySet());
                     adapter.notifyDataSetChanged();
                 }
 

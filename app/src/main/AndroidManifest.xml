@@ -57,13 +57,6 @@
         <!-- MAP -->
 
 
-
-        <activity
-            android:name="pt.ulisboa.tecnico.meic.cmu.locmess.presentation.MsgSenderActivity"
-            android:label="@string/app_name" >
-        </activity>
-
-
         <activity
             android:name=".presentation.GPSLocationPicker"
             android:configChanges="orientation|keyboardHidden"

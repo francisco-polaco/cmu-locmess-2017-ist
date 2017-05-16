@@ -17,7 +17,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -37,10 +41,10 @@ public class God {
     private Context context;
     private Token token;
     // profile represents the key values of the user
-    private List<Pair> profile;
+    private List<Pair> profile = new ArrayList<Pair>();
     private ArrayList<pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location> locations;
     private TreeMap<Integer, MessageDto> messages;
-    private List<Message> messageRepository;
+    private HashMap<MessageDto,Message> messageRepository;
     private TreeMap<Integer, MessageDto> cachedMessages;
     private boolean stateHasChanged = false;
     private String username;
@@ -161,12 +165,12 @@ public class God {
         }
     }
 
-    public List<Message> getMessageRepository() {
+    public HashMap<MessageDto, Message> getMessageRepository() {
         return messageRepository;
     }
 
     public void printMessages(){
-        for(Message m : messageRepository)
+        for(Message m : messageRepository.values())
             Log.d(TAG, "getMessages: " + m.getContent());
     }
 
@@ -223,10 +227,10 @@ public class God {
     public void loadMessagesDescentralized()  {
         try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
                 context.openFileInput(Constants.MESSAGEREPOSITORY_FILENAME)))) {
-            messageRepository = (ArrayList<Message>) objectInputStream.readObject();
+            messageRepository = (HashMap<MessageDto,Message>) objectInputStream.readObject();
             printMessages();
         } catch (ClassNotFoundException| IOException e) {
-            messageRepository= new ArrayList<>();
+            messageRepository= new HashMap<>();
         }
     }
 
@@ -240,12 +244,31 @@ public class God {
     }
 
     public void addToMessageRepository(Message message) {
-        Log.d(TAG, "addToMessageRepository: Entrei2");
-            messageRepository.add(message);
-        Log.d(TAG, "addToMessageRepository: EntreEConquistei");
-            //stateHasChanged = true;
+            Log.d(TAG, "addToMessageRepository: BeforeInsert:" + message.getPairs() );
+            MessageDto mdto = createMessageDTO(message);
+            messageRepository.put(mdto,message);
+            Log.d(TAG, "addToMessageRepository: AfterInsert" + messageRepository.get(mdto).getPairs() );
     }
 
+    public Message getMessage(MessageDto messageDto) {
+        return messageRepository.get(messageDto);
+    }
+
+    public void removeFromMessageRepository(MessageDto message) {
+        if(messageRepository.containsKey(message))
+            messageRepository.remove(message);
+    }
+
+    public MessageDto createMessageDTO(Message message){
+        Date convertedDate = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        try {
+            convertedDate = simpleDateFormat.parse(message.getBeginDate());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return new MessageDto(0, message.getTitle(), message.getContent(), message.getOwner(), convertedDate);
+    }
 
     public boolean amIPublisher(String publisher) {
         return false; //publisher.equals(username);
@@ -253,6 +276,10 @@ public class God {
 
     public boolean inCache(MessageDto messageDto) {
         return cachedMessages.containsValue(messageDto);
+    }
+
+    public boolean inMessageRepository(MessageDto messageDto) {
+        return messageRepository.containsKey(messageDto);
     }
 
 }

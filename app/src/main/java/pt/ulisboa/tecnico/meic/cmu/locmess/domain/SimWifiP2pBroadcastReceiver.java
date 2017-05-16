@@ -7,14 +7,13 @@ import android.widget.Toast;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
-import pt.ulisboa.tecnico.meic.cmu.locmess.presentation.MsgSenderActivity;
 
 public class SimWifiP2pBroadcastReceiver extends BroadcastReceiver {
 
     private static final String TAG = SimWifiP2pBroadcastReceiver.class.getSimpleName();
-    private MsgSenderActivity mActivity;
+    private UpdateLocationService mActivity;
 
-    public SimWifiP2pBroadcastReceiver(MsgSenderActivity activity) {
+    public SimWifiP2pBroadcastReceiver(UpdateLocationService activity) {
         super();
         this.mActivity = activity;
     }
