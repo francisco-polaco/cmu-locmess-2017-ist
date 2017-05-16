@@ -22,6 +22,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
@@ -46,9 +48,9 @@ public class LocationScreen extends AppCompatActivity {
     private ActionBarDrawerToggle drawerToggle;
     private ProgressDialog dialog;
     private ArrayList<Location> locations = new ArrayList<>();
-    ;
     private LocationRvAdapter adapter;
     private RecyclerView locListView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

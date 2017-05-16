@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.PersistenceManager;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.StaticFields;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.User;
@@ -33,6 +34,8 @@ public class Login extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        PersistenceManager.getInstance().loadMessagesDescentralized(getApplicationContext());
+        PersistenceManager.getInstance().flushAndLoadProfile(getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
     }

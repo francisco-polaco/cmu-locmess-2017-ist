@@ -25,9 +25,15 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
@@ -37,18 +43,23 @@ import pt.inesc.termite.wifidirect.SimWifiP2pInfo;
 import pt.inesc.termite.wifidirect.SimWifiP2pManager;
 import pt.inesc.termite.wifidirect.service.SimWifiP2pService;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocket;
+import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketManager;
 import pt.inesc.termite.wifidirect.sockets.SimWifiP2pSocketServer;
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.APLocation;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.googleapi.GoogleAPI;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.GoogleApiCallbacks;
+import pt.ulisboa.tecnico.meic.cmu.locmess.presentation.NewMessage;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListLocationsService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.ListMessagesService;
 import pt.ulisboa.tecnico.meic.cmu.locmess.service.LocationWebService;
+
+import static pt.ulisboa.tecnico.meic.cmu.locmess.R.array.keys;
 
 
 public final class UpdateLocationService extends Service implements
@@ -61,8 +72,6 @@ public final class UpdateLocationService extends Service implements
             ;
     private static final int INTERVAL = UPDATE_INTERVAL;
     private static final int FASTEST_UPDATE_INTERVAL = 1000;
-    public static boolean wifion = false;
-    public boolean connected = false;
     private Location oldLocation;
     private APLocation oldAPLocation;
     private List<String> IpDeviceList = new ArrayList<>();
@@ -72,21 +81,10 @@ public final class UpdateLocationService extends Service implements
     private SimWifiP2pManager mManager = null;
     private SimWifiP2pManager.Channel mChannel = null;
     private SimWifiP2pBroadcastReceiver mReceiver;
-    private ServiceConnection mConnection = new ServiceConnection() {
-        // callbacks for service binding, passed to bindService()
-
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            mManager = new SimWifiP2pManager(new Messenger(service));
-            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mManager = null;
-            mChannel = null;
-        }
-    };
+    public static boolean wifion = false;
+    public boolean connected = false;
+    private HashMap<MessageDto, Message> msgLst = new HashMap<>();
+    ;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -101,6 +99,8 @@ public final class UpdateLocationService extends Service implements
         GoogleAPI.getInstance().connect(this);
 
         // register broadcast receiver
+        SimWifiP2pSocketManager.Init(getApplicationContext());
+
         IntentFilter filter = new IntentFilter();
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_STATE_CHANGED_ACTION);
         filter.addAction(SimWifiP2pBroadcast.WIFI_P2P_PEERS_CHANGED_ACTION);
@@ -240,45 +240,65 @@ public final class UpdateLocationService extends Service implements
 	 */
 
     public void DescentralizedMessageSend() {
-        PersistenceManager.getInstance().loadMessagesDescentralized(getApplicationContext());
-        for (Message m : PersistenceManager.getInstance().getMessageRepository()) {
-            if (oldAPLocation != null && m.getLocation() instanceof APLocation) {
-                if (oldAPLocation.equalAPLocation((APLocation) m.getLocation())) {
-                    Log.d(TAG, "DescentralizedMessageSend: Localizações Iguais ");
-                    Log.d(TAG, "DescentralizedMessageSend: IPPosiçao0:" + IpDeviceList.size());
-                    for (String s : IpDeviceList) {
-                        Log.d(TAG, "DescentralizedMessageSend: " + s);
-                        Log.d(TAG, "DescentralizedMessageSend: Creating Comunication");
+        msgLst.clear();
 
-                        new OutgoingCommTask().executeOnExecutor(
-                                AsyncTask.THREAD_POOL_EXECUTOR, s
-                        );
-                        String message = m.getTitle() + "," + m.getLocation() + "," + m.getPolicy() + "," +
-                                m.getBeginDate() + "," + m.getEndDate() + "," + m.getOwner() + "," + m.getContent();
-                        for (Pair p : m.getPairs())
-                            message = message + "," + p.getKey() + "-" + p.getValue();
+        for (MessageDto messageDto : PersistenceManager.getInstance().getMessageRepository().keySet()) {
+            pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location location = PersistenceManager.getInstance().getMessage(messageDto).getLocation();
+            if (oldAPLocation != null && location instanceof APLocation) {
+                if (oldAPLocation.equalAPLocation((APLocation) location)) {
+                    msgLst.put(messageDto, PersistenceManager.getInstance().getMessage(messageDto));
+                }
+            }
+        }
 
-                        Log.d(TAG, "DescentralizedMessageSend: Message format:" + message);
-                        final String finalMessage = Integer.toString(PersistenceManager.getInstance().getMessageRepository().indexOf(m));
-                        Log.d(TAG, "DescentralizedMessageSend: Message format: finalmessage:" + finalMessage);
-                        new Thread() {
-                            @Override
-                            public void run() {
-                                Log.d(TAG, "DescentralizedMessageSend: Message format: Entrei Na Thread");
-                                while (connected == false) {
-                                }
-                                Log.d(TAG, "DescentralizedMessageSend: Connection State: FOra do ciclo");
-                                new SendCommTask().executeOnExecutor(
-                                        AsyncTask.THREAD_POOL_EXECUTOR, finalMessage);
 
-                                Log.d(TAG, "DescentralizedMessageSend: Message format: Sai Na Thread");
-                            }
-                        }.start();
+        if (!msgLst.isEmpty()) {
+            for (String s : IpDeviceList) {
+                new OutgoingCommTask().executeOnExecutor(
+                        AsyncTask.THREAD_POOL_EXECUTOR, s
+                );
+
+                final String position = msgLst.toString();
+
+                new Thread() {
+                    @Override
+                    public void run() {
+                        while (connected == false) {
+                        }
+                        new SendCommTask().executeOnExecutor(
+                                AsyncTask.THREAD_POOL_EXECUTOR, position);
                     }
+                }.start();
+            }
+        }
+    }
+
+    public void ConfirmMessage(HashMap<MessageDto, Message> messagesReceived) {
+        Message message = null;
+        for (MessageDto messagedto : messagesReceived.keySet()) {
+            message = messagesReceived.get(messagedto);
+            if (!PersistenceManager.getInstance().inMessageRepository(messagedto)) {
+                for (Pair p : message.getPairs())
+                if (message.getPairs().size() != 0) {
+                    if (message.getPolicy().equals("W")) {
+                        if (PersistenceManager.getInstance().getProfile().containsAll(message.getPairs())) {
+                            PersistenceManager.getInstance().getMessageRepository().put(messagedto,message);
+                            PersistenceManager.getInstance().saveMessagesDescentralized(getApplicationContext());
+                        }
+                    } else if (message.getPolicy().equals("B")) {
+                        if (!PersistenceManager.getInstance().getProfile().containsAll(message.getPairs())) {
+                            PersistenceManager.getInstance().getMessageRepository().put(messagedto,message);
+                            PersistenceManager.getInstance().saveMessagesDescentralized(getApplicationContext());
+                        }
+                    }
+                } else {
+                    PersistenceManager.getInstance().getMessageRepository().put(messagedto, message);
+                    PersistenceManager.getInstance().saveMessagesDescentralized(getApplicationContext());
                 }
             }
         }
     }
+
 
     @Override
     public void onPeersAvailable(SimWifiP2pDeviceList peers) {
@@ -314,7 +334,7 @@ public final class UpdateLocationService extends Service implements
 
             Log.d(TAG, "IncommingCommTask started (" + this.hashCode() + ").");
 
-            /*try {
+            try {
                 mSrvSocket = new SimWifiP2pSocketServer(
                         Integer.parseInt(getString(R.string.port)));
             } catch (IOException e) {
@@ -324,38 +344,30 @@ public final class UpdateLocationService extends Service implements
                 try {
                     SimWifiP2pSocket sock = mSrvSocket.accept();
                     try {
-                        Log.d(TAG, "doInBackground: RecebiAlgumaMensagem");
-                   *//*     BufferedReader sockIn = new BufferedReader(
-                                new InputStreamReader(sock.getInputStream()));
-                        String st = sockIn.readLine();
-                        publishProgress(st);
-                        sock.getOutputStream().write(("\n").getBytes());
-                    } catch (IOException e) {
-                        Log.d("Error reading socket:", e.getMessage());*//*
+                        InputStream is = sock.getInputStream();
+                        ObjectInputStream ois = new ObjectInputStream(is);
+                        HashMap m = (HashMap) ois.readObject();
+                        ConfirmMessage(m);
+                        ois.close();
+                        is.close();
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
                     } finally {
                         sock.close();
                     }
                 } catch (IOException e) {
-                    Log.d("Error socket:", e.getMessage());
+                    e.printStackTrace();
                     break;
-                    //e.printStackTrace();
                 }
-            }*/
+            }
             return null;
         }
-
-       /* @Override
-        protected void onProgressUpdate(String... values) {
-            mTextOutput.append(values[0] + "\n");
-        }*/
     }
 
-    public class OutgoingCommTask extends AsyncTask<String, Void, String> {
 
-     /*   @Override
-        protected void onPreExecute() {
-            mTextOutput.setText("Connecting...");
-        }*/
+
+
+    public class OutgoingCommTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
@@ -370,20 +382,6 @@ public final class UpdateLocationService extends Service implements
             }
             return null;
         }
-
-    /*    @Override
-        protected void onPostExecute(String result) {
-            if (result != null) {
-                guiUpdateDisconnectedState();
-                mTextOutput.setText(result);
-            } else {
-                findViewById(R.id.idDisconnectButton).setEnabled(true);
-                findViewById(R.id.idConnectButton).setEnabled(false);
-                findViewById(R.id.idSendButton).setEnabled(true);
-                mTextInput.setHint("");
-                mTextInput.setText("");
-                mTextOutput.setText("");
-            }*/
     }
 
     public class SendCommTask extends AsyncTask<String, String, Void> {
@@ -391,22 +389,13 @@ public final class UpdateLocationService extends Service implements
         @Override
         protected Void doInBackground(String... msg) {
             try {
-                Log.d(TAG, "doInBackground SendCommTASKE: " + (msg[0] + "\n"));
-                Log.d(TAG, "doInBackground: A thread funcionou no SendCommTask");
-
                 OutputStream os = mCliSocket.getOutputStream();
-                Log.d(TAG, "doInBackground: OutputStream deu bem");
-                //  ObjectOutputStream oos = new ObjectOutputStream(os);
-                Log.d(TAG, "doInBackground: A ObjectOutputStream deu bem");
-                ///   oos.writeObject(PersistenceManager.getInstance().getMessageRepository().get(Integer.parseInt(msg[0])));
-                /*mCliSocket.getOutputStream().write((msg[0] + "\n").getBytes());
-                Log.d(TAG, "Escrevi na socket");
-                BufferedReader sockIn = new BufferedReader(
-                        new InputStreamReader(mCliSocket.getInputStream()));
-                Log.d(TAG, "Fiz Algo no Buffer");
-                sockIn.readLine();*/
-                Log.d(TAG, "doInBackground: Magic Finished Fuck yea");
+                ObjectOutputStream oos = new ObjectOutputStream(os);
+
+                oos.writeObject(msgLst);
                 connected = false;
+                oos.close();
+                os.close();
                 mCliSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -415,10 +404,21 @@ public final class UpdateLocationService extends Service implements
             return null;
         }
 
-       /* @Override
-        protected void onPostExecute(Void result) {
-            mTextInput.setText("");
-            guiUpdateDisconnectedState();
-        }*/
     }
+    
+    private ServiceConnection mConnection = new ServiceConnection() {
+        // callbacks for service binding, passed to bindService()
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            mManager = new SimWifiP2pManager(new Messenger(service));
+            mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mManager = null;
+            mChannel = null;
+        }
+    };
 }

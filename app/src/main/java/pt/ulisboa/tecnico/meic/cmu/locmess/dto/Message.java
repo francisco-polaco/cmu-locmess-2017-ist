@@ -43,9 +43,7 @@ public class Message implements Serializable {
         this.policy = policy;
     }
 
-    public List<Pair> getPairs() {
-        return pairs;
-    }
+    public List<Pair> getPairs() {return pairs;}
 
     public void setPairs(List<Pair> pairs) {
         this.pairs = pairs;
@@ -92,6 +90,17 @@ public class Message implements Serializable {
                     pairs.containsAll(toCompare.getPairs()) &&
                     beginDate.equals(toCompare.getBeginDate()) &&
                     endDate.equals(toCompare.getEndDate()) &&
+                    owner.equals(toCompare.getOwner()) &&
+                    content.equals(toCompare.getContent());
+        }
+        return false;
+    }
+
+    public boolean equalM(Object o) {
+        if (o != null && o instanceof Message) {
+            Message toCompare = (Message) o;
+            return  title.equals(toCompare.getTitle())&&
+                    beginDate.equals(toCompare.getBeginDate()) &&
                     owner.equals(toCompare.getOwner()) &&
                     content.equals(toCompare.getContent());
         }

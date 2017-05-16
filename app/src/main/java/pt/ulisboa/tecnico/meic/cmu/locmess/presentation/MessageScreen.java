@@ -108,7 +108,16 @@ public class MessageScreen extends AppCompatActivity {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                new RemoveMessageListener(adapter.getMessageById(viewHolder.getAdapterPosition()));
+                MessageDto messageDto = adapter.getMessageById(viewHolder.getAdapterPosition());
+                if(PersistenceManager.getInstance().inMessageRepository(messageDto)) {
+                    adapter.removeMsg(messageDto);
+                    PersistenceManager.getInstance().removeFromMessageRepository(messageDto);
+                    PersistenceManager.getInstance().saveMessagesDescentralized(getApplicationContext());
+                    adapter.notifyDataSetChanged();
+                }
+                else{
+                    new RemoveMessageListener(messageDto);
+                }
             }
         };
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
@@ -233,22 +242,12 @@ public class MessageScreen extends AppCompatActivity {
                 @Override
                 public void onSuccess(Result result) {
                     messages.clear();
+
+                    messages.addAll(PersistenceManager.getInstance().getMessageRepository().keySet());
+
                     messages.addAll(PersistenceManager.getInstance().retrieveCache());
                     for (MessageDto m : ((List<MessageDto>) result.getPiggyback())) {
                         if (!messages.contains(m)) messages.add(m);
-                    }
-
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-                    Date convertedDate = new Date();
-                    PersistenceManager.getInstance().loadMessagesDescentralized(getApplicationContext());
-                    for (Message m : PersistenceManager.getInstance().getMessageRepository()) {
-                        try {
-                            convertedDate = simpleDateFormat.parse(m.getBeginDate());
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                        MessageDto mdto = new MessageDto(0, m.getTitle(), m.getContent(), m.getOwner(), convertedDate);
-                        messages.add(mdto);
                     }
 
                     adapter.notifyDataSetChanged();

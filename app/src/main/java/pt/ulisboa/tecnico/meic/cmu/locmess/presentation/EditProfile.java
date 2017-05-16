@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
+import pt.ulisboa.tecnico.meic.cmu.locmess.domain.PersistenceManager;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.handler.ProfileRvAdapter;
@@ -137,6 +138,8 @@ public class EditProfile extends AppCompatActivity {
             return;
         }
         new AddPairListener(getApplicationContext(), pair);
+        PersistenceManager.getInstance().addPair(pair);
+        PersistenceManager.getInstance().saveProfile(getApplicationContext());
     }
 
     private void initRecyclerView() {
@@ -155,6 +158,8 @@ public class EditProfile extends AppCompatActivity {
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 new EditProfile.RemovePairListener(getApplicationContext(), adapter.getMessageById(viewHolder.getAdapterPosition()));
+                PersistenceManager.getInstance().removePair(adapter.getMessageById(viewHolder.getAdapterPosition()));
+                PersistenceManager.getInstance().saveProfile(getApplicationContext());
             }
         };
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);

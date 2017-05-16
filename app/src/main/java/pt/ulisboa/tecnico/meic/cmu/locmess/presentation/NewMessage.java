@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.thomashaertel.widget.MultiSpinner;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -35,6 +36,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.domain.PersistenceManager;
 import pt.ulisboa.tecnico.meic.cmu.locmess.domain.StaticFields;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Result;
 import pt.ulisboa.tecnico.meic.cmu.locmess.interfaces.ActivityCallback;
@@ -54,17 +56,23 @@ public class NewMessage extends AppCompatActivity {
     private ArrayAdapter spinnerLocations;
     private MultiSpinner multispinner;
     private List<Pair> keysInPairs;
+    private ArrayList<Pair> MessagePairs = new ArrayList<>();
     private List<String> keys = new ArrayList<>();
     private List<String> locations = new ArrayList<>();
     private List<Location> locationList = new ArrayList<>();
 
     private MultiSpinner.MultiSpinnerListener onSelectedListener = new MultiSpinner.MultiSpinnerListener() {
         public void onItemsSelected(boolean[] selected) {
-            // Do something here with the selected items
+            //Do something here with the selected items
             String s = "";
             for (int i = 0; i < selected.length; i++)
-                if (selected[i])
-                    s += " " + spinnerKeys.getItem(i).toString() + "\n";
+                if (selected[i]) {
+                    if (!MessagePairs.contains(keysInPairs.get(i))) {
+                        MessagePairs.add(keysInPairs.get(i));
+                        s += "\n" + keysInPairs.get(i).toString();
+                    }
+                } else
+                    MessagePairs.remove(keysInPairs.get(i));
 
             multispinner = (MultiSpinner) findViewById(R.id.spinnerMulti);
             multispinner.setText(s.equals("") ? getText(R.string.multispinner_placeholder) : s);
@@ -147,6 +155,7 @@ public class NewMessage extends AppCompatActivity {
         if (keysInPairs == null)
             keysInPairs = new ArrayList<>();
 
+
         RadioGroup group = ((RadioGroup) this.findViewById(R.id.radio));
         int id = group.getCheckedRadioButtonId();
         View radioButton = this.findViewById(id);
@@ -166,8 +175,12 @@ public class NewMessage extends AppCompatActivity {
         String eDate = simpleDateFormat.format(new Date(endTime + " " + endDate));
 
 
-        Message message = new Message(title, location, policy, keysInPairs, bDate, eDate, content);
+        Message message = new Message(title, location, policy, MessagePairs, bDate, eDate, content);
         Log.d("NewMessage", "sendMessage: " + location);
+
+
+        for (Pair p : MessagePairs)
+            Log.d("NewMessage", "sendMessage: " + p.getValue() + p.getKey());
 
         if (sendModePolicy.equals("Centralized"))
             new PostMessageListener(getApplicationContext(), message);
@@ -175,6 +188,7 @@ public class NewMessage extends AppCompatActivity {
             Log.d("NewMessage:", "sendMessage: " + StaticFields.username);
             message.setOwner(StaticFields.username);
             PersistenceManager.getInstance().addToMessageRepository(message);
+
             new Thread() {
                 @Override
                 public void run() {
@@ -183,6 +197,7 @@ public class NewMessage extends AppCompatActivity {
             }.start();
         }
     }
+
 
     private void reset() {
         ((EditText) this.findViewById(R.id.msgtitle)).setText("");
@@ -348,5 +363,7 @@ public class NewMessage extends AppCompatActivity {
             Toast.makeText(getContext(), result.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
-
 }
+
+
+

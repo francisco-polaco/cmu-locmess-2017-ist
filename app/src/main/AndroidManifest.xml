@@ -4,8 +4,8 @@
     package="pt.ulisboa.tecnico.meic.cmu.locmess">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <!--    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+        <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />-->
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
@@ -52,6 +52,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
         <!-- MAP -->
+
 
         <activity
             android:name=".presentation.GPSLocationPicker"

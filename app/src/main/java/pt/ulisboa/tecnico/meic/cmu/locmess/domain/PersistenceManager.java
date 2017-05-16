@@ -10,19 +10,25 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
 import pt.ulisboa.tecnico.meic.cmu.locmess.R;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Message;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.MessageDto;
+import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Pair;
 import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Token;
 
 public class PersistenceManager {
 
     private static final String MESSAGEREPOSITORY_FILENAME = "messages.dat";
+    private static final String PROFILE_FILENAME = "profile.dat";
     private static final String TAG = PersistenceManager.class.getSimpleName();
 
     private static PersistenceManager ourInstance = new PersistenceManager();
@@ -30,9 +36,22 @@ public class PersistenceManager {
     private Token token;
 
     // profile represents the key values of the user
-    private List<Message> messageRepository;
+    private HashMap<MessageDto,Message> messageRepository;
     private TreeMap<Integer, MessageDto> cachedMessages;
+    private List<Pair> Profile;
     private boolean stateHasChanged = false;
+
+    public List<Pair> getProfile() {
+        return Profile;
+    }
+
+    public void addPair(Pair p) {
+        Profile.add(p);
+    }
+
+    public void removePair(Pair p) {
+        Profile.remove(p);
+    }
 
     private PersistenceManager() {
     }
@@ -110,9 +129,6 @@ public class PersistenceManager {
     public Collection<MessageDto> retrieveCache() {
         return cachedMessages.values();
     }
-    public List<Message> getMessageRepository() {
-        return messageRepository;
-    }
 
     public void loadMessagesDescentralized(Context context) {
         loadMessagesDescentralized(context, false);
@@ -122,14 +138,37 @@ public class PersistenceManager {
         loadMessagesDescentralized(context, true);
     }
 
+    public void flushAndLoadProfile(Context context) {
+        loadProfile(context, true);
+    }
+
+    private void loadProfile(Context context, boolean flush) {
+        if (flush || Profile == null) {
+            try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
+                    context.openFileInput(PROFILE_FILENAME)))) {
+                Profile = (List<Pair>) objectInputStream.readObject();
+            } catch (ClassNotFoundException| IOException e) {
+                Profile= new ArrayList<>();
+            }
+        }
+    }
+
+    public void saveProfile(Context context) {
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(
+                context.openFileOutput(PROFILE_FILENAME, Context.MODE_PRIVATE)))) {
+            objectOutputStream.writeObject(Profile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void loadMessagesDescentralized(Context context, boolean flush) {
         if (flush || messageRepository == null) {
             try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
                     context.openFileInput(MESSAGEREPOSITORY_FILENAME)))) {
-                messageRepository = (ArrayList<Message>) objectInputStream.readObject();
-                printMessages();
-            } catch (ClassNotFoundException | IOException e) {
-                messageRepository = new ArrayList<>();
+                messageRepository = (HashMap<MessageDto,Message>) objectInputStream.readObject();
+            } catch (ClassNotFoundException| IOException e) {
+                messageRepository= new HashMap<>();
             }
         }
     }
@@ -138,20 +177,40 @@ public class PersistenceManager {
         try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(
                 context.openFileOutput(MESSAGEREPOSITORY_FILENAME, Context.MODE_PRIVATE)))) {
             objectOutputStream.writeObject(messageRepository);
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    private void printMessages() {
-        for (Message m : messageRepository)
-            Log.d(TAG, "getMessages: " + m.getContent());
-    }
+
 
     public void addToMessageRepository(Message message) {
-        Log.d(TAG, "addToMessageRepository: Entrei2");
-        messageRepository.add(message);
-        Log.d(TAG, "addToMessageRepository: EntreEConquistei");
-        //stateHasChanged = true;
+        messageRepository.put(createMessageDTO(message),message);
+    }
+
+    public Message getMessage(MessageDto messageDto) {
+        return messageRepository.get(messageDto);
+    }
+    public HashMap<MessageDto,Message> getMessageRepository(){return messageRepository;}
+
+    public void removeFromMessageRepository(MessageDto message) {
+        if(messageRepository.containsKey(message))
+            messageRepository.remove(message);
+    }
+
+    public MessageDto createMessageDTO(Message message){
+        Date convertedDate = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        try {
+            convertedDate = simpleDateFormat.parse(message.getBeginDate());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return new MessageDto(0, message.getTitle(), message.getContent(), message.getOwner(), convertedDate);
+    }
+
+    public boolean inMessageRepository(MessageDto messageDto) {
+        return messageRepository.containsKey(messageDto);
     }
 
 }
