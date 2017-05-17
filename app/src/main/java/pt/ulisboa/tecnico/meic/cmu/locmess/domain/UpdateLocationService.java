@@ -76,6 +76,9 @@ public final class UpdateLocationService extends Service implements
     private APLocation oldAPLocation;
     private List<String> IpDeviceList = new ArrayList<>();
     private List<String> peersStr = new ArrayList<>();
+
+    private List<APLocation> APLog = new ArrayList<>();
+
     private SimWifiP2pSocketServer mSrvSocket = null;
     private SimWifiP2pSocket mCliSocket = null;
     private SimWifiP2pManager mManager = null;
@@ -271,6 +274,22 @@ public final class UpdateLocationService extends Service implements
                 }.start();
             }
         }
+
+        //---------------------------Relay Route--------------------------------------------------
+
+        else{
+            new Thread() {
+                @Override
+                public void run() {
+                    while (connected == false) {
+                    }
+                    new SendCommTask().executeOnExecutor(
+                            AsyncTask.THREAD_POOL_EXECUTOR, "oi");
+                }
+            }.start();
+        }
+        //----------------------------------------------------------------------------------------
+
     }
 
     public void ConfirmMessage(HashMap<MessageDto, Message> messagesReceived) {
@@ -310,6 +329,8 @@ public final class UpdateLocationService extends Service implements
             peersStr.add(devstr);
         }
         oldAPLocation = new APLocation(peersStr.toString(), peersStr);
+
+        APLog.add(oldAPLocation);
 
         //TODO
     }
@@ -391,7 +412,6 @@ public final class UpdateLocationService extends Service implements
             try {
                 OutputStream os = mCliSocket.getOutputStream();
                 ObjectOutputStream oos = new ObjectOutputStream(os);
-
                 oos.writeObject(msgLst);
                 connected = false;
                 oos.close();

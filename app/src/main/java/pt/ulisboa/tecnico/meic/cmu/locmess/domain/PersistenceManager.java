@@ -30,7 +30,7 @@ public class PersistenceManager {
     private static final String MESSAGEREPOSITORY_FILENAME = "messages.dat";
     private static final String PROFILE_FILENAME = "profile.dat";
     private static final String TAG = PersistenceManager.class.getSimpleName();
-
+    private static int MAX_MESSAGES_CARRY = 0;
     private static PersistenceManager ourInstance = new PersistenceManager();
 
     private Token token;
@@ -40,6 +40,7 @@ public class PersistenceManager {
     private TreeMap<Integer, MessageDto> cachedMessages;
     private List<Pair> Profile;
     private boolean stateHasChanged = false;
+    private int messageCounter = 0;
 
     public List<Pair> getProfile() {
         return Profile;
@@ -69,6 +70,18 @@ public class PersistenceManager {
     public void stopLocationUpdates(Context context) {
         Log.d(TAG, "Shutting down the update location service.");
         context.stopService(new Intent(context, UpdateLocationService.class));
+    }
+
+    public int getMessageCounter() {
+        return messageCounter;
+    }
+
+    public void setMessageCounter(int messageCounter) {
+        this.messageCounter = messageCounter;
+    }
+
+    public static void setMaxMessagesCarry(int maxMessagesCarry) {
+        MAX_MESSAGES_CARRY = maxMessagesCarry;
     }
 
     public Token getToken() {
