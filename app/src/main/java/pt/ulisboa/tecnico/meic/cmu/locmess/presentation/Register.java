@@ -45,7 +45,9 @@ public class Register extends AppCompatActivity {
         String password = ((EditText) this.findViewById(R.id.Pass)).getText().toString();
         String repeatPassword = ((EditText) this.findViewById(R.id.RepeatPass)).getText().toString();
         int maxMessages= Integer.parseInt(((EditText) this.findViewById(R.id.MaxSizeMessages)).getText().toString());
-        PersistenceManager.getInstance().setMaxMessagesCarry(maxMessages);
+
+        PersistenceManager.getInstance().setMessageCounter(maxMessages);
+        PersistenceManager.getInstance().saveMessageCounter(getApplicationContext());
 
         if (!password.equals(repeatPassword)) {
             Toast.makeText(this, "Passwords don't match!", Toast.LENGTH_LONG).show();

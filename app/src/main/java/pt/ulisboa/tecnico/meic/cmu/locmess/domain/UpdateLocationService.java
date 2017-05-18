@@ -24,6 +24,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -35,6 +36,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
 import pt.inesc.termite.wifidirect.SimWifiP2pBroadcast;
 import pt.inesc.termite.wifidirect.SimWifiP2pDevice;
@@ -245,14 +248,35 @@ public final class UpdateLocationService extends Service implements
     public void DescentralizedMessageSend() {
         msgLst.clear();
 
+        pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location location = null;
+
         for (MessageDto messageDto : PersistenceManager.getInstance().getMessageRepository().keySet()) {
-            pt.ulisboa.tecnico.meic.cmu.locmess.dto.Location location = PersistenceManager.getInstance().getMessage(messageDto).getLocation();
+            location = PersistenceManager.getInstance().getMessage(messageDto).getLocation();
             if (oldAPLocation != null && location instanceof APLocation) {
                 if (oldAPLocation.equalAPLocation((APLocation) location)) {
                     msgLst.put(messageDto, PersistenceManager.getInstance().getMessage(messageDto));
                 }
             }
         }
+
+        HashMap<MessageDto,Message> MessageDisplay = new HashMap<>();
+        for (MessageDto messageDto : PersistenceManager.getInstance().getMessageToCarry().keySet()) {
+            Log.d(TAG, "DescentralizedMessageSend: Checking Messages that Device Carry");
+            location = PersistenceManager.getInstance().getMessageToCarry().get(messageDto).getLocation();
+            if (oldAPLocation != null && location instanceof APLocation) {
+                if (oldAPLocation.equalAPLocation((APLocation) location)) {
+                    msgLst.put(messageDto, PersistenceManager.getInstance().getMessageToCarry().get(messageDto));
+                    MessageDisplay.put(messageDto,PersistenceManager.getInstance().getMessageToCarry().get(messageDto));
+                    PersistenceManager.getInstance().getMessageToCarry().remove(messageDto);
+                    PersistenceManager.getInstance().setMessageCounter(PersistenceManager.getInstance().getMessageCounter()+1);
+                }
+            }
+        }
+        if(!MessageDisplay.isEmpty()) {
+            Log.d(TAG, "DescentralizedMessageSend: Confirming Message to display on screen");
+            ConfirmMessage(MessageDisplay);
+        }
+
 
 
         if (!msgLst.isEmpty()) {
@@ -277,16 +301,82 @@ public final class UpdateLocationService extends Service implements
 
         //---------------------------Relay Route--------------------------------------------------
 
-        else{
-            new Thread() {
-                @Override
-                public void run() {
-                    while (connected == false) {
-                    }
-                    new SendCommTask().executeOnExecutor(
-                            AsyncTask.THREAD_POOL_EXECUTOR, "oi");
+        else {
+            Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Starting");
+            //final int numberOfDevicesToPick = IpDeviceList.size()/3;
+            final int numberOfDevicesToPick = IpDeviceList.size(); // Testar para apenas 1 device
+            if (!IpDeviceList.isEmpty() && numberOfDevicesToPick>0) {
+                Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Have Devices to Send Messages");
+                final int APLogSize = APLog.size();
+                final ArrayList<Integer> cache = new ArrayList();
+                final int size = IpDeviceList.size();
+
+                for (String s : IpDeviceList) {
+                    final String ip = s;
+                    final int position = IpDeviceList.indexOf(s);
+
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            try {
+                                //int n = numberOfDevicesToPick*3;
+                                int n = numberOfDevicesToPick;
+                                Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Thread: Connecting..." );
+                                SimWifiP2pSocket CliSocket = new SimWifiP2pSocket(ip,
+                                        Integer.parseInt(getString(R.string.port)));
+                                Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Thread: Connected" );
+
+
+                                OutputStream os = CliSocket.getOutputStream();
+                                ObjectOutputStream oos = new ObjectOutputStream(os);
+                                Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Thread: Out and In Streams created" );
+                                oos.writeObject("APListSize");
+                                Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Thread: APListSize Sent" );
+                                InputStream is = CliSocket.getInputStream();
+                                ObjectInputStream ois = new ObjectInputStream(is);
+                                int myApsize = (Integer) (ois.readObject());
+                                cache.add(position, myApsize);
+
+                                Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Thread: Waiting for other threads write" );
+                                while(cache.size() != size){}
+
+
+                                for (int i : cache){
+                                    if(myApsize < i){
+                                        --n;
+                                    }
+                                }
+
+                                if( n > 0){
+                                    Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Thread: Selected Device" );
+                                    HashMap<MessageDto,Message> hashMap = new HashMap<MessageDto, Message>();
+                                    for (MessageDto m : PersistenceManager.getInstance().getMessageRepository().keySet()){
+                                        hashMap.put(m, PersistenceManager.getInstance().getMessage(m));
+                                    }
+
+                                    Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Thread: Sending Messages" );
+                                    oos.writeObject("Messages");
+                                    oos.writeObject(hashMap);
+                                    oos.close();
+                                    os.close();
+                                    CliSocket.close();
+                                }
+
+                                else if (n<=0) {
+                                    Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Thread: Closing-Small Aplist" );
+                                   oos.writeObject("\n");
+                                    CliSocket.close();
+                                }
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            } catch (ClassNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }.start();
                 }
-            }.start();
+            }
         }
         //----------------------------------------------------------------------------------------
 
@@ -297,23 +387,23 @@ public final class UpdateLocationService extends Service implements
         for (MessageDto messagedto : messagesReceived.keySet()) {
             message = messagesReceived.get(messagedto);
             if (!PersistenceManager.getInstance().inMessageRepository(messagedto)) {
-                for (Pair p : message.getPairs())
-                if (message.getPairs().size() != 0) {
-                    if (message.getPolicy().equals("W")) {
-                        if (PersistenceManager.getInstance().getProfile().containsAll(message.getPairs())) {
-                            PersistenceManager.getInstance().getMessageRepository().put(messagedto,message);
-                            PersistenceManager.getInstance().saveMessagesDescentralized(getApplicationContext());
+                    if (message.getPairs().size() != 0) {
+                        if (message.getPolicy().equals("W")) {
+                            if (PersistenceManager.getInstance().getProfile().containsAll(message.getPairs())) {
+                                PersistenceManager.getInstance().getMessageRepository().put(messagedto, message);
+                                PersistenceManager.getInstance().saveMessagesDescentralized(getApplicationContext());
+                            }
+                        } else if (message.getPolicy().equals("B")) {
+                            if (!PersistenceManager.getInstance().getProfile().containsAll(message.getPairs())) {
+                                PersistenceManager.getInstance().getMessageRepository().put(messagedto, message);
+                                PersistenceManager.getInstance().saveMessagesDescentralized(getApplicationContext());
+                            }
                         }
-                    } else if (message.getPolicy().equals("B")) {
-                        if (!PersistenceManager.getInstance().getProfile().containsAll(message.getPairs())) {
-                            PersistenceManager.getInstance().getMessageRepository().put(messagedto,message);
-                            PersistenceManager.getInstance().saveMessagesDescentralized(getApplicationContext());
-                        }
+                    } else {
+                        PersistenceManager.getInstance().getMessageRepository().put(messagedto, message);
+                        PersistenceManager.getInstance().saveMessagesDescentralized(getApplicationContext());
                     }
-                } else {
-                    PersistenceManager.getInstance().getMessageRepository().put(messagedto, message);
-                    PersistenceManager.getInstance().saveMessagesDescentralized(getApplicationContext());
-                }
+                //}
             }
         }
     }
@@ -331,7 +421,7 @@ public final class UpdateLocationService extends Service implements
         oldAPLocation = new APLocation(peersStr.toString(), peersStr);
 
         APLog.add(oldAPLocation);
-
+        Log.d(TAG, "onPeersAvailable: APlocation added to APlog");
         //TODO
     }
 
@@ -365,10 +455,80 @@ public final class UpdateLocationService extends Service implements
                 try {
                     SimWifiP2pSocket sock = mSrvSocket.accept();
                     try {
+                        Log.d(TAG, "doInBackground: IncommingTask:Connected");
                         InputStream is = sock.getInputStream();
                         ObjectInputStream ois = new ObjectInputStream(is);
-                        HashMap m = (HashMap) ois.readObject();
-                        ConfirmMessage(m);
+                        String st = (String) ois.readObject();
+                        Log.d(TAG, "doInBackground: IncommingTask:Catch Tag String:"+ st);
+                        if(st.equals("APListSize")){
+                            OutputStream os = sock.getOutputStream();
+                            ObjectOutputStream oos = new ObjectOutputStream(os);
+                            Log.d(TAG, "doInBackground: Incomming: Relay Route Selected");
+                            oos.writeObject(APLog.size());
+                            st = (String) ois.readObject();
+
+                            if (st.equals("\n")){
+                                Log.d(TAG, "doInBackground: Incomming: Device Not Selected");
+                                break;
+                            }
+
+                            else{
+                                if (PersistenceManager.getInstance().getMessageCounter() == 0) {
+                                    Log.d(TAG, "doInBackground: Incomming: Full on messages to carry");
+                                    break;
+                                }
+                                else {
+                                    Log.d(TAG, "doInBackground: Incomming: Receiving messages...");
+                                    HashMap<MessageDto, Message> hashMap = (HashMap) ois.readObject();
+
+                                    Log.d(TAG, "doInBackground: Incomming: Selecting messages...");
+                                    MessageDto m;
+                                    while(PersistenceManager.getInstance().getMessageCounter() > 0) {
+
+                                        m = (MessageDto) hashMap.keySet().toArray()[0];
+                                        boolean toAdd = false;
+
+                                        int i = 0;
+                                        int j = 0;
+                                        for (MessageDto messageDto : hashMap.keySet()) {
+                                            for (APLocation l : APLog){
+                                                if(l.equalAPLocation((APLocation) hashMap.get(m).getLocation())){
+                                                    j++;
+                                                }
+                                            }
+                                           if (j >= i && !PersistenceManager.getInstance().getMessageToCarry().containsKey(m)){
+                                                    i = j;
+                                                    j = 0;
+                                                    m = messageDto;
+                                                    toAdd = true;
+                                            }
+                                        }
+                                        if(toAdd) {
+                                            Log.d(TAG, "doInBackground: Incomming: Adding message ...");
+                                            PersistenceManager.getInstance().getMessageToCarry().put(m, hashMap.get(m));
+                                            PersistenceManager.getInstance().setMessageCounter(PersistenceManager.getInstance().getMessageCounter() - 1);
+                                        }
+                                        else{
+                                            Log.d(TAG, "doInBackground: Incomming: No more Messages ...");
+                                            break;
+                                        }
+                                        ois.close();
+                                        is.close();
+
+                                        for (MessageDto dto : PersistenceManager.getInstance().getMessageToCarry().keySet())
+                                            Log.d(TAG, "doInBackground: Incomming " + dto );
+                                    }
+                                }
+                            }
+                            oos.close();
+                            os.close();
+                        }
+
+                        else {
+                            Log.d(TAG, "doInBackground: Incomming: APLocation Receiving ...");
+                            HashMap<MessageDto,Message> m = (HashMap) ois.readObject();
+                            ConfirmMessage(m);
+                        }
                         ois.close();
                         is.close();
                     } catch (ClassNotFoundException e) {
@@ -410,8 +570,11 @@ public final class UpdateLocationService extends Service implements
         @Override
         protected Void doInBackground(String... msg) {
             try {
+                Log.d(TAG, "doInBackground: Notifying Devices about Sending Messages on APL");
                 OutputStream os = mCliSocket.getOutputStream();
                 ObjectOutputStream oos = new ObjectOutputStream(os);
+                oos.writeObject("MessagesOnAPL");
+                Log.d(TAG, "doInBackground: Sending Messages on APL");
                 oos.writeObject(msgLst);
                 connected = false;
                 oos.close();

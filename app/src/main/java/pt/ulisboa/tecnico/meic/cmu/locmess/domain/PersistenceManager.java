@@ -29,8 +29,8 @@ public class PersistenceManager {
 
     private static final String MESSAGEREPOSITORY_FILENAME = "messages.dat";
     private static final String PROFILE_FILENAME = "profile.dat";
+    private static final String MESSAGECOUNTER_FILENAME = "messagecounter.dat";
     private static final String TAG = PersistenceManager.class.getSimpleName();
-    private static int MAX_MESSAGES_CARRY = 0;
     private static PersistenceManager ourInstance = new PersistenceManager();
 
     private Token token;
@@ -38,6 +38,7 @@ public class PersistenceManager {
     // profile represents the key values of the user
     private HashMap<MessageDto,Message> messageRepository;
     private TreeMap<Integer, MessageDto> cachedMessages;
+    private HashMap<MessageDto,Message> messageToCarry = new HashMap<>();
     private List<Pair> Profile;
     private boolean stateHasChanged = false;
     private int messageCounter = 0;
@@ -72,16 +73,20 @@ public class PersistenceManager {
         context.stopService(new Intent(context, UpdateLocationService.class));
     }
 
+    public HashMap<MessageDto, Message> getMessageToCarry() {
+        return messageToCarry;
+    }
+
+    public void setMessageToCarry(HashMap<MessageDto, Message> messageToCarry) {
+        this.messageToCarry = messageToCarry;
+    }
+
     public int getMessageCounter() {
         return messageCounter;
     }
 
     public void setMessageCounter(int messageCounter) {
         this.messageCounter = messageCounter;
-    }
-
-    public static void setMaxMessagesCarry(int maxMessagesCarry) {
-        MAX_MESSAGES_CARRY = maxMessagesCarry;
     }
 
     public Token getToken() {
@@ -170,6 +175,24 @@ public class PersistenceManager {
         try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(
                 context.openFileOutput(PROFILE_FILENAME, Context.MODE_PRIVATE)))) {
             objectOutputStream.writeObject(Profile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadMessageCounter(Context context) {
+            try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
+                    context.openFileInput(MESSAGECOUNTER_FILENAME)))) {
+                messageCounter = (int) objectInputStream.readObject();
+            } catch (ClassNotFoundException| IOException e) {
+                e.getStackTrace();
+            }
+    }
+
+    public void saveMessageCounter(Context context) {
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(
+                context.openFileOutput(MESSAGECOUNTER_FILENAME, Context.MODE_PRIVATE)))) {
+            objectOutputStream.writeObject(messageCounter);
         } catch (IOException e) {
             e.printStackTrace();
         }
