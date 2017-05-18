@@ -303,8 +303,8 @@ public final class UpdateLocationService extends Service implements
 
         else {
             Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Starting");
-            //final int numberOfDevicesToPick = IpDeviceList.size()/3;
-            final int numberOfDevicesToPick = IpDeviceList.size(); // Testar para apenas 1 device
+            final int numberOfDevicesToPick = IpDeviceList.size()/2;
+            //final int numberOfDevicesToPick = IpDeviceList.size(); // Testar para apenas 1 device
             if (!IpDeviceList.isEmpty() && numberOfDevicesToPick>0) {
                 Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Have Devices to Send Messages");
                 final int APLogSize = APLog.size();
@@ -319,8 +319,8 @@ public final class UpdateLocationService extends Service implements
                         @Override
                         public void run() {
                             try {
-                                //int n = numberOfDevicesToPick*3;
                                 int n = numberOfDevicesToPick;
+                                //int n = numberOfDevicesToPick;
                                 Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Thread: Connecting..." );
                                 SimWifiP2pSocket CliSocket = new SimWifiP2pSocket(ip,
                                         Integer.parseInt(getString(R.string.port)));
@@ -338,7 +338,7 @@ public final class UpdateLocationService extends Service implements
                                 cache.add(position, myApsize);
 
                                 Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Thread: Waiting for other threads write" );
-                                while(cache.size() != size){}
+                                while(cache.size() < size){}
 
 
                                 for (int i : cache){
@@ -346,6 +346,8 @@ public final class UpdateLocationService extends Service implements
                                         --n;
                                     }
                                 }
+
+                                Log.d(TAG, "run: Thread: N:" + n);
 
                                 if( n > 0){
                                     Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Thread: Selected Device" );
@@ -362,7 +364,7 @@ public final class UpdateLocationService extends Service implements
                                     CliSocket.close();
                                 }
 
-                                else if (n<=0) {
+                                else if (n==0) {
                                     Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Thread: Closing-Small Aplist" );
                                    oos.writeObject("\n");
                                     CliSocket.close();
