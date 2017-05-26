@@ -28,6 +28,7 @@ import pt.ulisboa.tecnico.meic.cmu.locmess.dto.Token;
 public class PersistenceManager {
 
     private static final String MESSAGEREPOSITORY_FILENAME = "messages.dat";
+    private static final String MESSAGETOCARRY_FILENAME = "messagestocarry.dat";
     private static final String PROFILE_FILENAME = "profile.dat";
     private static final String MESSAGECOUNTER_FILENAME = "messagecounter.dat";
     private static final String TAG = PersistenceManager.class.getSimpleName();
@@ -38,7 +39,7 @@ public class PersistenceManager {
     // profile represents the key values of the user
     private HashMap<MessageDto,Message> messageRepository;
     private TreeMap<Integer, MessageDto> cachedMessages;
-    private HashMap<MessageDto,Message> messageToCarry = new HashMap<>();
+    private HashMap<MessageDto,Message> messageToCarry;
     private List<Pair> Profile;
     private boolean stateHasChanged = false;
     private int messageCounter = 0;
@@ -75,10 +76,6 @@ public class PersistenceManager {
 
     public HashMap<MessageDto, Message> getMessageToCarry() {
         return messageToCarry;
-    }
-
-    public void setMessageToCarry(HashMap<MessageDto, Message> messageToCarry) {
-        this.messageToCarry = messageToCarry;
     }
 
     public int getMessageCounter() {
@@ -152,6 +149,10 @@ public class PersistenceManager {
         loadMessagesDescentralized(context, false);
     }
 
+    public void loadMessagesToCarry(Context context) {
+        loadMessagesToCarry(context, false);
+    }
+
     public void flushAndLoadMessagesDescentralized(Context context) {
         loadMessagesDescentralized(context, true);
     }
@@ -218,6 +219,26 @@ public class PersistenceManager {
         }
     }
 
+    private void loadMessagesToCarry(Context context, boolean flush) {
+        if (flush || messageToCarry == null) {
+            try (ObjectInputStream objectInputStream = new ObjectInputStream(new BufferedInputStream(
+                    context.openFileInput(MESSAGETOCARRY_FILENAME)))) {
+                messageToCarry = (HashMap<MessageDto,Message>) objectInputStream.readObject();
+            } catch (ClassNotFoundException| IOException e) {
+                messageToCarry= new HashMap<>();
+            }
+        }
+    }
+
+    public void saveMessagesToCarry(Context context) {
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new BufferedOutputStream(
+                context.openFileOutput(MESSAGETOCARRY_FILENAME, Context.MODE_PRIVATE)))) {
+            objectOutputStream.writeObject(messageToCarry);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
     public void addToMessageRepository(Message message) {
@@ -248,5 +269,7 @@ public class PersistenceManager {
     public boolean inMessageRepository(MessageDto messageDto) {
         return messageRepository.containsKey(messageDto);
     }
+
+
 
 }

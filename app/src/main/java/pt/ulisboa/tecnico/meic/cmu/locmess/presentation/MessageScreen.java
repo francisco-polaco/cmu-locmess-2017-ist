@@ -23,11 +23,15 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -58,7 +62,6 @@ public class MessageScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.messagescreen);
-        noMessageDisplay();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -161,12 +164,6 @@ public class MessageScreen extends AppCompatActivity {
         drawerToggle.syncState();
     }
 
-    public void noMessageDisplay() {
-        /*ListView listview = (ListView) findViewById(R.id.MessageList);
-        TextView textView = (TextView) findViewById(R.id.empty);
-        textView.setText(R.string.main_no_messages);
-        listview.setEmptyView(textView);*/
-    }
 
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
@@ -243,6 +240,7 @@ public class MessageScreen extends AppCompatActivity {
                 public void onSuccess(Result result) {
                     messages.clear();
 
+                    MessageTimeCheck();
                     messages.addAll(PersistenceManager.getInstance().getMessageRepository().keySet());
 
                     messages.addAll(PersistenceManager.getInstance().retrieveCache());
@@ -281,5 +279,34 @@ public class MessageScreen extends AppCompatActivity {
         }
     }
 
+    private void MessageTimeCheck(){
+        Log.d(TAG, "MessageTimeCheck: Checking The Time on Messages...");
+        Message m = null;
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        Calendar cal = Calendar.getInstance();
+        try {
+            Date actualDate = format.parse(format.format(cal.getTime()));
+            for(MessageDto mdto : PersistenceManager.getInstance().getMessageRepository().keySet()){
+                m = PersistenceManager.getInstance().getMessageRepository().get(mdto);
+                Date endDate = format.parse(m.getEndDate());
+                if (actualDate.after(endDate)) {
+                    PersistenceManager.getInstance().removeFromMessageRepository(mdto);
+                    PersistenceManager.getInstance().saveMessagesDescentralized(getApplicationContext());
+                }
+            }
 
+            for(MessageDto mdto : PersistenceManager.getInstance().getMessageToCarry().keySet()) {
+                m = PersistenceManager.getInstance().getMessageRepository().get(mdto);
+                Date endDate = format.parse(m.getEndDate());
+                if (actualDate.after(endDate)) {
+                    PersistenceManager.getInstance().getMessageToCarry().remove(mdto);
+                    PersistenceManager.getInstance().setMessageCounter(PersistenceManager.getInstance().getMessageCounter() + 1);
+                    PersistenceManager.getInstance().saveMessagesToCarry(getApplicationContext());
+                    PersistenceManager.getInstance().saveMessageCounter(getApplicationContext());
+                }
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -56,7 +56,7 @@ public class EditProfile extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         drawerToggle = setupDrawerToggle();
         drawerLayout.addDrawerListener(drawerToggle);

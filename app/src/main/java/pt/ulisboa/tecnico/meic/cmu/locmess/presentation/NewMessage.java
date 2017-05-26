@@ -171,16 +171,15 @@ public class NewMessage extends AppCompatActivity {
         String sendModePolicy = (String) btNext.getText();
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
         String bDate = simpleDateFormat.format(new Date(beginTime + " " + beginDate));
         String eDate = simpleDateFormat.format(new Date(endTime + " " + endDate));
 
 
         Message message = new Message(title, location, policy, MessagePairs, bDate, eDate, content);
-        Log.d("NewMessage", "sendMessage: " + location);
 
 
         for (Pair p : MessagePairs)
-            Log.d("NewMessage", "sendMessage: " + p.getValue() + p.getKey());
 
         if (sendModePolicy.equals("Centralized"))
             new PostMessageListener(getApplicationContext(), message);

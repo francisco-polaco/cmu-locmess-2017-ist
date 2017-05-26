@@ -50,7 +50,6 @@ public class WifiLocationPicker extends AppCompatActivity implements
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.d(TAG, "mConnection: Entrei!");
             mManager = new SimWifiP2pManager(new Messenger(service));
             mChannel = mManager.initialize(getApplication(), getMainLooper(), null);
         }
@@ -114,7 +113,6 @@ public class WifiLocationPicker extends AppCompatActivity implements
 
     @Override
     public void onPeersAvailable(SimWifiP2pDeviceList peers) {
-        Log.d(TAG, "onPeersAvailable: Entrei111111");
         if (peers != null) {
             peersStr.clear();
 

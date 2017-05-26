@@ -26,8 +26,6 @@ import static pt.ulisboa.tecnico.meic.cmu.locmess.R.layout.register;
 
 public class Register extends AppCompatActivity {
 
-    // TODO: Refactorized!
-
     private static final String TAG = Register.class.getSimpleName();
     private ProgressDialog dialog;
 

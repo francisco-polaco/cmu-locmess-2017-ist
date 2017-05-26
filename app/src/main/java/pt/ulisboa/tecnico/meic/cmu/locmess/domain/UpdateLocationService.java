@@ -33,9 +33,15 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
 import java.net.UnknownHostException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -75,20 +81,16 @@ public final class UpdateLocationService extends Service implements
             ;
     private static final int INTERVAL = UPDATE_INTERVAL;
     private static final int FASTEST_UPDATE_INTERVAL = 1000;
-    private Location oldLocation;
     private APLocation oldAPLocation;
     private List<String> IpDeviceList = new ArrayList<>();
-    private List<String> peersStr = new ArrayList<>();
 
     private List<APLocation> APLog = new ArrayList<>();
 
     private SimWifiP2pSocketServer mSrvSocket = null;
-    private SimWifiP2pSocket mCliSocket = null;
     private SimWifiP2pManager mManager = null;
     private SimWifiP2pManager.Channel mChannel = null;
     private SimWifiP2pBroadcastReceiver mReceiver;
     public static boolean wifion = false;
-    public boolean connected = false;
     private HashMap<MessageDto, Message> msgLst = new HashMap<>();
     ;
 
@@ -184,7 +186,6 @@ public final class UpdateLocationService extends Service implements
 
     protected boolean isBetterLocation(Location location, Location currentBestLocation) {
         if (currentBestLocation == null) {
-            // A new location is always better than no location //keeping this comment because it's awesome
             return true;
         } else if (location == null) {
             return false;
@@ -241,10 +242,6 @@ public final class UpdateLocationService extends Service implements
         stopLocationUpdates();
     }
 
-    /*
-     * Asynctasks implementing message exchange
-	 */
-
     public void DescentralizedMessageSend() {
         msgLst.clear();
 
@@ -269,6 +266,8 @@ public final class UpdateLocationService extends Service implements
                     MessageDisplay.put(messageDto,PersistenceManager.getInstance().getMessageToCarry().get(messageDto));
                     PersistenceManager.getInstance().getMessageToCarry().remove(messageDto);
                     PersistenceManager.getInstance().setMessageCounter(PersistenceManager.getInstance().getMessageCounter()+1);
+                    PersistenceManager.getInstance().saveMessagesToCarry(getApplicationContext());
+                    PersistenceManager.getInstance().saveMessageCounter(getApplicationContext());
                 }
             }
         }
@@ -280,34 +279,22 @@ public final class UpdateLocationService extends Service implements
 
 
         if (!msgLst.isEmpty()) {
-            for (String s : IpDeviceList) {
-                new OutgoingCommTask().executeOnExecutor(
-                        AsyncTask.THREAD_POOL_EXECUTOR, s
-                );
-
-                final String position = msgLst.toString();
-
+            for (final String s : IpDeviceList) {
                 new Thread() {
                     @Override
                     public void run() {
-                        while (connected == false) {
-                        }
                         new SendCommTask().executeOnExecutor(
-                                AsyncTask.THREAD_POOL_EXECUTOR, position);
+                                AsyncTask.THREAD_POOL_EXECUTOR, s);
                     }
                 }.start();
             }
         }
 
-        //---------------------------Relay Route--------------------------------------------------
-
         else {
             Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Starting");
             final int numberOfDevicesToPick = IpDeviceList.size()/2;
-            //final int numberOfDevicesToPick = IpDeviceList.size(); // Testar para apenas 1 device
             if (!IpDeviceList.isEmpty() && numberOfDevicesToPick>0) {
                 Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Have Devices to Send Messages");
-                final int APLogSize = APLog.size();
                 final ArrayList<Integer> cache = new ArrayList();
                 final int size = IpDeviceList.size();
 
@@ -320,7 +307,6 @@ public final class UpdateLocationService extends Service implements
                         public void run() {
                             try {
                                 int n = numberOfDevicesToPick;
-                                //int n = numberOfDevicesToPick;
                                 Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Thread: Connecting..." );
                                 SimWifiP2pSocket CliSocket = new SimWifiP2pSocket(ip,
                                         Integer.parseInt(getString(R.string.port)));
@@ -329,7 +315,6 @@ public final class UpdateLocationService extends Service implements
 
                                 OutputStream os = CliSocket.getOutputStream();
                                 ObjectOutputStream oos = new ObjectOutputStream(os);
-                                Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Thread: Out and In Streams created" );
                                 oos.writeObject("APListSize");
                                 Log.d(TAG, "DescentralizedMessageSend: RelayRoute: Thread: APListSize Sent" );
                                 InputStream is = CliSocket.getInputStream();
@@ -380,7 +365,6 @@ public final class UpdateLocationService extends Service implements
                 }
             }
         }
-        //----------------------------------------------------------------------------------------
 
     }
 
@@ -405,7 +389,6 @@ public final class UpdateLocationService extends Service implements
                         PersistenceManager.getInstance().getMessageRepository().put(messagedto, message);
                         PersistenceManager.getInstance().saveMessagesDescentralized(getApplicationContext());
                     }
-                //}
             }
         }
     }
@@ -415,7 +398,6 @@ public final class UpdateLocationService extends Service implements
     public void onPeersAvailable(SimWifiP2pDeviceList peers) {
         ArrayList<String> peersStr = new ArrayList<>();
 
-        // compile list of devices in range
         for (SimWifiP2pDevice device : peers.getDeviceList()) {
             String devstr = device.deviceName + " (" + device.getVirtIp() + ")";
             peersStr.add(devstr);
@@ -431,7 +413,6 @@ public final class UpdateLocationService extends Service implements
     public void onGroupInfoAvailable(SimWifiP2pDeviceList devices,
                                      SimWifiP2pInfo groupInfo) {
         IpDeviceList.clear();
-        // compile list of network members
         for (String deviceName : groupInfo.getDevicesInNetwork()) {
             SimWifiP2pDevice device = devices.getByName(deviceName);
             String[] s = device.getVirtIp().split(":");
@@ -461,7 +442,6 @@ public final class UpdateLocationService extends Service implements
                         InputStream is = sock.getInputStream();
                         ObjectInputStream ois = new ObjectInputStream(is);
                         String st = (String) ois.readObject();
-                        Log.d(TAG, "doInBackground: IncommingTask:Catch Tag String:"+ st);
                         if(st.equals("APListSize")){
                             OutputStream os = sock.getOutputStream();
                             ObjectOutputStream oos = new ObjectOutputStream(os);
@@ -509,6 +489,8 @@ public final class UpdateLocationService extends Service implements
                                             Log.d(TAG, "doInBackground: Incomming: Adding message ...");
                                             PersistenceManager.getInstance().getMessageToCarry().put(m, hashMap.get(m));
                                             PersistenceManager.getInstance().setMessageCounter(PersistenceManager.getInstance().getMessageCounter() - 1);
+                                            PersistenceManager.getInstance().saveMessagesToCarry(getApplicationContext());
+                                            PersistenceManager.getInstance().saveMessageCounter(getApplicationContext());
                                         }
                                         else{
                                             Log.d(TAG, "doInBackground: Incomming: No more Messages ...");
@@ -547,52 +529,31 @@ public final class UpdateLocationService extends Service implements
         }
     }
 
-
-
-
-    public class OutgoingCommTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                mCliSocket = new SimWifiP2pSocket(params[0],
-                        Integer.parseInt(getString(R.string.port)));
-                connected = true;
-            } catch (UnknownHostException e) {
-                return "Unknown Host:" + e.getMessage();
-            } catch (IOException e) {
-                return "IO error:" + e.getMessage();
-            }
-            return null;
-        }
-    }
-
     public class SendCommTask extends AsyncTask<String, String, Void> {
 
         @Override
         protected Void doInBackground(String... msg) {
             try {
+                SimWifiP2pSocket mCliSocket = new SimWifiP2pSocket(msg[0],
+                        Integer.parseInt(getString(R.string.port)));
                 Log.d(TAG, "doInBackground: Notifying Devices about Sending Messages on APL");
                 OutputStream os = mCliSocket.getOutputStream();
                 ObjectOutputStream oos = new ObjectOutputStream(os);
                 oos.writeObject("MessagesOnAPL");
                 Log.d(TAG, "doInBackground: Sending Messages on APL");
                 oos.writeObject(msgLst);
-                connected = false;
                 oos.close();
                 os.close();
                 mCliSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            mCliSocket = null;
             return null;
         }
 
     }
     
     private ServiceConnection mConnection = new ServiceConnection() {
-        // callbacks for service binding, passed to bindService()
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {

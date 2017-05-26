@@ -37,6 +37,7 @@ public class Login extends AppCompatActivity {
         PersistenceManager.getInstance().loadMessagesDescentralized(getApplicationContext());
         PersistenceManager.getInstance().flushAndLoadProfile(getApplicationContext());
         PersistenceManager.getInstance().loadMessageCounter(getApplicationContext());
+        PersistenceManager.getInstance().loadMessagesToCarry(getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
     }
